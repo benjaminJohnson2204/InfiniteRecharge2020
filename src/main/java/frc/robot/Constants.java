@@ -16,4 +16,33 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static int leftJoystick = 0;
+    public static int rightJoystick = 1;
+    public static int xBoxController = 2;
+
+    public static class DriveMotors {
+        public static int leftFrontDriveMotor = 20;
+        public static int leftRearDriveMotor = 21;
+        public static int rightFrontDriveMotor = 22;
+        public static int rightRearDriveMotor = 23;
+        public static int climbDriveMotor = 24;
+    }
+
+    public static enum PCM_ONE {
+        DRIVETRAIN_SIFTER (0, 1),
+        HATCH_EXTEND (4, 5),
+        //    	HATCH_SECURE (4, 5),
+        CLIMB_PISTONS (2, 3);
+
+        public int FORWARD;
+        public int REVERSE;
+
+        private PCM_ONE(int forward, int reverse){
+            this.FORWARD = forward;
+            this.REVERSE = reverse;
+        }
+
+        public static int CAN_ADDRESS = 11;
+    }
 }
