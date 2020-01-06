@@ -76,7 +76,7 @@ public class ColorSensor extends SubsystemBase {
     return false;
   }
 
-  public void updateSmartDashboard() {
+  public void updateSmartDashboard() { //s
     SmartDashboard.putNumber("Red", getColor().red);
     SmartDashboard.putNumber("Green", getColor().green);
     SmartDashboard.putNumber("Blue", getColor().blue);
