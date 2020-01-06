@@ -19,6 +19,8 @@ public class ColorSensor extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+  private boolean isGreen = false;
+  private int semiRotations = 0;
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   
   public ColorSensor() {
@@ -55,6 +57,25 @@ public class ColorSensor extends SubsystemBase {
     }
   }
 
+  public void resetRotationControlVars(){
+    isGreen = false;
+    semiRotations = 0;
+  }
+
+  public boolean rotationControlComplete(){
+    if(panelColor() == 2 && isGreen == false){
+      isGreen = true;
+      semiRotations++;
+    }
+    if(panelColor() != 2){
+      isGreen = false;
+    }
+    if(semiRotations >= 7){
+      return true;
+    }
+    return false;
+  }
+
   public void updateSmartDashboard() {
     SmartDashboard.putNumber("Red", getColor().red);
     SmartDashboard.putNumber("Green", getColor().green);
@@ -62,6 +83,8 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putNumber("IR", getIR());
     SmartDashboard.putNumber("Proximity", getProximity());
     SmartDashboard.putNumber("Panel Color", panelColor());
+    SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
+    SmartDashboard.putNumber("Semi-Rotations", semiRotations);
     //SmartDashboard.putString("Color", getColorString());
   }
 
