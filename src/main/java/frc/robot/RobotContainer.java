@@ -8,11 +8,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SetIntake;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -24,10 +29,12 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public static ColorSensor colorSensor = new ColorSensor();
+  public static Intake intake = new Intake();
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-
+  Joystick leftJoystick = new Joystick(Constants.leftJoystick);
+  Button[] leftButtons = new Button[leftJoystick.getButtonCount()];
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -35,6 +42,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    
+    
   }
 
   /**
@@ -44,6 +53,11 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    for(int i = 0; i < leftButtons.length; i++){
+      leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
+    }
+    
+    leftButtons[0].whileHeld(new SetIntake(intake));
   }
 
 
