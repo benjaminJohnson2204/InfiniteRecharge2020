@@ -69,6 +69,9 @@ public class ColorSensor extends SubsystemBase {
     }
     if(panelColor() != 2){
       isGreen = false;
+      if(semiRotations >= 6){
+        return true;
+      }
     }
     if(semiRotations >= 7){
       return true;
@@ -76,13 +79,27 @@ public class ColorSensor extends SubsystemBase {
     return false;
   }
 
-  public void updateSmartDashboard() {
+  
+  String colorName;
+  public void updateSmartDashboard() { //s
     SmartDashboard.putNumber("Red", getColor().red);
     SmartDashboard.putNumber("Green", getColor().green);
     SmartDashboard.putNumber("Blue", getColor().blue);
     SmartDashboard.putNumber("IR", getIR());
     SmartDashboard.putNumber("Proximity", getProximity());
-    SmartDashboard.putNumber("Panel Color", panelColor());
+    switch(panelColor()){
+      case 0:
+        colorName = "Not Close Enough";
+      case 1:
+        colorName = "Red";
+      case 2:
+        colorName = "Green";
+      case 3:
+        colorName = "Blue";
+      case 4:
+        colorName = "Yellow";
+    }
+    SmartDashboard.putString("Panel Color", colorName);
     SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
     SmartDashboard.putNumber("Semi-Rotations", semiRotations);
     //SmartDashboard.putString("Color", getColorString());
