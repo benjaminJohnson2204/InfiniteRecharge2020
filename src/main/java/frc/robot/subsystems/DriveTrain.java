@@ -14,12 +14,21 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PCM_ONE;
 import frc.robot.Constants.DriveMotors;
 
-public class DriveTrain extends SubsystemBase {
+public class
+DriveTrain extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
@@ -35,6 +44,18 @@ public class DriveTrain extends SubsystemBase {
   public AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
   public int controlMode = 0;
+  private int gearRatio = 1; //gear ration between the encoder and the wheel
+  private int wheelRadius = 3;
+
+  DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
+  DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
+
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1,1, 1);
+
+  PIDController leftPIDController = new PIDController(1, 0, 0);
+  PIDController rightPIDController = new PIDController(1, 0,0);
+
+  Pose2d pose;
 
   public DriveTrain() {
 
@@ -73,8 +94,40 @@ public class DriveTrain extends SubsystemBase {
 
     driveMotors[4].configPeakOutputReverse(0);
   }
+
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(-navX.getAngle());
+  }
+
+  public DifferentialDriveWheelSpeeds getSpeeds() {
+    return new DifferentialDriveWheelSpeeds(
+      driveMotors[0].getSelectedSensorVelocity() / gearRatio * 2 * Math.PI * Units.inchesToMeters(wheelRadius) / 60, //divide by gear ratio to make sure we have wheel speed
+      driveMotors[2].getSelectedSensorVelocity() / gearRatio * 2 * Math.PI * Units.inchesToMeters(wheelRadius) / 60  //calculate for circumference and divide by 60 to convert from rpm to rps
+    );
+  }
+
+  public SimpleMotorFeedforward getFeedforward() {
+    return feedforward;
+  }
+
+  public PIDController getLeftPIDController() {
+    return leftPIDController;
+  }
+
+  public PIDController getRightPIDController() {
+    return rightPIDController;
+  }
+
   public int getEncoderCount(int sensorIndex) {
     return driveMotors[sensorIndex].getSelectedSensorPosition();
+  }
+
+  public double getEncoderDistanceMeters(int sensorIndex) {
+    return driveMotors[sensorIndex].getSelectedSensorPosition() / gearRatio * 2 * Math.PI * Units.inchesToMeters(wheelRadius);
+  }
+
+  public void resetEncoderCount(int sensorIndex) {
+    driveMotors[sensorIndex].setSelectedSensorPosition(0);
   }
 
   public void setMotorArcadeDrive(double throttle, double turn) {
@@ -118,10 +171,19 @@ public class DriveTrain extends SubsystemBase {
     driveTrainShifters.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
   }
 
+  public void resetOdometry(){
+    odometry.resetPosition(new Pose2d(0, 0, new Rotation2d(0)), new Rotation2d(0));
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    pose = odometry.update(getHeading(), getEncoderDistanceMeters(0), getEncoderDistanceMeters(3));
     SmartDashboard.putNumber("Left Encoder", getEncoderCount(0));
     SmartDashboard.putNumber("Right Encoder", getEncoderCount(2));
+
+    SmartDashboard.putNumber("xCoordinate", Units.metersToInches(pose.getTranslation().getX()/4096));
+    SmartDashboard.putNumber("yCoordinate", Units.metersToInches(pose.getTranslation().getY()/4096));
+    SmartDashboard.putNumber("angle", pose.getRotation().getDegrees());
   }
 }

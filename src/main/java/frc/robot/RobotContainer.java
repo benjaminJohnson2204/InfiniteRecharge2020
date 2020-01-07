@@ -29,7 +29,7 @@ import frc.vitruvianlib.utils.XBoxTrigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final DriveTrain m_driveTrain = new DriveTrain();
+  public static final DriveTrain m_driveTrain = new DriveTrain();
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
