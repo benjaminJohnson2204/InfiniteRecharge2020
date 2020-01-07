@@ -19,12 +19,12 @@ public class ColorSensor extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  private boolean isGreen = false;
-  private int semiRotations = 0;
+  public boolean isColor = false;
+  public int semiRotations = 0;
+  private int colorID;
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   
   public ColorSensor() {
-
   }
 
   public Color getColor() {
@@ -58,17 +58,18 @@ public class ColorSensor extends SubsystemBase {
   }
 
   public void resetRotationControlVars(){
-    isGreen = false;
+    isColor = true;
     semiRotations = 0;
+    colorID = panelColor();
   }
 
   public boolean rotationControlComplete(){
-    if(panelColor() == 2 && isGreen == false){
-      isGreen = true;
+    if(panelColor() == colorID && isColor == false){
+      isColor = true;
       semiRotations++;
     }
-    if(panelColor() != 2){
-      isGreen = false;
+    if(panelColor() != colorID){
+      isColor = false;
       if(semiRotations >= 6){
         return true;
       }
@@ -80,24 +81,26 @@ public class ColorSensor extends SubsystemBase {
   }
 
   
-  String colorName;
   public void updateSmartDashboard() { //s
+    String colorName = "Not Close Enough";
     SmartDashboard.putNumber("Red", getColor().red);
     SmartDashboard.putNumber("Green", getColor().green);
     SmartDashboard.putNumber("Blue", getColor().blue);
     SmartDashboard.putNumber("IR", getIR());
     SmartDashboard.putNumber("Proximity", getProximity());
     switch(panelColor()){
-      case 0:
-        colorName = "Not Close Enough";
       case 1:
         colorName = "Red";
+        break;
       case 2:
         colorName = "Green";
+        break;
       case 3:
         colorName = "Blue";
+        break;
       case 4:
         colorName = "Yellow";
+        break;
     }
     SmartDashboard.putString("Panel Color", colorName);
     SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
