@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ResetRotationControl;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -24,7 +25,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Climber m_climber = new Climber();
-  private final ControlPanel m_controlPanel = new ControlPanel();
+  private final ColorSensor m_colorSensor = new ColorSensor();
   private final Controls m_controls = new Controls();
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Indexer m_indexer = new Indexer();
@@ -39,7 +40,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    SmartDashboard.putData(new ResetRotationControl(colorSensor));
+    SmartDashboard.putData(new ResetRotationControl(m_colorSensor));
     // Configure the button bindings
     configureButtonBindings();
   }

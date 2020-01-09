@@ -67,17 +67,13 @@ public class ColorSensor extends SubsystemBase {
     if(panelColor() == colorID && isColor == false){
       isColor = true;
       semiRotations++;
-    }
-    if(panelColor() != colorID){
+    } else if(panelColor() != colorID && isColor){
       isColor = false;
-      if(semiRotations >= 6){
-        return true;
-      }
     }
-    if(semiRotations >= 7){
+    if(semiRotations >= 6 && isColor == false){
       return true;
-    }
-    return false;
+    } else
+      return false;
   }
 
   
