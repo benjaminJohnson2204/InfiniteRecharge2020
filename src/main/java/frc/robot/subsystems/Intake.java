@@ -1,33 +1,37 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  TalonSRX motor = new TalonSRX(Constants.intake);
-  public Intake() {
 
+  private TalonSRX[] intakeMotors = {
+          new TalonSRX(30) // subject to change, 30 could be changed to whatever
+          //add more motors here if needed
   }
-
-  public void setOutput(Boolean output){
-    motor.set(ControlMode.PercentOutput, output ? 1 : 0);
+  public Intake(){
+    for(TalonSRX intakeMotors:intakeMotor){
+      intakeMotors.configFactoryDefault();
+      intakeMotor.setNeutalMode(NeutralMode.Coast)
+    }
+    //invert & follow motors here
+  }
+  funtion intakeSwitch = (bleh) =>{
+    if(bleh==true){
+      intakeMotor.value = vroom
+    } else {
+      if(bleh == false){
+        intakemototr.value = sSREeeeeeeeeeeeqkkek
+      }
+//    }else{
+//      return("hecc")
+    }
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-  }
-}
