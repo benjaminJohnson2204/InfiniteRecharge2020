@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.PCM_ONE;
 import frc.robot.Constants.DriveMotors;
 
@@ -47,6 +48,7 @@ DriveTrain extends SubsystemBase {
   private int gearRatio = 1; //gear ration between the encoder and the wheel
   private int wheelRadius = 3;
 
+  //DifferentialDrive drive = new DifferentialDrive(driveMotors[0],driveMotors[2]);
   DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
   DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
 
@@ -56,6 +58,9 @@ DriveTrain extends SubsystemBase {
   PIDController rightPIDController = new PIDController(1, 0,0);
 
   Pose2d pose;
+
+  private int leftZeroOffset;
+  private int rightZeroOffset;
 
   public DriveTrain() {
 
@@ -122,12 +127,13 @@ DriveTrain extends SubsystemBase {
     return driveMotors[sensorIndex].getSelectedSensorPosition();
   }
 
-  public double getEncoderDistanceMeters(int sensorIndex) {
-    return driveMotors[sensorIndex].getSelectedSensorPosition() / gearRatio * 2 * Math.PI * Units.inchesToMeters(wheelRadius);
+  public double getWheelDistanceMeters(int sensorIndex) {
+    return driveMotors[sensorIndex].getSelectedSensorPosition() * Constants.ticksPerMeter;
   }
 
-  public void resetEncoderCount(int sensorIndex) {
-    driveMotors[sensorIndex].setSelectedSensorPosition(0);
+  public void resetEncoderCounts() {
+    leftZeroOffset = driveMotors[0].getSelectedSensorPosition();
+    rightZeroOffset = driveMotors[2].getSelectedSensorPosition();
   }
 
   public void setMotorArcadeDrive(double throttle, double turn) {
@@ -178,12 +184,16 @@ DriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    pose = odometry.update(getHeading(), getEncoderDistanceMeters(0), getEncoderDistanceMeters(3));
+    pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
     SmartDashboard.putNumber("Left Encoder", getEncoderCount(0));
     SmartDashboard.putNumber("Right Encoder", getEncoderCount(2));
 
-    SmartDashboard.putNumber("xCoordinate", Units.metersToInches(pose.getTranslation().getX()/4096));
-    SmartDashboard.putNumber("yCoordinate", Units.metersToInches(pose.getTranslation().getY()/4096));
-    SmartDashboard.putNumber("angle", pose.getRotation().getDegrees());
+    SmartDashboard.putNumber("xCoordinate", Units.metersToInches(getRobotPose().getTranslation().getX()));
+    SmartDashboard.putNumber("yCoordinate", Units.metersToInches(getRobotPose().getTranslation().getY()));
+    SmartDashboard.putNumber("angle", getRobotPose().getRotation().getDegrees());
+  }
+
+  public Pose2d getRobotPose(){
+    return pose;
   }
 }

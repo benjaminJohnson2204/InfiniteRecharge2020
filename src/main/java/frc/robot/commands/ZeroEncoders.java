@@ -8,7 +8,6 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -32,8 +31,7 @@ public class ZeroEncoders extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveTrain.resetEncoderCount(0);
-    m_driveTrain.resetEncoderCount(2);
+    m_driveTrain.resetEncoderCounts();
     m_driveTrain.resetOdometry();
   }
 

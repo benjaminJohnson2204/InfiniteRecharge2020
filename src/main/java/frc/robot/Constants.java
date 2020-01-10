@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -28,6 +30,8 @@ public final class Constants {
         public static int rightRearDriveMotor = 23;
         public static int climbDriveMotor = 24;
     }
+
+    public static double ticksPerMeter = Units.inchesToMeters(6*Math.PI) / 4096;
 
     public static enum PCM_ONE {
         DRIVETRAIN_SIFTER (0, 1),
