@@ -13,8 +13,14 @@ public class Indexer extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+  TalonSRX master = new TalonSRX(Constants.indexer);
+
   public Indexer() {
 
+  }
+
+  public void setOutput(double output){
+    master.set(ControlMode.PercentOutput, output);
   }
 
   @Override
