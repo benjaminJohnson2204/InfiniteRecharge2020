@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Indexer;
 
 /**
  * An example command that uses an example subsystem.
@@ -16,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class SetIndexer extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Indexer m_indexer;
-
+  private double m_output;
   /**
    * Creates a new ExampleCommand.
    *
@@ -24,6 +25,7 @@ public class SetIndexer extends CommandBase {
    */
   public SetIndexer(Indexer subsystem, double output) {
     m_indexer = subsystem;
+    m_output = output;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -36,7 +38,7 @@ public class SetIndexer extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.setOutput(output);
+    m_indexer.setOutput(m_output);
   }
 
   // Called once the command ends or is interrupted.
