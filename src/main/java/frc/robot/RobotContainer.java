@@ -34,6 +34,15 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+
+  //Climber motors
+  public float rightClimberMotor = 10;
+  public float leftClimberMotor = 11;
+
+
+
+
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
