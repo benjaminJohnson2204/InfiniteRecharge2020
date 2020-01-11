@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.SetIntake;
+import frc.robot.commands.FastIntake;
+import frc.robot.commands.SlowIntake;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
@@ -36,14 +37,15 @@ public class RobotContainer {
   Joystick leftJoystick = new Joystick(Constants.leftJoystick);
   Button[] leftButtons = new Button[leftJoystick.getButtonCount()];
 
+  Joystick rightJoystick = new Joystick(Constants.rightJoystick);
+  Button[] rightButtons = new Button[rightJoystick.getButtonCount()];
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    
-    
   }
 
   /**
@@ -56,8 +58,13 @@ public class RobotContainer {
     for(int i = 0; i < leftButtons.length; i++){
       leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
     }
-    
-    leftButtons[0].whileHeld(new SetIntake(intake));
+    for(int i = 0; i < rightButtons.length; i++){
+      rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
+    }
+
+    leftButtons[0].whileHeld(new FastIntake(intake));
+    rightButtons[0].whileHeld(new SlowIntake(intake));
+
   }
 
 

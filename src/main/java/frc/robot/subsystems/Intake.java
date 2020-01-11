@@ -18,11 +18,14 @@ public class Intake extends SubsystemBase {
       intakeMotor.configFactoryDefault();
       intakeMotor.setNeutralMode(NeutralMode.Coast);
   }
-  public void setIntake(float value){
+  public void setIntake(double value){
     intakeMotor.set(ControlMode.PercentOutput, value);
   }
-  public void intake(){
-    setIntake(1);
+  public void intakeFast(){
+    setIntake(.7);
+  }
+  public void intakeSlow(){
+    setIntake(.5);
   }
   public void stop(){
     setIntake(0);
