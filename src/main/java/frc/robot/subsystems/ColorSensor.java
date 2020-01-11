@@ -7,13 +7,18 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.tables.IRemote;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ColorSensor extends SubsystemBase {
   /**
@@ -23,8 +28,10 @@ public class ColorSensor extends SubsystemBase {
   public int semiRotations = 0;
   private int colorID;
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
+  public TalonSRX motor = new TalonSRX(Constants.controlPanel);
   
   public ColorSensor() {
+    motor.setNeutralMode(NeutralMode.Brake);
   }
 
   public Color getColor() {
@@ -76,8 +83,27 @@ public class ColorSensor extends SubsystemBase {
       return false;
   }
 
+  public void setOutput(double output){
+    motor.set(ControlMode.PercentOutput, output);
+  }
+
+  public int getFMSColor() {
+    String message = DriverStation.getInstance().getGameSpecificMessage();
+    switch(message){
+      case "R":
+        return 1;
+      case "G":
+        return 2;
+      case "B":
+        return 3;
+      case "Y":
+        return 4;
+      default:
+        return -1;
+    }
+  }
   
-  public void updateSmartDashboard() { //s
+  public void updateSmartDashboard() {
     String colorName = "Not Close Enough";
     SmartDashboard.putNumber("Red", getColor().red);
     SmartDashboard.putNumber("Green", getColor().green);
@@ -107,5 +133,6 @@ public class ColorSensor extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateSmartDashboard();
   }
 }

@@ -17,4 +17,10 @@ package frc.robot;
  */
 public final class Constants {
     public static final int intake = 30;
+
+    public static final int controlPanel = 40;
+
+    public static final int leftJoystick = 0;
+    public static final int rightJoystick = 1;
+    public static final int xBoxController = 2;
 }

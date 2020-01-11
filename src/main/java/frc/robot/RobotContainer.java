@@ -8,12 +8,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.ResetRotationControl;
+import frc.robot.commands.controlPanel.PositionControl;
+import frc.robot.commands.controlPanel.ResetRotationControl;
+import frc.robot.commands.controlPanel.RotationControl;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -36,6 +41,11 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  Joystick leftJoystick = new Joystick(Constants.leftJoystick);
+  Joystick rightJoystick = new Joystick(Constants.rightJoystick);
+  Joystick xBoxController = new Joystick(Constants.xBoxController);
+  JoystickButton[] leftButtons, rightButtons, xBoxButtons;
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -52,6 +62,22 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    leftButtons = new JoystickButton[leftJoystick.getButtonCount()];
+    rightButtons = new JoystickButton[rightJoystick.getButtonCount()];
+    xBoxButtons = new JoystickButton[xBoxController.getButtonCount()];
+
+    for(int i = 0; i < leftButtons.length; i++){
+      leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
+    }
+    for(int i = 0; i < rightButtons.length; i++){
+      rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
+    }
+    for(int i = 0; i < xBoxButtons.length; i++){
+      xBoxButtons[i] = new JoystickButton(xBoxController, i + 1);
+    }
+
+    xBoxButtons[6].whenPressed(new RotationControl(m_colorSensor));
+    xBoxButtons[7].whenPressed(new PositionControl(m_colorSensor));
   }
 
 
