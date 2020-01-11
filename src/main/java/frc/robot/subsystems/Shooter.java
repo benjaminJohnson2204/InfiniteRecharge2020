@@ -8,29 +8,39 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.revrobotics.*;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Shooter extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
 
-  private TalonSRX[] outtakeMotors = {
-          new TalonSRX(40); //subject to change, 40 is placeholder
-          //initialize motors here
-  }
+  private CANSparkMax[] outtakeMotors = {
+          new CANSparkMax(40, MotorType.kBrushless), //0 and 1 are the actual shooting motors
+          new CANSparkMax(41, MotorType.kBrushless)
+  };
+
   public Shooter() {
-    super("Shooter"); //do not know what this does
+    super(); //do not know what this does
 
-    for(TalonSRX outtakeMotors:outtakeMotor){
-      outtakeMotor.configFactoryDefault(); //configure the motors
-      outtakeMotor.setNeutralMode(NeutralMode.Coast)
+    for(CANSparkMax outtakeMotor : outtakeMotors){
+      outtakeMotor.restoreFactoryDefaults(); //configure the motors
+      outtakeMotor.setIdleMode(IdleMode.kCoast);
     }
-    //set any motors inverted/follow if necessary
+    outtakeMotors[0].setInverted(true);
+    outtakeMotors[1].setInverted(false);
+    outtakeMotors[1].follow(outtakeMotors[0]);
   }
 
-  public void startSpin(double output){outtakeMotors[0].set(ControlMode.PercentOutput, output);}
+  public void startSpin(double output){outtakeMotors[0].set(output);}
 
-  public void insertCell(){/*dont know how to do this mechanically*/}
+  public void insertCell(){}
 
   public void angleHood(double distance){
     //calculate angle necessary to shoot
