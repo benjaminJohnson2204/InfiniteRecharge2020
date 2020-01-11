@@ -33,8 +33,8 @@ public class Shooter extends SubsystemBase {
       outtakeMotor.restoreFactoryDefaults(); //configure the motors
       outtakeMotor.setIdleMode(IdleMode.kCoast);
     }
-    outtakeMotors[0].setInverted(true);
-    outtakeMotors[1].setInverted(false);
+    outtakeMotors[0].setInverted(false);
+    outtakeMotors[1].setInverted(true);
     outtakeMotors[1].follow(outtakeMotors[0]);
   }
 
