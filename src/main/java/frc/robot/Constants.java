@@ -31,7 +31,7 @@ public final class Constants {
         public static int climbDriveMotor = 24;
     }
 
-    public static double ticksPerMeter = Units.inchesToMeters(6*Math.PI) / 4096;
+    public static double ticksPerMeter = Units.inchesToMeters(6 * Math.PI) / 4096;
 
     public static enum PCM_ONE {
         DRIVETRAIN_SIFTER (0, 1),
@@ -49,4 +49,5 @@ public final class Constants {
 
         public static int CAN_ADDRESS = 11;
     }
+
 }

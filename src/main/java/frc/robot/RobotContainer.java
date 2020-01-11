@@ -10,10 +10,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.ZeroEncoders;
+import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -31,7 +36,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   public static final DriveTrain m_driveTrain = new DriveTrain();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private Command m_autoCommand;
 
   static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
   static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
@@ -42,13 +47,23 @@ public class RobotContainer {
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
 
+  SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain));
+    m_autoChooser.setDefaultOption("Test Path", new TestPathFollowing(m_driveTrain));
+    SmartDashboard.putData(m_autoChooser);
+
+    initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
+  }
+
+  public void initializeSubsystems() {
+    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain));
+    CommandScheduler.getInstance().schedule(new ZeroEncoders(m_driveTrain));
   }
 
   /**
@@ -141,6 +156,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    if(m_autoChooser.getSelected() != null)
+      m_autoCommand = m_autoChooser.getSelected();
+
+    return m_autoCommand.andThen(() -> m_driveTrain.setVoltageOutput(0, 0));
   }
 }

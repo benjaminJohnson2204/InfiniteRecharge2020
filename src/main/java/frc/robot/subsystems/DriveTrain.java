@@ -37,8 +37,7 @@ DriveTrain extends SubsystemBase {
         new TalonSRX(DriveMotors.leftFrontDriveMotor),
         new TalonSRX(DriveMotors.leftRearDriveMotor),
         new TalonSRX(DriveMotors.rightFrontDriveMotor),
-        new TalonSRX(DriveMotors.rightRearDriveMotor),
-        new TalonSRX(DriveMotors.climbDriveMotor)
+        new TalonSRX(DriveMotors.rightRearDriveMotor)
   };
 
   DoubleSolenoid driveTrainShifters = new DoubleSolenoid(PCM_ONE.CAN_ADDRESS, PCM_ONE.DRIVETRAIN_SIFTER.FORWARD, PCM_ONE.DRIVETRAIN_SIFTER.REVERSE);
@@ -46,16 +45,19 @@ DriveTrain extends SubsystemBase {
 
   public int controlMode = 0;
   private int gearRatio = 1; //gear ration between the encoder and the wheel
-  private int wheelRadius = 3;
+  private double wheelDiameter = 0.5;
 
   //DifferentialDrive drive = new DifferentialDrive(driveMotors[0],driveMotors[2]);
   DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
   DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
+  // 1.35, 1.04, 0.182
+  // 1.3, 1.04, 0.175
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1.35,1.04, 0.182);
 
-  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1,1, 1);
-
-  PIDController leftPIDController = new PIDController(1, 0, 0);
-  PIDController rightPIDController = new PIDController(1, 0,0);
+  // 17.7, 0, 8.21
+  // 17.2, 0, 7.91
+  PIDController leftPIDController = new PIDController(8.02, 0, 0);
+  PIDController rightPIDController = new PIDController(8.02, 0,0);
 
   Pose2d pose;
 
@@ -87,7 +89,6 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].setInverted(true);
     driveMotors[2].setInverted(false);
     driveMotors[3].setInverted(false);
-    driveMotors[4].setInverted(true);
 
     driveMotors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     driveMotors[2].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
@@ -97,7 +98,6 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
     driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
 
-    driveMotors[4].configPeakOutputReverse(0);
   }
 
   public Rotation2d getHeading() {
@@ -105,9 +105,10 @@ DriveTrain extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getSpeeds() {
+    // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
     return new DifferentialDriveWheelSpeeds(
-      driveMotors[0].getSelectedSensorVelocity() / gearRatio * 2 * Math.PI * Units.inchesToMeters(wheelRadius) / 60, //divide by gear ratio to make sure we have wheel speed
-      driveMotors[2].getSelectedSensorVelocity() / gearRatio * 2 * Math.PI * Units.inchesToMeters(wheelRadius) / 60  //calculate for circumference and divide by 60 to convert from rpm to rps
+ (driveMotors[0].getSelectedSensorVelocity() * 10 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter), //divide by gear ratio to make sure we have wheel speed
+(driveMotors[2].getSelectedSensorVelocity() * 10 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter) //divide by gear ratio to make sure we have wheel speed
     );
   }
 
@@ -132,8 +133,10 @@ DriveTrain extends SubsystemBase {
   }
 
   public void resetEncoderCounts() {
-    leftZeroOffset = driveMotors[0].getSelectedSensorPosition();
-    rightZeroOffset = driveMotors[2].getSelectedSensorPosition();
+    driveMotors[0].setSelectedSensorPosition(0);
+    driveMotors[2].setSelectedSensorPosition(0);
+//    leftZeroOffset = driveMotors[0].getSelectedSensorPosition();
+//    rightZeroOffset = driveMotors[2].getSelectedSensorPosition();
   }
 
   public void setMotorArcadeDrive(double throttle, double turn) {
@@ -154,9 +157,6 @@ DriveTrain extends SubsystemBase {
       leftPWM = -1.0;
     }
 
-//        if(Robot.climber.climbMode == 1)
-//            setMotorCurrentOutput(20 *leftPWM, 20 * rightPWM);
-//        else
     setMotorPercentOutput(leftPWM, rightPWM);
   }
 
@@ -164,7 +164,11 @@ DriveTrain extends SubsystemBase {
     setMotorPercentOutput(leftOutput, rightOutput);
   }
 
-  public void setMotorPercentOutput(double leftOutput, double rightOutput) {
+  public void setVoltageOutput(double leftVoltage, double rightVoltage) {
+    setMotorPercentOutput(leftVoltage/12, rightVoltage/12);
+  }
+
+  private void setMotorPercentOutput(double leftOutput, double rightOutput) {
     driveMotors[0].set(ControlMode.PercentOutput, leftOutput);
     driveMotors[2].set(ControlMode.PercentOutput, rightOutput);
   }
@@ -188,12 +192,18 @@ DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Left Encoder", getEncoderCount(0));
     SmartDashboard.putNumber("Right Encoder", getEncoderCount(2));
 
-    SmartDashboard.putNumber("xCoordinate", Units.metersToInches(getRobotPose().getTranslation().getX()));
-    SmartDashboard.putNumber("yCoordinate", Units.metersToInches(getRobotPose().getTranslation().getY()));
+    SmartDashboard.putNumber("xCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getX()));
+    SmartDashboard.putNumber("yCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getY()));
     SmartDashboard.putNumber("angle", getRobotPose().getRotation().getDegrees());
+    SmartDashboard.putNumber("leftSpeed", Units.metersToFeet(getSpeeds().leftMetersPerSecond));
+    SmartDashboard.putNumber("rightSpeed", Units.metersToFeet(getSpeeds().rightMetersPerSecond));
   }
 
   public Pose2d getRobotPose(){
     return pose;
+  }
+
+  public DifferentialDriveKinematics getDriveTrainKinematics() {
+    return kinematics;
   }
 }

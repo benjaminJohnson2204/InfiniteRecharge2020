@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -72,8 +73,8 @@ public class Robot extends TimedRobot {
     leftMaster.setNeutralMode(NeutralMode.Brake);
 
     rightMaster = new WPI_TalonSRX(22);
-    rightMaster.setInverted(false);
-    rightMaster.setSensorPhase(false);
+    rightMaster.setInverted(true);
+    rightMaster.setSensorPhase(true);
     rightMaster.setNeutralMode(NeutralMode.Brake);
 
     WPI_TalonSRX leftSlave0 = new WPI_TalonSRX(21);
@@ -82,7 +83,7 @@ public class Robot extends TimedRobot {
     leftSlave0.setNeutralMode(NeutralMode.Brake);
 
     WPI_TalonSRX rightSlave0 = new WPI_TalonSRX(23);
-    rightSlave0.setInverted(false);
+    rightSlave0.setInverted(true);
     rightSlave0.follow(rightMaster);
     rightSlave0.setNeutralMode(NeutralMode.Brake);
 
