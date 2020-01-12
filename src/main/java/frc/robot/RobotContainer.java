@@ -8,8 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SetElevator;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -32,12 +36,18 @@ public class RobotContainer {
   private final Skyhook m_skyhook = new Skyhook();
   private final Vision m_vision = new Vision();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  Joystick leftJoystick = new Joystick(Constants.leftJoystick);
+  Joystick rightJoystick = new Joystick(Constants.rightJoystick);
+  static Joystick xBoxController = new Joystick(Constants.xBoxController);
+  Button[] leftButtons = new Button[10];
+  Button[] rightButtons = new Button[10];
+  Button[] xBoxButtons = new Button[12];
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    m_skyhook.setDefaultCommand(new SetElevator(m_skyhook));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -49,8 +59,24 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    leftButtons = new Button[leftJoystick.getButtonCount()];
+    rightButtons = new Button[rightJoystick.getButtonCount()];
+    xBoxButtons = new Button[xBoxController.getButtonCount()];
+
+    for(int i = 0; i < leftButtons.length; i++){
+      leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
+    }
+    for(int i = 0; i < rightButtons.length; i++){
+      rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
+    }
+    for(int i = 0; i < xBoxButtons.length; i++){
+      xBoxButtons[i] = new JoystickButton(xBoxController, i + 1);
+    }
   }
 
+  public static double getXBoxLeftY(){
+    return xBoxController.getRawAxis(1);
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -59,6 +85,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+   // return m_autoCommand;
+    return null;
   }
 }

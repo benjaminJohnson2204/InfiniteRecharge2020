@@ -7,15 +7,34 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Skyhook extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  public Skyhook() {
+  private TalonSRX skyhookMotor = new TalonSRX(Constants.skyhookMotor);
 
+  public Skyhook() {
+    skyhookMotor.configFactoryDefault();
+    skyhookMotor.setNeutralMode(NeutralMode.Brake);
   }
+  public void setSkyhook(double value) {
+    skyhookMotor.set(ControlMode.PercentOutput, value);
+  }
+  /*public void moveRight() {
+    setSkyhook(1);
+  }
+  public void moveLeft() {
+    setSkyhook(-1);
+  }
+  public void stop() {
+    setSkyhook(0);
+  }*/
 
   @Override
   public void periodic() {
