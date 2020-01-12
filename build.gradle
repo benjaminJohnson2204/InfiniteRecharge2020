@@ -62,7 +62,7 @@ dependencies {
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 
-    //implementation 'com.github.4201VitruvianBots:vitruvianlib:1.1'
+    compile "com.github.jonathandao0:badlog:v0.1.2.4"
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
