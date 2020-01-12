@@ -61,10 +61,8 @@ public class RobotContainer {
     for(int i = 0; i < rightButtons.length; i++){
       rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
     }
-
     leftButtons[0].whileHeld(new ForwardIntake(intake));
     rightButtons[0].whileHeld(new BackwardIntake(intake));
-
   }
 
 
