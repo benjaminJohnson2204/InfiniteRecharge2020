@@ -16,10 +16,9 @@ import frc.robot.Constants;
 public class DriveTrain extends SubsystemBase {
 
   private TalonSRX[] driveMotors ={
-            new TalonSRX(Constants.leftFrontDriveMotor),
-            new TalonSRX(Constants.leftRearDriveMotor),
-            new TalonSRX(Constants.rightFrontDriveMotor),
-            new TalonSRX(Constants.rightRearDriveMotor)
+            new TalonSRX(Constants.leftDriveMotor),
+            new TalonSRX(Constants.rightDriveMotor)
+
   };
   public DriveTrain() {
     for (TalonSRX motor : driveMotors){
@@ -27,20 +26,14 @@ public class DriveTrain extends SubsystemBase {
     motor.setNeutralMode(NeutralMode.Coast);
     }
   driveMotors[0].setInverted(true);
-  driveMotors[1].setInverted(true);
-  driveMotors[2].setInverted(false);
-  driveMotors[3].setInverted(false);
-
-//  driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
-//  driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
-
+  driveMotors[1].setInverted(false);
 }
-  public void tankDrive(float leftValue, float rightValue) {
+  public void tankDrive(double leftValue, double rightValue) {
     driveMotors[0].set(ControlMode.PercentOutput, leftValue);
-    driveMotors[2].set(ControlMode.PercentOutput, rightValue);
+    driveMotors[1].set(ControlMode.PercentOutput, rightValue);
   }
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // This method will be called once per scheduler rub
   }
 }

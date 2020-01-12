@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.setTankDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -38,10 +39,10 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  Joystick leftJoystick = new Joystick(Constants.leftJoystick);
+  static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
   Button[] leftButtons = new Button[leftJoystick.getButtonCount()];
 
-  Joystick rightJoystick = new Joystick(Constants.rightJoystick);
+  static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
   Button[] rightButtons = new Button[rightJoystick.getButtonCount()];
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -49,6 +50,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    m_driveTrain.setDefaultCommand(new setTankDrive(m_driveTrain));
   }
 
   /**
@@ -57,10 +59,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  public double getLeftJoystickY() {
+  public static double getLeftJoystickY() {
     return leftJoystick.getY();
   }
-  public double getRightJoystickY() {
+  public static double getRightJoystickY() {
     return rightJoystick.getY();
   }
   private void configureButtonBindings() {
@@ -70,8 +72,7 @@ public class RobotContainer {
     for(int i = 0; i < rightButtons.length; i++){
       rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
     }
-    leftButtons[0].whileHeld(new ForwardIntake(intake));
-    rightButtons[0].whileHeld(new BackwardIntake(intake));
+
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
