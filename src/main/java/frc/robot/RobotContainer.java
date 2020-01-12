@@ -34,6 +34,11 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  Joystick leftJoystick = new Joystick(Constants.leftJoystick);
+  Button[] leftButtons = new Button[leftJoystick.getButtonCount()];
+
+  Joystick rightJoystick = new Joystick(Constants.rightJoystick);
+  Button[] rightButtons = new Button[rightJoystick.getButtonCount()];
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -49,6 +54,14 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    for(int i = 0; i < leftButtons.length; i++){
+      leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
+    }
+    for(int i = 0; i < rightButtons.length; i++){
+      rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
+    }
+    leftButtons[0].whileHeld(new ForwardIntake(intake));
+    rightButtons[0].whileHeld(new BackwardIntake(intake));
   }
 
 
