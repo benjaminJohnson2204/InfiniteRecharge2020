@@ -13,7 +13,7 @@ import frc.robot.subsystems.Intake;
 /**
  * An example command that uses an example subsystem.
  */
-public class SlowIntake extends CommandBase {
+public class BackwardIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Intake intake;
 
@@ -22,7 +22,7 @@ public class SlowIntake extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SlowIntake(Intake subsystem) {
+  public BackwardIntake(Intake subsystem) {
     intake = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -37,7 +37,7 @@ public class SlowIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.intakeSlow();
+    intake.intakeBackward();
   }
 
   // Called once the command ends or is interrupted.

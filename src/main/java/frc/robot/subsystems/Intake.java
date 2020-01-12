@@ -21,11 +21,11 @@ public class Intake extends SubsystemBase {
   public void setIntake(double value){
     intakeMotor.set(ControlMode.PercentOutput, value);
   }
-  public void intakeFast(){
-    setIntake(.7);
-  }
-  public void intakeSlow(){
+  public void intakeForward(){
     setIntake(.5);
+  }
+  public void intakeBackward(){
+    setIntake(-.5);
   }
   public void stop(){
     setIntake(0);
