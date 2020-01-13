@@ -51,7 +51,7 @@ public class TestPathFollowing extends CommandBase implements Runnable {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveTrain.resetOdometry();
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
 
     var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));

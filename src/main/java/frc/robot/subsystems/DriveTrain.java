@@ -181,8 +181,8 @@ DriveTrain extends SubsystemBase {
     driveTrainShifters.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
   }
 
-  public void resetOdometry(){
-    odometry.resetPosition(new Pose2d(0, 0, new Rotation2d(0)), new Rotation2d(0));
+  public void resetOdometry(Pose2d pose, Rotation2d rotation){
+    odometry.resetPosition(pose, rotation);
   }
 
   @Override

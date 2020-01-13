@@ -7,6 +7,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -33,7 +35,7 @@ public class ZeroEncoders extends CommandBase {
   @Override
   public void initialize() {
     m_driveTrain.resetEncoderCounts();
-    m_driveTrain.resetOdometry();
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
