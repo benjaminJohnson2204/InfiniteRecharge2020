@@ -5,10 +5,8 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.shooter;
 
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -21,7 +19,7 @@ public class StartShooterMotors extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param RobotContainer.m_shooter The subsystem used by this command.
+   * @param m_shooter The subsystem used by this command.
    */
   public StartShooterMotors(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
