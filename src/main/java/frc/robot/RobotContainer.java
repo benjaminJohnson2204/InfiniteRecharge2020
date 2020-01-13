@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.ZeroEncoders;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
+import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,7 +72,7 @@ public class RobotContainer {
 
   public void initializeSubsystems() {
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain));
-    CommandScheduler.getInstance().schedule(new ZeroEncoders(m_driveTrain));
+    CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
   }
 
   /**

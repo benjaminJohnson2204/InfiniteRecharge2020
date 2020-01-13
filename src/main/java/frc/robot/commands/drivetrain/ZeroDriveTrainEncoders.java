@@ -5,24 +5,26 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class setTankDrive extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+public class ZeroDriveTrainEncoders extends CommandBase {
+  //@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public setTankDrive(DriveTrain subsystem) {
+  public ZeroDriveTrainEncoders(DriveTrain subsystem) {
     m_driveTrain = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -32,13 +34,13 @@ public class setTankDrive extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    m_driveTrain.resetEncoderCounts();
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveTrain.setMotorTankDrive(RobotContainer.getLeftJoystickY(), RobotContainer.getRightJoystickY());
   }
 
   // Called once the command ends or is interrupted.

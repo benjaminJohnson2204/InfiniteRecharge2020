@@ -28,9 +28,20 @@ import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
+  private double gearRatio = 1;
+  private double wheelDiameter = 0.5;
+  private double ticksPerMeter = Units.inchesToMeters(6 * Math.PI) / 4096;
+
+  private double kS = 1.35;
+  private double kV = 1.04;
+  private double kA = 0.182;
+
+  public double kP = 8.02;
+  public double kI = 0;
+  public double kD = 0;
+
+  public int controlMode = 0;
+
   private TalonSRX[] driveMotors = {
         new TalonSRX(Constants.leftFrontDriveMotor),
         new TalonSRX(Constants.leftRearDriveMotor),
@@ -41,35 +52,20 @@ DriveTrain extends SubsystemBase {
   DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
   public AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
-  public int controlMode = 0;
-  private int gearRatio = 1; //gear ration between the encoder and the wheel
-  private double wheelDiameter = 0.5;
-
-  //DifferentialDrive drive = new DifferentialDrive(driveMotors[0],driveMotors[2]);
   DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
   DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
-  // 1.35, 1.04, 0.182
-  // 1.3, 1.04, 0.175
-  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1.35,1.04, 0.182);
 
-  // 17.7, 0, 8.21
-  // 17.2, 0, 7.91
-  PIDController leftPIDController = new PIDController(8.02, 0, 0);
-  PIDController rightPIDController = new PIDController(8.02, 0,0);
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
+  PIDController leftPIDController = new PIDController(kP, kI, kD);
+  PIDController rightPIDController = new PIDController(kP, kI, kD);
 
   Pose2d pose;
-
-  private int leftZeroOffset;
-  private int rightZeroOffset;
 
   public DriveTrain() {
 
     for (TalonSRX motor : driveMotors) {
       motor.configFactoryDefault();
-//      motor.config_kP(0, 0.25, 30);
-//      motor.config_kI(0, 0, 30);
-//      motor.config_kD(0, 10, 30);
-//      motor.config_kF(0, 1023.0 / 72000.0, 30);
       motor.configVoltageCompSaturation(12);
       motor.enableVoltageCompensation(true);
       motor.configContinuousCurrentLimit(30);
@@ -127,14 +123,12 @@ DriveTrain extends SubsystemBase {
   }
 
   public double getWheelDistanceMeters(int sensorIndex) {
-    return driveMotors[sensorIndex].getSelectedSensorPosition() * Constants.ticksPerMeter;
+    return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }
 
   public void resetEncoderCounts() {
     driveMotors[0].setSelectedSensorPosition(0);
     driveMotors[2].setSelectedSensorPosition(0);
-//    leftZeroOffset = driveMotors[0].getSelectedSensorPosition();
-//    rightZeroOffset = driveMotors[2].getSelectedSensorPosition();
   }
 
   public void setMotorArcadeDrive(double throttle, double turn) {

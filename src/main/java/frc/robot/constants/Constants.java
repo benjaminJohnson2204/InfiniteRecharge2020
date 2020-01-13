@@ -34,6 +34,4 @@ public final class Constants {
     public static final int pcmOne = 11;
     public static final int driveTrainShiftersForward = 0;
     public static final int driveTrainShiftersReverse = 1;
-
-    public static double ticksPerMeter = Units.inchesToMeters(6 * Math.PI) / 4096;
 }
