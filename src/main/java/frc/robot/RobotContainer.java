@@ -8,8 +8,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.setTankDrive;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -34,12 +39,18 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
+  Button[] leftButtons = new Button[leftJoystick.getButtonCount()];
+
+  static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
+  Button[] rightButtons = new Button[rightJoystick.getButtonCount()];
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    m_driveTrain.setDefaultCommand(new setTankDrive(m_driveTrain));
   }
 
   /**
@@ -48,10 +59,21 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
+  public static double getLeftJoystickY() {
+    return leftJoystick.getY();
   }
+  public static double getRightJoystickY() {
+    return rightJoystick.getY();
+  }
+  private void configureButtonBindings() {
+    for(int i = 0; i < leftButtons.length; i++){
+      leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
+    }
+    for(int i = 0; i < rightButtons.length; i++){
+      rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
+    }
 
-
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
