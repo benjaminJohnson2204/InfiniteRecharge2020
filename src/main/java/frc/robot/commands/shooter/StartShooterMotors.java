@@ -7,50 +7,49 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Skyhook;
+import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetSkyhook extends CommandBase {
+public class StartShooterMotors extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Skyhook m_subsystem;
-
+  private final Shooter m_shooter;
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param RobotContainer.m_shooter The subsystem used by this command.
    */
-  double value;
-  public SetSkyhook(Skyhook subsystem) {
-    m_subsystem = subsystem;
+  public StartShooterMotors(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-    this.value = value;
+    m_shooter = shooter;
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_shooter.startSpin(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.setSkyhook(RobotContainer.getXBoxLeftY());
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.setSkyhook(0);
+    m_shooter.startSpin(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (false);
   }
 }
