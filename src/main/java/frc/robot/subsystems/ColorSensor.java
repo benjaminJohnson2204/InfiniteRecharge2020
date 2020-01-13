@@ -24,6 +24,7 @@ public class ColorSensor extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+  public boolean practiceField = true;
   public boolean isColor = false;
   public int semiRotations = 0;
   private int colorID;
@@ -47,20 +48,37 @@ public class ColorSensor extends SubsystemBase {
   }
 
   public int panelColor(){ // none = 0; red = 1; green = 2; blue = 3; yellow = 4
-    if(getColor().red > getColor().blue * 3 && getColor().red > getColor().green * 1.33){
-      return 1;
-    }
-    else if(getColor().green > getColor().red * 2.75 && getColor().green > getColor().blue * 1.8){
-      return 2;
-    }
-    else if(getColor().blue < getColor().green * 1.15 && getColor().green < getColor().blue * 1.15 && getColor().blue > getColor().red * 2.5){
-      return 3;
-    }
-    else if(getColor().green < getColor().red * 1.8 && getColor().green > getColor().red * 1.65){
-      return 4;
+    if(practiceField){
+      if(getColor().red > getColor().green && getColor().green * 1.8 > getColor().red){
+        return 1;
+      }
+      if(getColor().red * 2.26 < getColor().green && getColor().blue * 2.16 < getColor().green){
+        return 2;
+      }
+      if(getColor().blue * 1.25 > getColor().green && getColor().blue * 1.02 < getColor().green && getColor().blue > getColor().red * 1.89){
+        return 3;
+      }
+      if(getColor().red * 1.83 > getColor().green && getColor().red * 1.78 < getColor().green && getColor().red > getColor().blue * 1.86){
+        return 4;
+      }
+      else
+        return 0;
     }
     else {
-      return 0;
+      if(getColor().red > getColor().blue * 3 && getColor().red > getColor().green * 1.33){
+        return 1;
+      }
+      else if(getColor().green > getColor().red * 2.75 && getColor().green > getColor().blue * 1.8){
+        return 2;
+      }
+      else if(getColor().blue < getColor().green * 1.15 && getColor().green < getColor().blue * 1.15 && getColor().blue > getColor().red * 2.5){
+        return 3;
+      }
+      else if(getColor().green < getColor().red * 1.8 && getColor().green > getColor().red * 1.65){
+        return 4;
+      }
+      else
+        return 0;
     }
   }
 

@@ -62,9 +62,9 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    leftButtons = new JoystickButton[leftJoystick.getButtonCount()];
-    rightButtons = new JoystickButton[rightJoystick.getButtonCount()];
-    xBoxButtons = new JoystickButton[xBoxController.getButtonCount()];
+    leftButtons = new JoystickButton[10];
+    rightButtons = new JoystickButton[10];
+    xBoxButtons = new JoystickButton[12];
 
     for(int i = 0; i < leftButtons.length; i++){
       leftButtons[i] = new JoystickButton(leftJoystick, i + 1);
