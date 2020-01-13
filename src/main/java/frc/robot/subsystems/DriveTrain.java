@@ -24,9 +24,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.PCM_ONE;
-import frc.robot.Constants.DriveMotors;
+import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
@@ -34,13 +32,13 @@ DriveTrain extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
   private TalonSRX[] driveMotors = {
-        new TalonSRX(DriveMotors.leftFrontDriveMotor),
-        new TalonSRX(DriveMotors.leftRearDriveMotor),
-        new TalonSRX(DriveMotors.rightFrontDriveMotor),
-        new TalonSRX(DriveMotors.rightRearDriveMotor)
+        new TalonSRX(Constants.leftFrontDriveMotor),
+        new TalonSRX(Constants.leftRearDriveMotor),
+        new TalonSRX(Constants.rightFrontDriveMotor),
+        new TalonSRX(Constants.rightRearDriveMotor)
   };
 
-  DoubleSolenoid driveTrainShifters = new DoubleSolenoid(PCM_ONE.CAN_ADDRESS, PCM_ONE.DRIVETRAIN_SIFTER.FORWARD, PCM_ONE.DRIVETRAIN_SIFTER.REVERSE);
+  DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
   public AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
   public int controlMode = 0;

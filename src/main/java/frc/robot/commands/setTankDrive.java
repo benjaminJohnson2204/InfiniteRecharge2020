@@ -40,7 +40,7 @@ public class setTankDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveTrain.tankDrive(RobotContainer.getLeftJoystickY(), RobotContainer.getRightJoystickY());
+    m_driveTrain.setMotorTankDrive(RobotContainer.getLeftJoystickY(), RobotContainer.getRightJoystickY());
   }
 
   // Called once the command ends or is interrupted.

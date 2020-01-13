@@ -12,7 +12,7 @@ public class Intake extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
 
-  private TalonSRX intakeMotor = new TalonSRX(Constants.intake);
+  private TalonSRX intakeMotor = new TalonSRX(Constants.intakeMotor);
 
   public Intake() {
       intakeMotor.configFactoryDefault();

@@ -10,8 +10,20 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.ZeroEncoders;
+import frc.robot.commands.autonomous.TestPathFollowing;
+import frc.robot.commands.drivetrain.SetArcadeDrive;
+import frc.robot.constants.Constants;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
@@ -57,7 +69,6 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
-    m_driveTrain.setDefaultCommand(new setTankDrive(m_driveTrain));
   }
 
   public void initializeSubsystems() {
@@ -71,12 +82,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  public static double getLeftJoystickY() {
-    return leftJoystick.getY();
-  }
-  public static double getRightJoystickY() {
-    return rightJoystick.getY();
-  }
   private void configureButtonBindings() {
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
@@ -105,10 +110,6 @@ public class RobotContainer {
     return -leftJoystick.getZ();
   }
 
-  public static double getLeftRotation(){
-    return leftJoystick.getZ();
-  }
-
   public static double getRightJoystickX() {
     return -rightJoystick.getX();
   }
@@ -121,39 +122,6 @@ public class RobotContainer {
     return -rightJoystick.getY();
   }
 
-  public static double getRawLeftJoystickX() {
-    return leftJoystick.getX();
-  }
-
-  public static double getRawLeftJoystickY() {
-    return -leftJoystick.getY();
-  }
-
-  public static double getRawRightJoystickX() {
-    return rightJoystick.getX();
-  }
-
-  public static double getRawRightJoystickY() {
-    return -rightJoystick.getY();
-  }
-
-  public static double getXBoxLeftX(){
-    return xBoxController.getRawAxis(0);
-  }
-
-  public static double getXBoxLeftY(){
-    return -xBoxController.getRawAxis(1);
-  }
-
-  public static double getXBoxRightX(){
-    return xBoxController.getRawAxis(4);
-  }
-
-  public static double getXBoxRightY(){
-    return -xBoxController.getRawAxis(5);
-  }
-
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -165,5 +133,10 @@ public class RobotContainer {
       m_autoCommand = m_autoChooser.getSelected();
 
     return m_autoCommand.andThen(() -> m_driveTrain.setVoltageOutput(0, 0));
+  }
+
+  public void teleOpInit() {
+    m_driveTrain.resetEncoderCounts();
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
 }
