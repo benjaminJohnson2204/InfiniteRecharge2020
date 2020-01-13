@@ -13,11 +13,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.robot.commands.BackwardIntake;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.ForwardIntake;
+import frc.robot.commands.setTankDrive;
+import frc.robot.constants.Constants;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -74,8 +76,8 @@ public class RobotContainer {
       rightButtons[i] = new JoystickButton(rightJoystick, i + 1);
     }
 
-    leftButtons[0].whileHeld(new ForwardIntake(intake));
-    rightButtons[0].whileHeld(new BackwardIntake(intake));
+    leftButtons[0].whileHeld(new ForwardIntake(m_intake));
+    rightButtons[0].whileHeld(new BackwardIntake(m_intake));
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
