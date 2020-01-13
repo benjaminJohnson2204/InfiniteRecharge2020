@@ -177,10 +177,7 @@ DriveTrain extends SubsystemBase {
     odometry.resetPosition(pose, rotation);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+  public void updateSmartDashboard() {
     SmartDashboard.putNumber("Left Encoder", getEncoderCount(0));
     SmartDashboard.putNumber("Right Encoder", getEncoderCount(2));
 
@@ -189,6 +186,14 @@ DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("angle", getRobotPose().getRotation().getDegrees());
     SmartDashboard.putNumber("leftSpeed", Units.metersToFeet(getSpeeds().leftMetersPerSecond));
     SmartDashboard.putNumber("rightSpeed", Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+
+    updateSmartDashboard();
   }
 
   public Pose2d getRobotPose(){

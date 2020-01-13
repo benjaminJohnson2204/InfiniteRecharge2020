@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import frc.robot.constants.Constants;
 
 public class Shooter extends SubsystemBase {
   /**
@@ -22,8 +23,8 @@ public class Shooter extends SubsystemBase {
    */
 
   private CANSparkMax[] outtakeMotors = {
-          new CANSparkMax(40, MotorType.kBrushless), //0 and 1 are the actual shooting motors
-          new CANSparkMax(41, MotorType.kBrushless)
+      new CANSparkMax(Constants.flywheelMotorA, MotorType.kBrushless), //0 and 1 are the actual shooting motors
+      new CANSparkMax(Constants.flywheelMotorB, MotorType.kBrushless)
   };
 
   public Shooter() {
@@ -40,16 +41,11 @@ public class Shooter extends SubsystemBase {
 
   public void startSpin(double output){outtakeMotors[0].set(output);}
 
-  public void insertCell(){}
-
   public void angleHood(double distance){
     //calculate angle necessary to shoot
     //determine difference in angles
     //use either pid loop or simpler loop to correct error
   }
-
-
-
 
   @Override
   public void periodic() {

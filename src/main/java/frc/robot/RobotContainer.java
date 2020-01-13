@@ -36,7 +36,7 @@ import frc.vitruvianlib.utils.XBoxTrigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Climber m_climber = new Climber();
-  private final ControlPanel m_controlPanel = new ControlPanel();
+  private final ColorSensor m_colorSensor = new ColorSensor();
   private final Controls m_controls = new Controls();
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Intake m_intake = new Intake();
