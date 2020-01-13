@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ZeroEncoders;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
@@ -35,7 +34,6 @@ import frc.vitruvianlib.utils.XBoxTrigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Climber m_climber = new Climber();
   private final ControlPanel m_controlPanel = new ControlPanel();
   private final Controls m_controls = new Controls();
@@ -43,6 +41,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Shooter m_shooter = new Shooter();
   private final Skyhook m_skyhook = new Skyhook();
+  private final Turret m_turret = new Turret();
   private final Vision m_vision = new Vision();
   private final Indexer m_indexer = new Indexer();
 
