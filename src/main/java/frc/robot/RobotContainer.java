@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.SetSkyhook;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -58,15 +59,6 @@ public class RobotContainer {
 
   SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
-
-  //Climber motors
-  public float rightClimberMotor = 10;
-  public float leftClimberMotor = 11;
-
-
-
-
-
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -82,6 +74,8 @@ public class RobotContainer {
   public void initializeSubsystems() {
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
+
+    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
   }
 
   /**
@@ -99,8 +93,6 @@ public class RobotContainer {
       xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
     for (int i = 0; i < xBoxPOVButtons.length; i++)
       xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
-    //xBoxPOVButtons[0] = new POVButton(xBoxController, 0);
-    //xBoxPOVButtons[1] = new POVButton(xBoxController, 90);
 
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
@@ -130,12 +122,30 @@ public class RobotContainer {
     return -rightJoystick.getY();
   }
 
+  // TODO: Verify axis values for xBox controller functions
+  public static double getXBoxLeftX() {
+    return xBoxController.getRawAxis(0);
+  }
+
+  public static double getXBoxLeftY() {
+    return xBoxController.getRawAxis(1);
+  }
+
+  public static double getXBoxRightX() {
+    return xBoxController.getRawAxis(4);
+  }
+
+  public static double getXBoxRightY() {
+    return xBoxController.getRawAxis(5);
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // TODO: Fix crash when this is called multiple times
     // An ExampleCommand will run in autonomous
     if(m_autoChooser.getSelected() != null)
       m_autoCommand = m_autoChooser.getSelected();
