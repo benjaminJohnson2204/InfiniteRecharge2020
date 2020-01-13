@@ -58,6 +58,15 @@ public class RobotContainer {
 
   SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
+
+  //Climber motors
+  public float rightClimberMotor = 10;
+  public float leftClimberMotor = 11;
+
+
+
+
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
