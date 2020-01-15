@@ -101,8 +101,8 @@ DriveTrain extends SubsystemBase {
   public DifferentialDriveWheelSpeeds getSpeeds() {
     // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
     return new DifferentialDriveWheelSpeeds(
- (driveMotors[0].getSelectedSensorVelocity() * 10 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter), //divide by gear ratio to make sure we have wheel speed
-(driveMotors[2].getSelectedSensorVelocity() * 10 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter) //divide by gear ratio to make sure we have wheel speed
+ (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter), //divide by gear ratio to make sure we have wheel speed
+(driveMotors[2].getSelectedSensorVelocity() * 10.0 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter) //divide by gear ratio to make sure we have wheel speed
     );
   }
 
