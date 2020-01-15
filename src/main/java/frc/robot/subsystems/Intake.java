@@ -1,25 +1,22 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
+import com.revrobotics.*;
 public class Intake extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
 
-  private TalonSRX intakeMotor = new TalonSRX(Constants.intake);
+  private CANSparkMax intakeMotor = new CANSparkMax(Constants.intake, CANSparkMaxLowLevel.MotorType.kBrushless);
 
   public Intake() {
-      intakeMotor.configFactoryDefault();
-      intakeMotor.setNeutralMode(NeutralMode.Coast);
+      intakeMotor.restoreFactoryDefaults();
+      intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
   public void setIntake(double value){
-    intakeMotor.set(ControlMode.PercentOutput, value);
+    intakeMotor.set(value);
   }
   public void intakeForward(){
     setIntake(.5);
@@ -31,7 +28,7 @@ public class Intake extends SubsystemBase {
     setIntake(0);
   }
   public double getIntakeVoltage(){
-    return intakeMotor.getMotorOutputVoltage();
+    return intakeMotor.getBusVoltage();
   }
   @Override
   public void periodic() {
