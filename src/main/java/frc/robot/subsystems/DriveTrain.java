@@ -28,9 +28,10 @@ import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
-  private double gearRatio = 1;
+  private double gearRatioLow = 1.0;
+  private double gearRatioHigh = 1.0;
   private double wheelDiameter = 0.5;
-  private double ticksPerMeter = Units.inchesToMeters(6 * Math.PI) / 4096;
+  private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 4096;
 
   private double kS = 1.35;
   private double kV = 1.04;
@@ -63,7 +64,6 @@ DriveTrain extends SubsystemBase {
   Pose2d pose;
 
   public DriveTrain() {
-
     for (TalonSRX motor : driveMotors) {
       motor.configFactoryDefault();
       motor.configVoltageCompSaturation(12);
@@ -92,30 +92,6 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
     driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
 
-  }
-
-  public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(-navX.getAngle());
-  }
-
-  public DifferentialDriveWheelSpeeds getSpeeds() {
-    // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
-    return new DifferentialDriveWheelSpeeds(
- (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter), //divide by gear ratio to make sure we have wheel speed
-(driveMotors[2].getSelectedSensorVelocity() * 10.0 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter) //divide by gear ratio to make sure we have wheel speed
-    );
-  }
-
-  public SimpleMotorFeedforward getFeedforward() {
-    return feedforward;
-  }
-
-  public PIDController getLeftPIDController() {
-    return leftPIDController;
-  }
-
-  public PIDController getRightPIDController() {
-    return rightPIDController;
   }
 
   public int getEncoderCount(int sensorIndex) {
@@ -173,6 +149,40 @@ DriveTrain extends SubsystemBase {
     driveTrainShifters.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
   }
 
+  public DifferentialDriveWheelSpeeds getSpeeds() {
+    double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+
+    double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 4096) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+    double righttMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 4096) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+
+    // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
+    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, righttMetersPerSecond);
+  }
+
+  public SimpleMotorFeedforward getFeedforward() {
+    return feedforward;
+  }
+
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(-navX.getAngle());
+  }
+
+  public Pose2d getRobotPose(){
+    return pose;
+  }
+
+  public DifferentialDriveKinematics getDriveTrainKinematics() {
+    return kinematics;
+  }
+
+  public PIDController getLeftPIDController() {
+    return leftPIDController;
+  }
+
+  public PIDController getRightPIDController() {
+    return rightPIDController;
+  }
+
   public void resetOdometry(Pose2d pose, Rotation2d rotation){
     odometry.resetPosition(pose, rotation);
   }
@@ -194,13 +204,5 @@ DriveTrain extends SubsystemBase {
     pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
     updateSmartDashboard();
-  }
-
-  public Pose2d getRobotPose(){
-    return pose;
-  }
-
-  public DifferentialDriveKinematics getDriveTrainKinematics() {
-    return kinematics;
   }
 }
