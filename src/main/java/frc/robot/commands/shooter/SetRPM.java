@@ -5,40 +5,48 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.shooter;
 
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class StartShooterMotors extends CommandBase {
+public class SetRPM extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter m_shooter;
+  private final double m_RPM;
+  private double time;
   /**
    * Creates a new ExampleCommand.
    *
    * @param RobotContainer.m_shooter The subsystem used by this command.
    */
-  public StartShooterMotors(Shooter shooter) {
+  public SetRPM(Shooter shooter, double RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
+    m_RPM = RPM;
     addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.startSpin(1);
+      time = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    m_shooter.setRPM(m_RPM);
+    if(m_shooter.encoderAtSetpoint()){
+        SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp()-time);
+    }
   }
 
   // Called once the command ends or is interrupted.
