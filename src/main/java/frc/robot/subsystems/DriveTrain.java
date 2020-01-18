@@ -26,8 +26,7 @@ import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
-public class
-DriveTrain extends SubsystemBase {
+public class DriveTrain extends SubsystemBase {
   private double gearRatio = 1;
   private double wheelDiameter = 0.5;
   private double ticksPerMeter = Units.inchesToMeters(6 * Math.PI) / 4096;

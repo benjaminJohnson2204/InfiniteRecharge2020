@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     System.out.println("Test");
     String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/";
     System.out.println(filePath);
+
   }
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
