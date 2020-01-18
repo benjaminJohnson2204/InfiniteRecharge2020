@@ -7,18 +7,30 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants;
 
 public class Climber extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  public Climber() {
 
+  private TalonSRX[] climberMotors = {
+      new TalonSRX(Constants.leftClimberMotor),
+      new TalonSRX(Constants.rightClimberMotor),
+  };
+  public Climber() {
+    climberMotors[0].configFactoryDefault();
+    climberMotors[0].setNeutralMode(NeutralMode.Coast);
+    climberMotors[1].configFactoryDefault();
+    climberMotors[1].setNeutralMode(NeutralMode.Coast);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void setClimber(float value) {
+    climberMotors[0].set(ControlMode.PercentOutput, value);
+    climberMotors[0].set(ControlMode.PercentOutput, value);
+  }
+  public void stop() {
+    setClimber(0);
   }
 }

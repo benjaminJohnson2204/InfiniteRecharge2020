@@ -22,16 +22,16 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class Indexer extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  CANSparkMax master = new CANSparkMax(Constants.indexer, MotorType.kBrushless);
+  CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
   CANPIDController pidController = master.getPIDController();
-  DigitalInput sensor = new DigitalInput(Constants.indexerSensor);
+  DigitalInput sensor = new DigitalInput(Constants.indexSensor);
 
   private double targetSetpoint;
   private double kF = 0.0001;

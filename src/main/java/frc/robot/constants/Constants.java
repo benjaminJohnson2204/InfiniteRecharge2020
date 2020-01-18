@@ -5,7 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package frc.robot.constants;
+
+import edu.wpi.first.wpilibj.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -16,11 +18,29 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int indexer = 40;
-
-    public static final int indexerSensor = 0;
-
+    // USB PORTS
     public static final int leftJoystick = 0;
     public static final int rightJoystick = 1;
     public static final int xBoxController = 2;
+
+    // CAN ADDRESSES
+    public static final int leftFrontDriveMotor = 20;
+    public static final int leftRearDriveMotor = 21;
+    public static final int rightFrontDriveMotor = 22;
+    public static final int rightRearDriveMotor = 23;
+    public static final int intakeMotor = 30;
+    public static final int indexerMotor = 35;
+    public static final int flywheelMotorA = 40;
+    public static final int flywheelMotorB = 41;
+    public static final int leftClimberMotor = 50;
+    public static final int rightClimberMotor = 51;
+    public static final int skyhookMotor = 55;
+
+    // DIO
+    public static final int indexSensor = 0;
+
+    // PCM
+    public static final int pcmOne = 11;
+    public static final int driveTrainShiftersForward = 0;
+    public static final int driveTrainShiftersReverse = 1;
 }
