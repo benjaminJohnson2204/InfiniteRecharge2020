@@ -18,7 +18,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Vision extends SubsystemBase
 {
-    private NetworkTableInstance instance;
+    private NetworkTable limelight;
     private UsbCamera driverCam;
 
     // Variables for calculating distance
@@ -28,17 +28,82 @@ public class Vision extends SubsystemBase
 
     public Vision()
     {
-        instance = NetworkTableInstance.getDefault();
+        limelight = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
-    public double getLimelightValue(String key)
+    public double getTargetY()
     {
-        return instance.getDefault().getTable("limelight").getEntry(key).getDouble(0);
+        return limelight.getEntry("ty").getDouble(0);
+    }
+
+    public double getTargetX()
+    {
+        return limelight.getEntry("tx").getDouble(0);
+    }
+
+    public boolean hasTarget()
+    {
+        return limelight.getEntry("tv").getDouble(0) == 1 ? true : false;
+    }
+
+    public double getTargetArea()
+    {
+        return limelight.getEntry("ta").getDouble(0);
+    }
+
+    public double getTargetSkew()
+    {
+        return limelight.getEntry("ts").getDouble(0);
+    }
+
+    public double getPipelineLatency()
+    {
+        return limelight.getEntry("tl").getDouble(0);
+    }
+
+    public double getTargetShort()
+    {
+        return limelight.getEntry("tshort").getDouble(0);
+    }
+
+    public double getTargetLong()
+    {
+        return limelight.getEntry("tlong").getDouble(0);
+    }
+
+    public double getHorizontalSidelength()
+    {
+        return limelight.getEntry("thor").getDouble(0);
+    }
+
+    public double getVerticalSidelength()
+    {
+        return limelight.getEntry("tvert").getDouble(0);
+    }
+
+    public double getPipeline()
+    {
+        return limelight.getEntry("getpipe").getDouble(0);
+    }
+
+    public void ledsOn()
+    {
+        limelight.getEntry("ledMode").setNumber(3);
+    }
+
+    public void ledsOff()
+    {
+        limelight.getEntry("ledMode").setNumber(1);
+    }
+
+    public void setPipeline(int pipeline)
+    {
+        limelight.getEntry("pipeline").setNumber(pipeline);
     }
 
     public double getTargetDistance()
     {
-        double angleToTarget = getLimelightValue("ty");
+        double angleToTarget = getTargetY();
         return (OUTER_PORT_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
     }
 
