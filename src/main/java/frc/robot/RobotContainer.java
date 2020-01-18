@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.SetIndexer;
+import frc.robot.commands.IncrementIndexer;
+import frc.robot.commands.ResetIndexerEncoder;
+//import frc.robot.commands.SetIndexer;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -74,7 +76,8 @@ public class RobotContainer {
       xBoxButtons[i] = new JoystickButton(xBoxController, i + 1);
     }
 
-    xBoxButtons[4].whileHeld(new SetIndexer(m_indexer, 1));
+    xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
+    xBoxButtons[5].whenPressed(new ResetIndexerEncoder(m_indexer));
   }
 
 

@@ -18,6 +18,8 @@ package frc.robot;
 public final class Constants {
     public static final int indexer = 40;
 
+    public static final int indexerSensor = 0;
+
     public static final int leftJoystick = 0;
     public static final int rightJoystick = 1;
     public static final int xBoxController = 2;
