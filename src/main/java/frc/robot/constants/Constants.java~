@@ -18,12 +18,12 @@ import edu.wpi.first.wpilibj.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
+<<<<<<< HEAD:src/main/java/frc/robot/Constants.java
     public static final int intake = 69;
 
-
+=======
     // USB PORTS
-
+>>>>>>> master:src/main/java/frc/robot/constants/Constants.java
     public static final int leftJoystick = 0;
     public static final int rightJoystick = 1;
     public static final int xBoxController = 2;

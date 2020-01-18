@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
+import frc.robot.commands.intake.SetIntake;
 import frc.robot.commands.skyhook.SetSkyhook;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
@@ -87,6 +88,7 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
+
   }
 
   public void initializeSubsystems() {
@@ -94,6 +96,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
     m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+
+    m_intake.setDefaultCommand(new SetIntake(m_intake));
   }
 
   /**
