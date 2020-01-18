@@ -22,3 +22,9 @@
 hs_err_pid*
 
 .idea/
+.gradle/
+.settings/
+build/
+
+.project
+InfiniteRecharge2020.iml
