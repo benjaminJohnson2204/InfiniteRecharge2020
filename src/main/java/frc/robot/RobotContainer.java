@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -26,6 +27,10 @@ import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.vitruvianlib.utils.XBoxTrigger;
+
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -46,8 +51,6 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final Indexer m_indexer = new Indexer();
 
-  private Command m_autoCommand;
-
   static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
   static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
   static Joystick xBoxController = new Joystick(Constants.xBoxController);
@@ -57,13 +60,28 @@ public class RobotContainer {
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
 
-  SendableChooser<Command> m_autoChooser = new SendableChooser<>();
+  private enum CommandSelector {
+    DRIVE_STRAIGHT
+  }
+
+  SendableChooser<Integer> m_autoChooser = new SendableChooser();
+  private SelectCommand m_autoCommand = new SelectCommand(
+    Map.ofEntries(
+      entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain))
+    ),
+    this::selectCommand
+  );
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    m_autoChooser.setDefaultOption("Test Path", new TestPathFollowing(m_driveTrain));
+    m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
+    for(Enum commandEnum : CommandSelector.values())
+      if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+        m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
+
+
     SmartDashboard.putData(m_autoChooser);
 
     initializeSubsystems();
@@ -144,13 +162,12 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // TODO: Fix crash when this is called multiple times
-    // An ExampleCommand will run in autonomous
-    if(m_autoChooser.getSelected() != null)
-      m_autoCommand = m_autoChooser.getSelected();
 
-    return m_autoCommand.andThen(() -> m_driveTrain.setVoltageOutput(0, 0));
+  private CommandSelector selectCommand() {
+    return CommandSelector.values()[m_autoChooser.getSelected()];
+  }
+  public Command getAutonomousCommand() {
+    return m_autoCommand;
   }
 
   public void teleOpInit() {
