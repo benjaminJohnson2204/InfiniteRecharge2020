@@ -36,6 +36,9 @@ public final class Constants {
     public static final int rightClimberMotor = 51;
     public static final int skyhookMotor = 55;
 
+    // DIO
+    public static final int indexSensor = 0;
+
     // PCM
     public static final int pcmOne = 11;
     public static final int driveTrainShiftersForward = 0;
