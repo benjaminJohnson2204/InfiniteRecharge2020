@@ -9,6 +9,7 @@ package frc.robot.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Indexer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -22,8 +23,8 @@ public class IndexerCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  boolean tripped = false;
-  double setpoint;
+  int tripped = -1;
+  double setpoint, startTime;
   public IndexerCommand(Indexer subsystem) {
     m_indexer = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -39,12 +40,16 @@ public class IndexerCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == false){
-      tripped = true;
-      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
+    if(m_indexer.sensorTripped() && tripped == -1){
+      tripped = 1;
+      startTime = Timer.getFPGATimestamp();
     }
     else if(!m_indexer.sensorTripped())
-      tripped = false;
+      tripped = -1;
+    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
+      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
+      tripped = 0;
+    }
   }
 
   // Called once the command ends or is interrupted.
