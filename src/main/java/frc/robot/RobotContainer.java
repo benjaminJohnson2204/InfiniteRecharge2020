@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final Turret m_turret = new Turret();
   private final Vision m_vision = new Vision();
   private final Indexer m_indexer = new Indexer();
+  private final LED m_led = new LED();
 
   static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
   static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
@@ -76,6 +78,7 @@ public class RobotContainer {
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * 
    */
   public RobotContainer() {
     m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
@@ -96,6 +99,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
     m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_led.setDefaultCommand(new LEDCommand(m_led));
   }
 
   /**
