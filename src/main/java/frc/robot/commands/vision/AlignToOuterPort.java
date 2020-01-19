@@ -7,6 +7,7 @@
 
 package frc.robot.commands.vision;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
@@ -39,14 +40,14 @@ public class AlignToOuterPort extends CommandBase
     public void execute()
     {
         // Make sure we have a target
-        if (vision.getLimelightValue("tv") == 0)
+        if (!vision.hasTarget())
         {
             return;
         }
 
-        double xOffset = vision.getLimelightValue("tx");
+        double xOffset = vision.getTargetX();
 
-        while (xOffset != 0)
+        while (xOffset > 3 || xOffset < -3)
         {
             if (xOffset < -3) // Target is to the left?
             {
@@ -57,7 +58,7 @@ public class AlignToOuterPort extends CommandBase
                 driveTrain.setMotorTankDrive(0.5, 0);
             }
 
-            xOffset = vision.getLimelightValue("tx");
+            xOffset = vision.getTargetX();
         }
     }
 
