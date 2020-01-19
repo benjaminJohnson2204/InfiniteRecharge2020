@@ -29,6 +29,7 @@ import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
 import java.util.Map;
@@ -54,9 +55,9 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   private final Indexer m_indexer = new Indexer();
 
-  static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
-  static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
-  static Joystick xBoxController = new Joystick(Constants.xBoxController);
+  static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
+  static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
+  static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
   public Button[] leftButtons = new Button[7];
   public Button[] rightButtons = new Button[7];
   public Button[] xBoxButtons = new Button[10];
@@ -93,10 +94,10 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    // m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain));
+    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, () -> leftJoystick.getRawAxis(0), () -> rightJoystick.getRawAxis(1)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
-    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, () -> xBoxController.getRawAxis(0)));
 
     m_vision.initUSBCamera();
   }
@@ -121,47 +122,6 @@ public class RobotContainer {
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
     xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
-  }
-
-  public static double getLeftJoystickX() {
-    return -leftJoystick.getX();
-  }
-
-  public static double getLeftJoystickY() {
-    return leftJoystick.getY();
-  }
-
-  public static double getLeftJoystickZ() {
-    return -leftJoystick.getZ();
-  }
-
-  public static double getRightJoystickX() {
-    return -rightJoystick.getX();
-  }
-
-  public static double getRightJoystickY() {
-    return rightJoystick.getY();
-  }
-
-  public static double getRightJoystickZ() {
-    return -rightJoystick.getY();
-  }
-
-  // TODO: Verify axis values for xBox controller functions
-  public static double getXBoxLeftX() {
-    return xBoxController.getRawAxis(0);
-  }
-
-  public static double getXBoxLeftY() {
-    return xBoxController.getRawAxis(1);
-  }
-
-  public static double getXBoxRightX() {
-    return xBoxController.getRawAxis(4);
-  }
-
-  public static double getXBoxRightY() {
-    return xBoxController.getRawAxis(5);
   }
 
   /**
