@@ -16,6 +16,9 @@ package frc.robot.constants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final boolean canSeeVisionTarget = false;
+
     // USB PORTS
     public static final int leftJoystick = 0;
     public static final int rightJoystick = 1;

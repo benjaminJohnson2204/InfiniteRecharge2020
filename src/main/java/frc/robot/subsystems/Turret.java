@@ -63,7 +63,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void turretTimeout(){
-    if(turretPID.atSetpoint()&&turretPID.getSetpoint()!=0){
+    if(turretPID.atSetpoint()&&turretPID.getSetpoint()!=0&&!Constants.canSeeVisionTarget){
       timeout.start();
     } else {
       timeout.stop();
