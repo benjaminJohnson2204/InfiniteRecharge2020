@@ -59,7 +59,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean sensorTripped(){
-    return sensor.get();
+    return !sensor.get();
   }
 
   public void incrementIndexer(double setpoint){
