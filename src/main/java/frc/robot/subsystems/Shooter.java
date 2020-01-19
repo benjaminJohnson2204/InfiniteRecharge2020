@@ -7,20 +7,17 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.revrobotics.*;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class Shooter extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+
 
   private CANSparkMax[] outtakeMotors = {
       new CANSparkMax(Constants.flywheelMotorA, MotorType.kBrushless), //0 and 1 are the actual shooting motors

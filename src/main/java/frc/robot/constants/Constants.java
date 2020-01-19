@@ -7,8 +7,6 @@
 
 package frc.robot.constants;
 
-import edu.wpi.first.wpilibj.util.Units;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -35,6 +33,8 @@ public final class Constants {
     public static final int leftClimberMotor = 50;
     public static final int rightClimberMotor = 51;
     public static final int skyhookMotor = 55;
+    public static final int turretMotor = 60;
+    public static final int turretEncoder = 61;
 
     // DIO
     public static final int indexSensor = 0;
