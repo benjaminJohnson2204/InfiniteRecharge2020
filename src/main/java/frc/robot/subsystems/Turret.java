@@ -13,6 +13,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.constants.Constants;
 
 public class Turret extends SubsystemBase {
@@ -26,6 +27,8 @@ public class Turret extends SubsystemBase {
   double kV = 1;
   double kA = 1;
   double maxAngle = 360;
+  double setpoint = 0; //angle
+  public int controlMode = 1;
 
   private Timer timeout = new Timer();
 
@@ -48,37 +51,41 @@ public class Turret extends SubsystemBase {
     return (360/4096)*encoder.getPosition();
   }
 
-  public void setTurretPercentOutput(double output){
+  public void setPercentOutput(double output){
     turretMotor.set(ControlMode.PercentOutput, output);
   }
 
-  public void setSetpointWithPID(double setpoint){ //use degrees
-    if(Math.abs(setpoint)<=maxAngle) {
-    } else if(setpoint<0){
-      setpoint = setpoint+360;
-    } else{
-      setpoint = setpoint-360;
-    }
-    setTurretPercentOutput(turretPID.calculate(getAngle(), setpoint));
+  public void incrementSetpoint(double increment){
+    setpoint = setpoint + increment;
   }
 
-  public void turretTimeout(){
-    if(turretPID.atSetpoint()&&turretPID.getSetpoint()!=0&&!Constants.canSeeVisionTarget){
-      timeout.start();
-    } else {
-      timeout.stop();
-      timeout.reset();
+  public void setSetpoint(double setpoint){ //use degrees
+    if(Math.abs(setpoint)>=maxAngle) {
+      if (setpoint < 0) {
+        setpoint = setpoint + 360;
+      } else {
+        setpoint = setpoint - 360;
+      }
+      Constants.limelightTempDisabled = true;
     }
-    if(timeout.get()>3){
-      timeout.stop();
-      timeout.reset();
-      setSetpointWithPID(0);
-    }
+    this.setpoint = setpoint;
+  }
+
+  public void setClosedLoopPosition(){
+    setPercentOutput(turretPID.calculate(getAngle(), setpoint));
+  }
+
+  public boolean atTarget(){
+    return turretPID.atSetpoint();
   }
 
   @Override
   public void periodic() {
-    turretTimeout();
+    if(controlMode == 1) {
+      setClosedLoopPosition();
+    }
+    else
+      setPercentOutput(RobotContainer.getXBoxLeftX());
     // This method will be called once per scheduler run
   }
 }

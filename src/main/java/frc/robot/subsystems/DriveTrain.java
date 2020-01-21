@@ -98,6 +98,10 @@ DriveTrain extends SubsystemBase {
     return driveMotors[sensorIndex].getSelectedSensorPosition();
   }
 
+  public double getAngle(){
+    return navX.getAngle();
+  }
+
   public double getWheelDistanceMeters(int sensorIndex) {
     return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }

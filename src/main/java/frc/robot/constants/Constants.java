@@ -17,7 +17,8 @@ package frc.robot.constants;
  */
 public final class Constants {
 
-    public static final boolean canSeeVisionTarget = false;
+    public static boolean canSeeVisionTarget = false;
+    public static boolean limelightTempDisabled = false;
 
     // USB PORTS
     public static final int leftJoystick = 0;
