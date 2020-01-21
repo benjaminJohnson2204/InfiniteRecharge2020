@@ -43,6 +43,10 @@ public final class Constants {
 
     // PCM
     public static final int pcmOne = 11;
+
+    //Solenoid addresses
     public static final int driveTrainShiftersForward = 0;
     public static final int driveTrainShiftersReverse = 1;
+    public static final int intakePistonForward = 2;
+    public static final int intakePistonReverse = 3;
 }

@@ -7,9 +7,7 @@
 
 package frc.robot.commands.intake;
 
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -17,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
  */
 public class SetIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final frc.robot.subsystems.Intake intake;
+  private final frc.robot.subsystems.Intake m_intake;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
   public SetIntake(frc.robot.subsystems.Intake subsystem) {
-    intake = subsystem;
+    m_intake = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -38,13 +36,13 @@ public class SetIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setIntake(RobotContainer.getLeftJoystickX() - RobotContainer.getRightJoystickX());
+    m_intake.setIntake(RobotContainer.getLeftJoystickX() - RobotContainer.getRightJoystickX());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.stop();
+    m_intake.stop();
   }
 
   // Returns true when the command should end.

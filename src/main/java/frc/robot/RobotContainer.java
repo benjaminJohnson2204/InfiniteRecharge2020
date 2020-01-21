@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
-import frc.robot.commands.intake.SetIntake;
+import frc.robot.commands.intake.*;
 import frc.robot.commands.skyhook.SetSkyhook;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
@@ -118,6 +118,9 @@ public class RobotContainer {
 
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
+
+    xBoxButtons[4].whenPressed(new SetIntakePiston(m_intake,true));
+    xBoxPOVButtons[180].whenPressed(new SetIntakePiston(m_intake, false));
   }
 
   public static double getLeftJoystickX() {
