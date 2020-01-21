@@ -49,31 +49,35 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(RobotContainer.getLeftJoystickX() >= deadZone || RobotContainer.getLeftJoystickY() >= deadZone) {
-      setpoint = Math.toDegrees(Math.tan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
-      limelightDisabled = false; //enable limelight control
-    } else if (!limelightDisabled){
-      if(Constants.limelightTempDisabled){
-        if(m_turret.atTarget()&&Constants.canSeeVisionTarget){
-          Constants.limelightTempDisabled = false;
-        }
-      } else if (Constants.canSeeVisionTarget){ //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
-        setpoint = m_turret.getAngle() + m_vision.getTargetX();
-        if(timeout) {
-          timer.stop();
-          timer.reset();
-        }
-      } else { //if you can't see the target for 1 second, then disable the limelight
-        timer.start();
-        timeout = true;
-        if(timer.get()>1) {
-          timer.stop();
-          timer.reset();
-          limelightDisabled = true;
+    if(m_turret.controlMode==1) {
+      if (RobotContainer.getLeftJoystickX() >= deadZone || RobotContainer.getLeftJoystickY() >= deadZone) {
+        setpoint = Math.toDegrees(Math.tan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
+        limelightDisabled = false; //enable limelight control
+      } else if (!limelightDisabled) {
+        if (Constants.limelightTempDisabled) {
+          if (m_turret.atTarget() && Constants.canSeeVisionTarget) {
+            Constants.limelightTempDisabled = false;
+          }
+        } else if (Constants.canSeeVisionTarget) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
+          setpoint = m_turret.getAngle() + m_vision.getTargetX();
+          if (timeout) {
+            timer.stop();
+            timer.reset();
+          }
+        } else { //if you can't see the target for 1 second, then disable the limelight
+          timer.start();
+          timeout = true;
+          if (timer.get() > 1) {
+            timer.stop();
+            timer.reset();
+            limelightDisabled = true;
+          }
         }
       }
+      m_turret.setSetpoint(setpoint);
+    } else {
+      m_turret.setPercentOutput(RobotContainer.getLeftJoystickX());
     }
-    m_turret.setSetpoint(setpoint);
   }
 
   // Called once the command ends or is interrupted.
