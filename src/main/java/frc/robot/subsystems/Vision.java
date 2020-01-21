@@ -106,7 +106,7 @@ public class Vision extends SubsystemBase
     public double getTargetDistance()
     {
         double angleToTarget = getTargetY();
-        return (OUTER_PORT_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+        return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
     }
 
     public void initUSBCamera()
