@@ -28,6 +28,7 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
   private Timer timer = new Timer();
   boolean timeout = false;
   boolean limelightDisabled = false;
+  boolean movedJoystick = false;
   /**
    * Creates a new ExampleCommand.
    *
@@ -52,8 +53,14 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
     if(m_turret.controlMode==1) {
       if (RobotContainer.getLeftJoystickX() >= deadZone || RobotContainer.getLeftJoystickY() >= deadZone) {
         setpoint = Math.toDegrees(Math.tan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
-        limelightDisabled = false; //enable limelight control
-      } else if (!limelightDisabled) {
+        limelightDisabled = true;
+        movedJoystick = true;
+      } else if (movedJoystick){
+        movedJoystick = false;
+        limelightDisabled = false;
+      }
+
+      if (!limelightDisabled) {
         if (Constants.limelightTempDisabled) {
           if (m_turret.atTarget() && Constants.canSeeVisionTarget) {
             Constants.limelightTempDisabled = false;
@@ -75,6 +82,7 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
         }
       }
       m_turret.setSetpoint(setpoint);
+      m_turret.setClosedLoopPosition();
     } else {
       m_turret.setPercentOutput(RobotContainer.getLeftJoystickX());
     }

@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.Timer;
@@ -26,7 +27,7 @@ public class Turret extends SubsystemBase {
   double kS = 0;
   double kV = 1;
   double kA = 1;
-  double maxAngle = 360;
+  double maxAngle = 450;
   double setpoint = 0; //angle
   public int controlMode = 1;
 
@@ -40,7 +41,9 @@ public class Turret extends SubsystemBase {
   private PIDController turretPID = new PIDController(kP, kI, kD);
 
   public Turret() {
-
+    turretMotor.configFactoryDefault();
+    turretMotor.setNeutralMode(NeutralMode.Brake);
+    turretMotor.setInverted(false);
   }
 
   public void resetEncoder(){
@@ -57,6 +60,14 @@ public class Turret extends SubsystemBase {
 
   public void incrementSetpoint(double increment){
     setpoint = setpoint + increment;
+    if(Math.abs(setpoint)>=maxAngle) {
+      if (setpoint < 0) {
+        setpoint = setpoint + 360;
+      } else {
+        setpoint = setpoint - 360;
+      }
+      Constants.limelightTempDisabled = true;
+    }
   }
 
   public void setSetpoint(double setpoint){ //use degrees
