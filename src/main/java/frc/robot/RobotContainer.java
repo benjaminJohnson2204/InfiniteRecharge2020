@@ -94,7 +94,7 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, () -> leftJoystick.getRawAxis(0), () -> rightJoystick.getRawAxis(1)));
+    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
     m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, () -> xBoxController.getRawAxis(0)));
@@ -109,6 +109,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    leftJoystick.invertRawAxis(1, true);
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)

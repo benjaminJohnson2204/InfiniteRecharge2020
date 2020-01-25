@@ -7,7 +7,7 @@ public class JoystickWrapper extends Joystick {
     private boolean[] invertedAxis;
     public JoystickWrapper(int port) {
         super(port);
-        invertedAxis = new boolean[this.getAxisCount()];
+        invertedAxis = new boolean[10];
     }
 
     public void invertRawAxis(int axis, boolean inverted) {
