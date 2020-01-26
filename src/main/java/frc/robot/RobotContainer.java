@@ -8,7 +8,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -26,10 +25,10 @@ import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.skyhook.SetSkyhook;
-import frc.robot.commands.turret.setTurretSetpointFieldAbsolute;
+import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
+import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
@@ -95,6 +94,7 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
+    leftJoystick.invertRawAxis(1, true);
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
@@ -102,7 +102,7 @@ public class RobotContainer {
 
     m_vision.initUSBCamera();
 
-    m_turret.setDefaultCommand(new setTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision));
+    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
   }
 
   /**

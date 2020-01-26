@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -41,7 +42,7 @@ public class Turret extends SubsystemBase {
 
   private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
 
-  //private SimpleMotorFeedforward turretFF = new SimpleMotorFeedforward(kS, kV, kA);
+  private SimpleMotorFeedforward turretFF = new SimpleMotorFeedforward(kS, kV, kA);
   private PIDController turretPID = new PIDController(kP, kI, kD);
 
   public Turret() {
@@ -107,8 +108,6 @@ public class Turret extends SubsystemBase {
   public void periodic() {
     if(controlMode == 1)
       setClosedLoopPosition();
-    else
-      setPercentOutput(RobotContainer.getXBoxLeftX());
     // This method will be called once per scheduler run
     updateSmartdashboard();
   }

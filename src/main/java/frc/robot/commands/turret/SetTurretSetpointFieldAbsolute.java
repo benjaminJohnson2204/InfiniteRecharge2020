@@ -15,14 +15,17 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * An example command that uses an example subsystem.
  */
-public class setTurretSetpointFieldAbsolute extends CommandBase {
+public class SetTurretSetpointFieldAbsolute extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   private final DriveTrain m_driveTrain;
   private final Vision m_vision;
+  private DoubleSupplier xValue, yValue;
   double setpoint;
   private final double deadZone = 0.1;
   private Timer timer = new Timer();
@@ -34,12 +37,16 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public setTurretSetpointFieldAbsolute(Turret subsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem) {
-    m_turret = subsystem;
+  public SetTurretSetpointFieldAbsolute(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
+    m_turret = turretSubsystem;
     m_driveTrain = driveTrainSubsystem;
     m_vision = visionSybsystem;
+    xValue = xInput;
+    yValue = yInput;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(turretSubsystem);
+//    addRequirements(driveTrainSubsystem);
+    addRequirements(visionSybsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -51,8 +58,9 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
   @Override
   public void execute() {
     if(m_turret.controlMode==1) {
-      if (RobotContainer.getLeftJoystickX() >= deadZone || RobotContainer.getLeftJoystickY() >= deadZone) {
-        setpoint = Math.toDegrees(Math.tan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
+      // TODO: calculate deadzone properly: https://www.gamasutra.com/blogs/JoshSutphin/20130416/190541/Doing_Thumbstick_Dead_Zones_Right.php
+      if (xValue.getAsDouble() >= deadZone || yValue.getAsDouble() >= deadZone) {
+        setpoint = Math.toDegrees(Math.tan(yValue.getAsDouble() / xValue.getAsDouble())) - (90 + m_driveTrain.getAngle());
         limelightDisabled = true;
         movedJoystick = true;
       } else if (movedJoystick){
@@ -65,6 +73,7 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
           if (m_turret.atTarget() && Constants.canSeeVisionTarget) {
             Constants.limelightTempDisabled = false;
           }
+          // TODO: Change this to a function call
         } else if (Constants.canSeeVisionTarget) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
           setpoint = m_turret.getAngle() + m_vision.getTargetX();
           if (timeout) {
@@ -84,7 +93,7 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
       m_turret.setSetpoint(setpoint);
       m_turret.setClosedLoopPosition();
     } else {
-      m_turret.setPercentOutput(RobotContainer.getLeftJoystickX());
+      m_turret.setPercentOutput(xValue.getAsDouble());
     }
   }
 

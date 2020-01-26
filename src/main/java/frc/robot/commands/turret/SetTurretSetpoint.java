@@ -13,7 +13,7 @@ import frc.robot.subsystems.Turret;
 /**
  * An example command that uses an example subsystem.
  */
-public class setTurretSetpoint extends CommandBase {
+public class SetTurretSetpoint extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   double setpoint;
@@ -22,7 +22,7 @@ public class setTurretSetpoint extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public setTurretSetpoint(Turret subsystem,double setpoint) {
+  public SetTurretSetpoint(Turret subsystem, double setpoint) {
     m_turret = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

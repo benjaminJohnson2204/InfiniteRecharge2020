@@ -26,7 +26,6 @@ public class Vision extends SubsystemBase
     // Variables for calculating distance
     private final double OUTER_PORT_HEIGHT = 98.25; // Outer port height above carpet in inches
     // Values from Carbon
-    private final double OUTER_PORT_HEIGHT = 0; // Angle that the Limelight is mounted at
     private final double LIMELIGHT_MOUNT_ANGLE = 0; // Angle that the Limelight is mounted at
     private final double LIMELIGHT_HEIGHT = 42.5; // Limelight height above the ground in inches
 
