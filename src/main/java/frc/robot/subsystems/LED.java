@@ -40,7 +40,7 @@ public class LED extends SubsystemBase {
     this.green = green;
   };
 
-  public void setSolidColor(int red, int green, int blue){
+  public void setSolidColor(){
     for(int i = 0; i < LEDBuffer.getLength(); i++){
       LEDBuffer.setRGB(i, red, green, blue);
     }
@@ -52,7 +52,7 @@ public class LED extends SubsystemBase {
     }
   }
 
-  public void setBlinkingColor(boolean blinkType, int red, int green, int blue){
+  public void setBlinkingColor(boolean blinkType){
     double time = (int)(5 * Timer.getFPGATimestamp());
     if(!blinkType){
       if(time / 2 == Math.floor(time / 2)){
@@ -89,7 +89,7 @@ public class LED extends SubsystemBase {
   }
 
   int head = 0;
-  public void coolDesign(int interval, int trail, int red, int green, int blue){
+  public void coolDesign(int interval, int trail){
     resetLED();
     for(int i = head; i < LEDBuffer.getLength(); i += (interval + trail)){
       LEDBuffer.setRGB(i, red, green, blue);
