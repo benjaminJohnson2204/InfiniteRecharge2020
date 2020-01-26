@@ -52,7 +52,7 @@ public class RobotContainer {
   private final Skyhook m_skyhook = new Skyhook();
   private final Turret m_turret = new Turret();
   private final Vision m_vision = new Vision();
-  private final Indexer m_indexer = new Indexer();
+  public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
   static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
