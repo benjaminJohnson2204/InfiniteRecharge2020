@@ -98,6 +98,10 @@ DriveTrain extends SubsystemBase {
     return driveMotors[sensorIndex].getSelectedSensorPosition();
   }
 
+  public double getAngle(){
+    return navX.getAngle();
+  }
+
   public double getWheelDistanceMeters(int sensorIndex) {
     return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }
@@ -193,7 +197,7 @@ DriveTrain extends SubsystemBase {
 
     SmartDashboard.putNumber("xCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getX()));
     SmartDashboard.putNumber("yCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getY()));
-    SmartDashboard.putNumber("angle", getRobotPose().getRotation().getDegrees());
+    SmartDashboard.putNumber("Robot Angle", getRobotPose().getRotation().getDegrees());
     SmartDashboard.putNumber("leftSpeed", Units.metersToFeet(getSpeeds().leftMetersPerSecond));
     SmartDashboard.putNumber("rightSpeed", Units.metersToFeet(getSpeeds().rightMetersPerSecond));
   }

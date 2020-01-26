@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -25,7 +26,7 @@ import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.skyhook.SetSkyhook;
-import frc.robot.commands.vision.AlignToOuterPort;
+import frc.robot.commands.turret.setTurretSetpointFieldAbsolute;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -100,6 +101,8 @@ public class RobotContainer {
     m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, () -> xBoxController.getRawAxis(0)));
 
     m_vision.initUSBCamera();
+
+    m_turret.setDefaultCommand(new setTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision));
   }
 
   /**
@@ -140,5 +143,11 @@ public class RobotContainer {
   public void teleOpInit() {
     m_driveTrain.resetEncoderCounts();
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+  }
+  public void teleOpPeriodic() {
+  }
+  public void autonomousInit() {
+  }
+  public void autonomousPeriodic(){
   }
 }
