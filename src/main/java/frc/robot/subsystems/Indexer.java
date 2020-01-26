@@ -52,10 +52,10 @@ public class Indexer extends SubsystemBase {
     master.setInverted(false);
     master.setIdleMode(IdleMode.kBrake);
 
-    SmartDashboard.putNumber("kF", kF);
-    SmartDashboard.putNumber("kP", kP);
-    SmartDashboard.putNumber("kI", kI);
-    SmartDashboard.putNumber("kD", kD);
+//    SmartDashboard.putNumber("kF", kF);
+//    SmartDashboard.putNumber("kP", kP);
+//    SmartDashboard.putNumber("kI", kI);
+//    SmartDashboard.putNumber("kD", kD);
   }
 
   public boolean sensorTripped(){
@@ -101,6 +101,6 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     updateSmartDashboard();
-    updatePIDValues();
+    //updatePIDValues();
   }
 }

@@ -95,14 +95,16 @@ public class RobotContainer {
 
   public void initializeSubsystems() {
     leftJoystick.invertRawAxis(1, true);
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
+    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
+            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
     m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, () -> xBoxController.getRawAxis(0)));
 
     m_vision.initUSBCamera();
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
+    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
+            m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
   }
 
   /**

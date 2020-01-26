@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -196,14 +197,18 @@ DriveTrain extends SubsystemBase {
   }
 
   public void updateSmartDashboard() {
-    SmartDashboard.putNumber("Left Encoder", getEncoderCount(0));
-    SmartDashboard.putNumber("Right Encoder", getEncoderCount(2));
-
-    SmartDashboard.putNumber("xCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getX()));
-    SmartDashboard.putNumber("yCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getY()));
-    SmartDashboard.putNumber("Robot Angle", getRobotPose().getRotation().getDegrees());
-    SmartDashboard.putNumber("leftSpeed", Units.metersToFeet(getSpeeds().leftMetersPerSecond));
-    SmartDashboard.putNumber("rightSpeed", Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+    Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
+    Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
+    Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
+            Units.metersToFeet(getRobotPose().getTranslation().getX()));
+    Shuffleboard.getTab("Drive Train").addNumber("yCoordinate", () ->
+            Units.metersToFeet(getRobotPose().getTranslation().getY()));
+    Shuffleboard.getTab("Drive Train").addNumber("Angle", () ->
+            getRobotPose().getRotation().getDegrees());
+    Shuffleboard.getTab("Drive Train").addNumber("leftSpeed", () ->
+            Units.metersToFeet(getSpeeds().leftMetersPerSecond));
+    Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
+            Units.metersToFeet(getSpeeds().rightMetersPerSecond));
   }
 
   @Override
