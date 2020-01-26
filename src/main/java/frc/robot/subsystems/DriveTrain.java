@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -28,8 +29,8 @@ import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
-  private double gearRatioLow = 1.0;
-  private double gearRatioHigh = 1.0;
+  private double gearRatioLow = 1 / 7.49;
+  private double gearRatioHigh = 1 / 14.14;
   private double wheelDiameter = 0.5;
   private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 4096;
 
@@ -43,11 +44,11 @@ DriveTrain extends SubsystemBase {
 
   public int controlMode = 0;
 
-  private TalonSRX[] driveMotors = {
-        new TalonSRX(Constants.leftFrontDriveMotor),
-        new TalonSRX(Constants.leftRearDriveMotor),
-        new TalonSRX(Constants.rightFrontDriveMotor),
-        new TalonSRX(Constants.rightRearDriveMotor)
+  private TalonFX[] driveMotors = {
+        new TalonFX(Constants.leftFrontDriveMotor),
+        new TalonFX(Constants.leftRearDriveMotor),
+        new TalonFX(Constants.rightFrontDriveMotor),
+        new TalonFX(Constants.rightRearDriveMotor)
   };
 
   DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
@@ -64,14 +65,14 @@ DriveTrain extends SubsystemBase {
   Pose2d pose;
 
   public DriveTrain() {
-    for (TalonSRX motor : driveMotors) {
+    for (TalonFX motor : driveMotors) {
       motor.configFactoryDefault();
       motor.configVoltageCompSaturation(12);
       motor.enableVoltageCompensation(true);
-      motor.configContinuousCurrentLimit(30);
-      motor.configPeakCurrentLimit(40);
-      motor.configPeakCurrentDuration(1000);
-      motor.enableCurrentLimit(true);
+      // motor.configGetSupplyCurrentLimit(30);
+      // motor.configPeakCurrentLimit(40);
+      // motor.configPeakCurrentDuration(1000);
+      // motor.enableCurrentLimit(true);
       motor.configOpenloopRamp(0.1);
       motor.configClosedloopRamp(0.1);
       motor.setNeutralMode(NeutralMode.Coast);
@@ -91,6 +92,9 @@ DriveTrain extends SubsystemBase {
 
     driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
     driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
+
+    driveMotors[1].configOpenloopRamp(0);
+    driveMotors[3].configOpenloopRamp(0);
 
   }
 
@@ -156,8 +160,8 @@ DriveTrain extends SubsystemBase {
   public DifferentialDriveWheelSpeeds getSpeeds() {
     double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
 
-    double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 4096) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-    double righttMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 4096) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+    double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+    double righttMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
 
     // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
     return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, righttMetersPerSecond);
