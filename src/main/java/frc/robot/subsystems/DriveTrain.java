@@ -216,6 +216,6 @@ DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
     pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
-    updateSmartDashboard();
+    //updateSmartDashboard();
   }
 }

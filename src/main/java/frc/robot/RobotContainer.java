@@ -24,6 +24,7 @@ import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
+import frc.robot.commands.shooter.StartShooterMotors;
 import frc.robot.commands.skyhook.SetSkyhook;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.vision.AlignToOuterPort;
@@ -105,7 +106,7 @@ public class RobotContainer {
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
             m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
-  }
+  } 
 
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by
@@ -128,6 +129,7 @@ public class RobotContainer {
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
     xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
+    leftButtons[1].whileHeld(new StartShooterMotors(m_shooter));
   }
 
   /**
