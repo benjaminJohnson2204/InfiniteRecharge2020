@@ -21,6 +21,8 @@ public class LED extends SubsystemBase {
   AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
+  private int red, green, blue;
+
   public LED() {
     LEDStrip = new AddressableLED(0);
     LEDBuffer = new AddressableLEDBuffer(60);
@@ -31,6 +33,12 @@ public class LED extends SubsystemBase {
     SmartDashboard.putNumber("Rainbows", rainbows);
     SmartDashboard.putNumber("Speed", speed);
   }
+
+  public void setRGB(int red, int green, int blue){
+    this.red = red;
+    this.blue = blue;
+    this.green = green;
+  };
 
   public void setSolidColor(int red, int green, int blue){
     for(int i = 0; i < LEDBuffer.getLength(); i++){
