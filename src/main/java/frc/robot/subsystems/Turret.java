@@ -13,7 +13,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -64,26 +63,14 @@ public class Turret extends SubsystemBase {
     turretMotor.set(ControlMode.PercentOutput, output);
   }
 
-  public void incrementSetpoint(double increment){
-    setpoint = setpoint + increment;
-    if(Math.abs(setpoint)>=maxAngle) {
-      if (setpoint < 0) {
-        setpoint = setpoint + 360;
-      } else {
-        setpoint = setpoint - 360;
-      }
-      Constants.limelightTempDisabled = true;
-    }
-  }
 
   public void setSetpoint(double setpoint){ //use degrees
-    if(Math.abs(setpoint)>=maxAngle) {
-      if (setpoint < 0) {
-        setpoint = setpoint + 360;
-      } else {
+    if(setpoint>=maxAngle) {
         setpoint = setpoint - 360;
-      }
-      Constants.limelightTempDisabled = true;
+        Constants.limelightTempDisabled = true;
+    } else if(setpoint<=minAngle) {
+        setpoint = setpoint + 360;
+        Constants.limelightTempDisabled = true;
     }
     this.setpoint = setpoint;
   }
