@@ -97,6 +97,7 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].configOpenloopRamp(0);
     driveMotors[3].configOpenloopRamp(0);
 
+    initShuffleboardValues();
   }
 
   public int getEncoderCount(int sensorIndex) {
@@ -196,7 +197,7 @@ DriveTrain extends SubsystemBase {
     odometry.resetPosition(pose, rotation);
   }
 
-  public void updateSmartDashboard() {
+  public void initShuffleboardValues() {
     Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
     Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
     Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
@@ -216,6 +217,5 @@ DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
     pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
-    updateSmartDashboard();
   }
 }
