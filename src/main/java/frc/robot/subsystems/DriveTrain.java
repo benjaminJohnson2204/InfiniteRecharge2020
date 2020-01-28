@@ -45,11 +45,11 @@ DriveTrain extends SubsystemBase {
 
   public int controlMode = 0;
 
-  private TalonFX[] driveMotors = {
-        new TalonFX(Constants.leftFrontDriveMotor),
-        new TalonFX(Constants.leftRearDriveMotor),
-        new TalonFX(Constants.rightFrontDriveMotor),
-        new TalonFX(Constants.rightRearDriveMotor)
+  private TalonSRX[] driveMotors = {
+        new TalonSRX(Constants.leftFrontDriveMotor),
+        new TalonSRX(Constants.leftRearDriveMotor),
+        new TalonSRX(Constants.rightFrontDriveMotor),
+        new TalonSRX(Constants.rightRearDriveMotor)
   };
 
   DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
@@ -66,7 +66,7 @@ DriveTrain extends SubsystemBase {
   Pose2d pose;
 
   public DriveTrain() {
-    for (TalonFX motor : driveMotors) {
+    for (TalonSRX motor : driveMotors) {
       motor.configFactoryDefault();
       motor.configVoltageCompSaturation(12);
       motor.enableVoltageCompensation(true);
