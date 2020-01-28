@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2020.1.2"
+    id "edu.wpi.first.GradleRIO" version "2020.2.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -10,6 +10,7 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 repositories {
     maven { url 'https://jitpack.io' }
+    maven { url 'https://nexus.otake.pw/repository/maven-public/' }
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -62,6 +63,10 @@ dependencies {
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
 
+    simulation "edu.wpi.first.halsim:halsim_ds_socket:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"
+    simulation "edu.wpi.first.halsim:halsim_ds_socket:${wpi.wpilibVersion}:${wpi.platforms.desktop}debug@zip"
+
+    implementation 'pw.otake.pseudoresonance:pixy2-java-api:1.3.5'
     compile "com.github.jonathandao0:badlog:v0.1.2.4"
 }
 

@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -21,63 +22,58 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.PCM_ONE;
-import frc.robot.Constants.DriveMotors;
+import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  private TalonSRX[] driveMotors = {
-        new TalonSRX(DriveMotors.leftFrontDriveMotor),
-        new TalonSRX(DriveMotors.leftRearDriveMotor),
-        new TalonSRX(DriveMotors.rightFrontDriveMotor),
-        new TalonSRX(DriveMotors.rightRearDriveMotor)
-  };
+  private double gearRatioLow = 1 / 7.49;
+  private double gearRatioHigh = 1 / 14.14;
+  private double wheelDiameter = 0.5;
+  private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 4096;
 
-  DoubleSolenoid driveTrainShifters = new DoubleSolenoid(PCM_ONE.CAN_ADDRESS, PCM_ONE.DRIVETRAIN_SIFTER.FORWARD, PCM_ONE.DRIVETRAIN_SIFTER.REVERSE);
-  public AHRS navX = new AHRS(SerialPort.Port.kMXP);
+  private double kS = 1.35;
+  private double kV = 1.04;
+  private double kA = 0.182;
+
+  public double kP = 8.02;
+  public double kI = 0;
+  public double kD = 0;
 
   public int controlMode = 0;
-  private int gearRatio = 1; //gear ration between the encoder and the wheel
-  private double wheelDiameter = 0.5;
 
-  //DifferentialDrive drive = new DifferentialDrive(driveMotors[0],driveMotors[2]);
+  private TalonFX[] driveMotors = {
+        new TalonFX(Constants.leftFrontDriveMotor),
+        new TalonFX(Constants.leftRearDriveMotor),
+        new TalonFX(Constants.rightFrontDriveMotor),
+        new TalonFX(Constants.rightRearDriveMotor)
+  };
+
+  DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
+  public AHRS navX = new AHRS(SerialPort.Port.kMXP);
+
   DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
   DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(getHeading());
-  // 1.35, 1.04, 0.182
-  // 1.3, 1.04, 0.175
-  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(1.35,1.04, 0.182);
 
-  // 17.7, 0, 8.21
-  // 17.2, 0, 7.91
-  PIDController leftPIDController = new PIDController(8.02, 0, 0);
-  PIDController rightPIDController = new PIDController(8.02, 0,0);
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
+  PIDController leftPIDController = new PIDController(kP, kI, kD);
+  PIDController rightPIDController = new PIDController(kP, kI, kD);
 
   Pose2d pose;
 
-  private int leftZeroOffset;
-  private int rightZeroOffset;
-
   public DriveTrain() {
-
-    for (TalonSRX motor : driveMotors) {
+    for (TalonFX motor : driveMotors) {
       motor.configFactoryDefault();
-//      motor.config_kP(0, 0.25, 30);
-//      motor.config_kI(0, 0, 30);
-//      motor.config_kD(0, 10, 30);
-//      motor.config_kF(0, 1023.0 / 72000.0, 30);
       motor.configVoltageCompSaturation(12);
       motor.enableVoltageCompensation(true);
-      motor.configContinuousCurrentLimit(30);
-      motor.configPeakCurrentLimit(40);
-      motor.configPeakCurrentDuration(1000);
-      motor.enableCurrentLimit(true);
+      // motor.configGetSupplyCurrentLimit(30);
+      // motor.configPeakCurrentLimit(40);
+      // motor.configPeakCurrentDuration(1000);
+      // motor.enableCurrentLimit(true);
       motor.configOpenloopRamp(0.1);
       motor.configClosedloopRamp(0.1);
       motor.setNeutralMode(NeutralMode.Coast);
@@ -98,45 +94,27 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
     driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
 
-  }
+    driveMotors[1].configOpenloopRamp(0);
+    driveMotors[3].configOpenloopRamp(0);
 
-  public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(-navX.getAngle());
-  }
-
-  public DifferentialDriveWheelSpeeds getSpeeds() {
-    // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
-    return new DifferentialDriveWheelSpeeds(
- (driveMotors[0].getSelectedSensorVelocity() * 10 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter), //divide by gear ratio to make sure we have wheel speed
-(driveMotors[2].getSelectedSensorVelocity() * 10 / 4096) * Math.PI * Units.feetToMeters(wheelDiameter) //divide by gear ratio to make sure we have wheel speed
-    );
-  }
-
-  public SimpleMotorFeedforward getFeedforward() {
-    return feedforward;
-  }
-
-  public PIDController getLeftPIDController() {
-    return leftPIDController;
-  }
-
-  public PIDController getRightPIDController() {
-    return rightPIDController;
+    initShuffleboardValues();
   }
 
   public int getEncoderCount(int sensorIndex) {
     return driveMotors[sensorIndex].getSelectedSensorPosition();
   }
 
+  public double getAngle(){
+    return navX.getAngle();
+  }
+
   public double getWheelDistanceMeters(int sensorIndex) {
-    return driveMotors[sensorIndex].getSelectedSensorPosition() * Constants.ticksPerMeter;
+    return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }
 
   public void resetEncoderCounts() {
     driveMotors[0].setSelectedSensorPosition(0);
     driveMotors[2].setSelectedSensorPosition(0);
-//    leftZeroOffset = driveMotors[0].getSelectedSensorPosition();
-//    rightZeroOffset = driveMotors[2].getSelectedSensorPosition();
   }
 
   public void setMotorArcadeDrive(double throttle, double turn) {
@@ -181,22 +159,22 @@ DriveTrain extends SubsystemBase {
     driveTrainShifters.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
   }
 
-  public void resetOdometry(Pose2d pose, Rotation2d rotation){
-    odometry.resetPosition(pose, rotation);
+  public DifferentialDriveWheelSpeeds getSpeeds() {
+    double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+
+    double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+    double righttMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+
+    // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
+    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, righttMetersPerSecond);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
-    SmartDashboard.putNumber("Left Encoder", getEncoderCount(0));
-    SmartDashboard.putNumber("Right Encoder", getEncoderCount(2));
+  public SimpleMotorFeedforward getFeedforward() {
+    return feedforward;
+  }
 
-    SmartDashboard.putNumber("xCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getX()));
-    SmartDashboard.putNumber("yCoordinate", Units.metersToFeet(getRobotPose().getTranslation().getY()));
-    SmartDashboard.putNumber("angle", getRobotPose().getRotation().getDegrees());
-    SmartDashboard.putNumber("leftSpeed", Units.metersToFeet(getSpeeds().leftMetersPerSecond));
-    SmartDashboard.putNumber("rightSpeed", Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+  public Rotation2d getHeading() {
+    return Rotation2d.fromDegrees(-navX.getAngle());
   }
 
   public Pose2d getRobotPose(){
@@ -205,5 +183,39 @@ DriveTrain extends SubsystemBase {
 
   public DifferentialDriveKinematics getDriveTrainKinematics() {
     return kinematics;
+  }
+
+  public PIDController getLeftPIDController() {
+    return leftPIDController;
+  }
+
+  public PIDController getRightPIDController() {
+    return rightPIDController;
+  }
+
+  public void resetOdometry(Pose2d pose, Rotation2d rotation){
+    odometry.resetPosition(pose, rotation);
+  }
+
+  public void initShuffleboardValues() {
+    Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
+    Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
+    Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
+            Units.metersToFeet(getRobotPose().getTranslation().getX()));
+    Shuffleboard.getTab("Drive Train").addNumber("yCoordinate", () ->
+            Units.metersToFeet(getRobotPose().getTranslation().getY()));
+    Shuffleboard.getTab("Drive Train").addNumber("Angle", () ->
+            getRobotPose().getRotation().getDegrees());
+    Shuffleboard.getTab("Drive Train").addNumber("leftSpeed", () ->
+            Units.metersToFeet(getSpeeds().leftMetersPerSecond));
+    Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
+            Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+
   }
 }

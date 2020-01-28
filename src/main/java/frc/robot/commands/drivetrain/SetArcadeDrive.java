@@ -8,10 +8,10 @@
 package frc.robot.commands.drivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.ExampleSubsystem;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
@@ -19,14 +19,17 @@ import frc.robot.subsystems.ExampleSubsystem;
 public class SetArcadeDrive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
-
+  private final DoubleSupplier m_throttle, m_turn;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetArcadeDrive(DriveTrain subsystem) {
+  public SetArcadeDrive(DriveTrain subsystem, DoubleSupplier throttle, DoubleSupplier turn) {
     m_driveTrain = subsystem;
+    m_throttle = throttle;
+    m_turn = turn;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -39,8 +42,8 @@ public class SetArcadeDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double joystickY = (Math.abs(RobotContainer.getLeftJoystickY()) > 0.05) ? RobotContainer.getLeftJoystickY() : 0;
-    double joystickX = (Math.abs(RobotContainer.getRightJoystickX()) > 0.05) ? RobotContainer.getRightJoystickX() : 0;
+    double joystickY = (Math.abs(m_throttle.getAsDouble()) > 0.05) ? m_throttle.getAsDouble() : 0;
+    double joystickX = (Math.abs(m_turn.getAsDouble()) > 0.05) ? m_turn.getAsDouble() : 0;
 
 //        double throttle = 0.5 * (joystickY + Math.pow(joystickY, 3));
 //        throttle = throttle < 0 ? Math.max( -0.7, throttle) : throttle;
