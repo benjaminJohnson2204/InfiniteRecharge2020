@@ -91,6 +91,7 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
+
   }
 
   public void initializeSubsystems() {
@@ -105,6 +106,8 @@ public class RobotContainer {
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
             m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
+    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_intake.setDefaultCommand(new SetIntake(m_intake));
   }
 
   /**
