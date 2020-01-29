@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -54,7 +55,8 @@ public class RobotContainer {
   private final Skyhook m_skyhook = new Skyhook();
   private final Turret m_turret = new Turret();
   private final Vision m_vision = new Vision();
-  private final Indexer m_indexer = new Indexer();
+  public final Indexer m_indexer = new Indexer();
+  private final LED m_led = new LED();
 
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
@@ -79,6 +81,7 @@ public class RobotContainer {
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * 
    */
   public RobotContainer() {
     m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
@@ -92,6 +95,7 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
+
   }
 
   public void initializeSubsystems() {
@@ -106,7 +110,10 @@ public class RobotContainer {
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
             m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
-  } 
+    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_intake.setDefaultCommand(new SetIntake(m_intake));
+    m_led.setDefaultCommand(new LEDCommand(m_led));
+  }
 
   /**
    * Use this method to define your button->command mappings.  Buttons can be created by

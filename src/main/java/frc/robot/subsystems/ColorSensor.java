@@ -24,7 +24,7 @@ public class ColorSensor extends SubsystemBase {
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   
   public ColorSensor() {
-
+    initShuffleboardValues();
   }
 
   public Color getColor() {
@@ -76,7 +76,7 @@ public class ColorSensor extends SubsystemBase {
     return false;
   }
 
-  public void updateSmartDashboard() { //s
+  public void initShuffleboardValues() { //s
     Shuffleboard.getTab("Color Sensor").addNumber("Red", ()-> getColor().red);
     Shuffleboard.getTab("Color Sensor").addNumber("Green", ()-> getColor().green);
     Shuffleboard.getTab("Color Sensor").addNumber("Blue", ()-> getColor().blue);
