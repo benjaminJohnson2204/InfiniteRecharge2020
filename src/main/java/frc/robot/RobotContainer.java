@@ -18,8 +18,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.shooter.SetRPM;
+import frc.robot.commands.shooter.StartShooterMotors;
+import frc.robot.commands.turret.ManualTurret;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -47,7 +50,6 @@ import static java.util.Map.entry;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Climber m_climber = new Climber();
-  private final ColorSensor m_colorSensor = new ColorSensor();
   private final Controls m_controls = new Controls();
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Intake m_intake = new Intake();
@@ -137,7 +139,8 @@ public class RobotContainer {
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
     xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
-    leftButtons[1].whileHeld(new StartShooterMotors(m_shooter));
+    leftButtons[0].whileHeld(new StartShooterMotors(m_shooter));
+    leftButtons[1].whileHeld(new SetRPM(m_shooter, 2800));
   }
 
   /**
