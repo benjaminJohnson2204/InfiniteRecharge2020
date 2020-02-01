@@ -135,12 +135,29 @@ public class RobotContainer {
     for (int i = 0; i < xBoxPOVButtons.length; i++)
       xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
 
+
+    leftButtons[0].whileHeld(new StartShooterMotors(m_shooter)); //Top (left) Button - Switch to high gear
+    leftButtons[1].whileHeld(new SetRPM(m_shooter, 2800)); //Bottom (right) Button - Switch to low gear
+
+    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
+    //leftButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
-    xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
-    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
-    leftButtons[0].whileHeld(new StartShooterMotors(m_shooter));
-    leftButtons[1].whileHeld(new SetRPM(m_shooter, 2800));
+
+    //xBoxLeftTrigger.whileHeld(new Command()); //Deploy intake and pick up powercell
+    //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
+    //xBoxButtons[0].whenPressed(new Command()); //A - toggle driver climb mode
+    //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
+    //xBoxButtons[2].whenPressed(new Command()); //X - manual move uptake
+    //xBoxButtons[3].whenPressed(new Command()); //Y -
+    //xBoxButtons[4].whileHeld(new Command()); //left bumper - winch up
+    //xBoxButtons[5].whileHeld(new Command()); //right bumper - winch down
+    //xBoxButtons[6].whenPressed(new Command()); //start - toggle control mode turret
+    //xBoxButtons[7].whenPressed(new Command()); //select - toggle control mode uptake
+    //xBoxButtons[8].whenPressed(new Command()); //left stick
+    //xBoxButtons[9].whenPressed(new Command()); //right stick
+
   }
 
   /**
