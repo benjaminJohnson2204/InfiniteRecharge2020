@@ -7,72 +7,93 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FollowerType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.revrobotics.*;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
  * @return 
    */
-  public double kP = 0.004;
-  public double kI = 0;
-  public double kD = 0.0016;
+  public double kF = 0.0558;
+  public double kP = 0.000452;
+  public double kI = 0.0000287;
+  public double kD = 0.0;
+  public double power = 1;
 
-  private CANSparkMax[] outtakeMotors = {
-          new CANSparkMax(40, MotorType.kBrushless), //0 and 1 are the actual shooting motors
-          new CANSparkMax(41, MotorType.kBrushless)
+  private TalonFX[] outtakeMotors = {
+          new TalonFX(40),
+          new TalonFX(41),
   };
 
-  private CANEncoder shooterEncoder = new CANEncoder(outtakeMotors[0]);
+  //private VictorSPX turretMotor = new VictorSPX(42);
 
-  private PIDController shooterController = new PIDController(kP, kI, kD);
 
+  private double rpmOutput;
   public Shooter() {
-    super(); //do not know what this does
+    //super();
 
-    for(CANSparkMax outtakeMotor : outtakeMotors){
-      outtakeMotor.restoreFactoryDefaults(); //configure the motors
-      outtakeMotor.setIdleMode(IdleMode.kCoast);
+    for(TalonFX outtakeMotor : outtakeMotors){
+      outtakeMotor.configFactoryDefault();
+      outtakeMotor.setNeutralMode(NeutralMode.Coast);
     }
-    outtakeMotors[0].setInverted(false);
-    outtakeMotors[1].setInverted(true);
+    outtakeMotors[0].setInverted(true);
+    outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
 
-    shooterController.setIntegratorRange(-500, 500);
-    shooterController.setTolerance(100);
+
+    outtakeMotors[0].config_kF(0, kF);
+    outtakeMotors[0].config_kP(0, kP);
+    outtakeMotors[0].config_kI(0, kI);
+    outtakeMotors[0].config_IntegralZone(0,100);
+    outtakeMotors[0].config_kD(0, kD);
+    outtakeMotors[0].configAllowableClosedloopError(0, 100);
+
+    outtakeMotors[1].configClosedloopRamp(0);
+    outtakeMotors[1].configOpenloopRamp(0);
+
+
+
+
+    SmartDashboard.putNumber("RPM Output", rpmOutput);
 
   }
-
   
 
   public void startSpin(double output){
-    outtakeMotors[0].set(output);
-    outtakeMotors[1].set(output);
+    outtakeMotors[0].set(ControlMode.PercentOutput, rpmOutput);
   }
 
+  public void setPower(double output) {
+    outtakeMotors[0].set(ControlMode.PercentOutput, output/1.2);
+  }
+  public void spinTurret(double output, int direction){
+    //turretMotor.set(ControlMode.PercentOutput, output*direction);
+  }
+
+
   public void setRPM(double setpoint){
-    double output = shooterController.calculate(shooterEncoder.getVelocity(), setpoint);
-    startSpin(output);
+    outtakeMotors[0].set(ControlMode.Velocity, rpmOutput);
   }
 
   public boolean encoderAtSetpoint(){
-    return shooterController.atSetpoint();
+    return (Math.abs(outtakeMotors[0].getClosedLoopError()) < 100);
   }
 
   public void updateShuffleboard(){
-    SmartDashboard.putNumber("RPM", shooterEncoder.getVelocity());
+    SmartDashboard.putNumber("RPM", outtakeMotors[0].getSelectedSensorVelocity());
+    SmartDashboard.putNumber("RPM 2", outtakeMotors[1].getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Voltage", outtakeMotors[0].getBusVoltage());
+    SmartDashboard.putNumber("Power", power);
+    SmartDashboard.putNumber("Position", outtakeMotors[0].getSelectedSensorPosition());
+    rpmOutput = SmartDashboard.getNumber("RPM Output", 0);
   }
 
-  public void insertCell(){}
 
 
 

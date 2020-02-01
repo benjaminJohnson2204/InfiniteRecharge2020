@@ -7,12 +7,10 @@
 
 package frc.robot.commands.shooter;
 
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Shooter;
 
 /**
  * An example command that uses an example subsystem.
@@ -22,6 +20,7 @@ public class SetRPM extends CommandBase {
   private final Shooter m_shooter;
   private final double m_RPM;
   private double time;
+  private boolean printed = false;
   /**
    * Creates a new ExampleCommand.
    *
@@ -44,8 +43,9 @@ public class SetRPM extends CommandBase {
   @Override
   public void execute() {
     m_shooter.setRPM(m_RPM);
-    if(m_shooter.encoderAtSetpoint()){
+    if(m_shooter.encoderAtSetpoint() && printed == false){
         SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp()-time);
+        printed = true;
     }
   }
 
