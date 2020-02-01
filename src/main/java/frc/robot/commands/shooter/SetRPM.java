@@ -24,7 +24,6 @@ public class SetRPM extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param RobotContainer.m_shooter The subsystem used by this command.
    */
   public SetRPM(Shooter shooter, double RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -43,7 +42,7 @@ public class SetRPM extends CommandBase {
   @Override
   public void execute() {
     m_shooter.setRPM(m_RPM);
-    if(m_shooter.encoderAtSetpoint() && printed == false){
+    if(m_shooter.encoderAtSetpoint(0) && printed == false){
         SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp()-time);
         printed = true;
     }
