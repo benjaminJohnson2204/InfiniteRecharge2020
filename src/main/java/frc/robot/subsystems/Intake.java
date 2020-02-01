@@ -12,7 +12,10 @@ public class Intake extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
 
-  private CANSparkMax intakeMotor = new CANSparkMax(Constants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private CANSparkMax intakeMotor[] ={
+          new CANSparkMax(Constants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless),
+          new CANSparkMax(Constants.intakeMotor1, CANSparkMaxLowLevel.MotorType.kBrushless)
+  };
 
   DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
 
@@ -25,19 +28,26 @@ public class Intake extends SubsystemBase {
   }
 
   public Intake() {
+    for(CANSparkMax intakeMotor: intakeMotor) {
       intakeMotor.restoreFactoryDefaults();
       intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    }
+    intakeMotor[0].setInverted(true);
+    intakeMotor[1].setInverted(false);
+
   }
   public void setIntake(double value){
-    intakeMotor.set(value);
+    intakeMotor[0].set(value);
+    intakeMotor[1].set(value);
+
   }
 
   public void stop(){
     setIntake(0);
   }
-  public double getIntakeVoltage(){
-    return intakeMotor.getBusVoltage();
-  }
+//  public double getIntakeVoltage(){
+//    return intakeMotor.getBusVoltage();
+//  }
   @Override
   public void periodic() {
   }
