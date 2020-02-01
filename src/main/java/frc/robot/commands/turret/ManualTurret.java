@@ -5,43 +5,49 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.commands.turret;
 
-import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.constants.Constants;
+import frc.robot.subsystems.Turret;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetIntake extends CommandBase {
+public class ManualTurret extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final frc.robot.subsystems.Intake m_intake;
+  private final Turret m_turret;
+  double xValue;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetIntake(frc.robot.subsystems.Intake subsystem) {
-    m_intake = subsystem;
+  public ManualTurret(Turret subsystem, DoubleSupplier xInput) {
+    m_turret = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
+    xValue = xInput.getAsDouble();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double threshHold = 0.05;
+    if(Math.abs(xValue)>threshHold)
+      m_turret.setPercentOutput(xValue);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intake.stop();
   }
 
   // Returns true when the command should end.

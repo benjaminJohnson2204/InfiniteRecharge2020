@@ -32,7 +32,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   boolean timeout = false;
   boolean limelightDisabled = false;
   boolean movedJoystick = false;
-  /**
+  /*
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.

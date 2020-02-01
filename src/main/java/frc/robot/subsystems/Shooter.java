@@ -115,6 +115,6 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     updateShuffleboard();
     // This method will be called once per scheduler run
-    output = SmartDashboard.getNumber("FW Output", 0);
+    //output = SmartDashboard.getNumber("FW Output", 0);
   }
 }

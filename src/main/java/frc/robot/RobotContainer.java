@@ -18,12 +18,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.shooter.SetRPM;
 import frc.robot.commands.shooter.StartShooterMotors;
+import frc.robot.commands.turret.ManualTurret;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -51,7 +50,6 @@ import static java.util.Map.entry;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Climber m_climber = new Climber();
-  private final ColorSensor m_colorSensor = new ColorSensor();
   private final Controls m_controls = new Controls();
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Intake m_intake = new Intake();
@@ -112,11 +110,8 @@ public class RobotContainer {
 
     m_vision.initUSBCamera();
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
-            m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
-    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
-    m_intake.setDefaultCommand(new SetIntake(m_intake));
-    m_led.setDefaultCommand(new LEDCommand(m_led));
+    //m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
+    m_turret.setDefaultCommand(new ManualTurret(m_turret, () -> xBoxController.getRawAxis(0)));
   }
 
   /**
