@@ -33,7 +33,7 @@ DriveTrain extends SubsystemBase {
   private double gearRatioLow = 1 / 7.49;
   private double gearRatioHigh = 1 / 14.14;
   private double wheelDiameter = 0.5;
-  private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 4096;
+  private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 2048;
 
   private double kS = 1.35;
   private double kV = 1.04;
@@ -63,7 +63,7 @@ DriveTrain extends SubsystemBase {
   PIDController leftPIDController = new PIDController(kP, kI, kD);
   PIDController rightPIDController = new PIDController(kP, kI, kD);
 
-  Pose2d pose;
+  Pose2d pose = new Pose2d();
 
   public DriveTrain() {
     for (TalonFX motor : driveMotors) {
@@ -86,8 +86,8 @@ DriveTrain extends SubsystemBase {
     driveMotors[2].setInverted(false);
     driveMotors[3].setInverted(false);
 
-    driveMotors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    driveMotors[2].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    driveMotors[0].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    driveMotors[2].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     driveMotors[0].setSensorPhase(false);
     driveMotors[2].setSensorPhase(false);
 
@@ -163,10 +163,10 @@ DriveTrain extends SubsystemBase {
     double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
 
     double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-    double righttMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+    double rightMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
 
     // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
-    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, righttMetersPerSecond);
+    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
   }
 
   public SimpleMotorFeedforward getFeedforward() {
@@ -200,12 +200,12 @@ DriveTrain extends SubsystemBase {
   public void initShuffleboardValues() {
     Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
     Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
-//    Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
-//            Units.metersToFeet(getRobotPose().getTranslation().getX()));
-//    Shuffleboard.getTab("Drive Train").addNumber("yCoordinate", () ->
-//            Units.metersToFeet(getRobotPose().getTranslation().getY()));
-//    Shuffleboard.getTab("Drive Train").addNumber("Angle", () ->
-//            getRobotPose().getRotation().getDegrees());
+    Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
+            Units.metersToFeet(getRobotPose().getTranslation().getX()));
+    Shuffleboard.getTab("Drive Train").addNumber("yCoordinate", () ->
+            Units.metersToFeet(getRobotPose().getTranslation().getY()));
+    Shuffleboard.getTab("Drive Train").addNumber("Angle", () ->
+            getRobotPose().getRotation().getDegrees());
     Shuffleboard.getTab("Drive Train").addNumber("leftSpeed", () ->
             Units.metersToFeet(getSpeeds().leftMetersPerSecond));
     Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->

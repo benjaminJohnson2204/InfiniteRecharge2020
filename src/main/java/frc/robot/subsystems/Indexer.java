@@ -31,7 +31,7 @@ public class Indexer extends SubsystemBase {
    */
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
-  VictorSPX kicker = new VictorSPX(Constants.kicker);
+  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
   CANPIDController pidController = master.getPIDController();
   DigitalInput sensor = new DigitalInput(Constants.indexSensor);
   DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);

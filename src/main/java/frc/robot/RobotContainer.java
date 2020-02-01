@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.shooter.SetRPM;
 import frc.robot.commands.shooter.StartShooterMotors;
 import frc.robot.commands.turret.ManualTurret;
@@ -101,7 +102,7 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    leftJoystick.invertRawAxis(1, true);
+    leftJoystick.invertRawAxis(1, false);
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
@@ -114,7 +115,7 @@ public class RobotContainer {
             m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
     //m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
     //m_intake.setDefaultCommand(new SetIntake(m_intake));
-    m_led.setDefaultCommand(new LEDCommand(m_led));
+    //m_led.setDefaultCommand(new LEDCommand(m_led));
     m_vision.openSightInit();
   }
 
@@ -125,7 +126,8 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    leftJoystick.invertRawAxis(1, true);
+    leftJoystick.invertRawAxis(1, false);
+    rightJoystick.invertRawAxis(0, true);
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)
