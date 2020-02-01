@@ -32,6 +32,7 @@ public class Indexer extends SubsystemBase {
   CANEncoder encoder = master.getEncoder();
   CANPIDController pidController = master.getPIDController();
   DigitalInput sensor = new DigitalInput(Constants.indexSensor);
+  DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);
 
   private double targetSetpoint;
   private double kF = 0.0001;
@@ -59,7 +60,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean sensorTripped(){
-    return !sensor.get();
+    return (!sensor.get() && limitSensor.get());
   }
 
   public void incrementIndexer(double setpoint){

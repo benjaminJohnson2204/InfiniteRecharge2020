@@ -38,6 +38,7 @@ public final class Constants {
 
     // DIO
     public static final int indexSensor = 0;
+    public static final int indexLimitSensor = 1;
 
     // PCM
     public static final int pcmOne = 11;
