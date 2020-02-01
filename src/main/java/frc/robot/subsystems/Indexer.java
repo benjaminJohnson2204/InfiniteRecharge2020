@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -30,6 +31,7 @@ public class Indexer extends SubsystemBase {
    */
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
+  VictorSPX kicker = new VictorSPX(Constants.kicker);
   CANPIDController pidController = master.getPIDController();
   DigitalInput sensor = new DigitalInput(Constants.indexSensor);
   DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);
@@ -51,6 +53,7 @@ public class Indexer extends SubsystemBase {
     pidController.setSmartMotionAllowedClosedLoopError(1, 0);
     pidController.setIZone(1);
     master.setInverted(false);
+    kicker.setInverted(false);
     master.setIdleMode(IdleMode.kBrake);
 
     SmartDashboard.putNumber("kF", kF);
@@ -61,6 +64,10 @@ public class Indexer extends SubsystemBase {
 
   public boolean sensorTripped(){
     return (!sensor.get() && limitSensor.get());
+  }
+
+  public boolean topSensor(){
+    return !limitSensor.get();
   }
 
   public void incrementIndexer(double setpoint){
@@ -79,6 +86,14 @@ public class Indexer extends SubsystemBase {
 
   public boolean onTarget() {
     return Math.abs(encoder.getPosition() - targetSetpoint) < 1; 
+  }
+
+  public void setKickerOutput(double output) {
+    kicker.set(ControlMode.PercentOutput, output);
+  }
+
+  public void setIndexerOutput(double output) {
+    master.set(output);
   }
 
   public void updateSmartDashboard(){
