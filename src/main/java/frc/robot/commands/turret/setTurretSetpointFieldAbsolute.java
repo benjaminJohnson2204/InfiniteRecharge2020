@@ -51,9 +51,9 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
   @Override
   public void execute() {
     if(m_turret.controlMode==1) {
-      if (RobotContainer.getLeftJoystickX() >= deadZone || RobotContainer.getLeftJoystickY() >= deadZone) {
-        setpoint = Math.toDegrees(Math.tan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
-        limelightDisabled = true;
+      if (Math.pow(RobotContainer.getLeftJoystickX(), 2) + Math.pow(RobotContainer.getLeftJoystickY(), 2) >= Math.pow(deadZone, 2)) {
+        setpoint = Math.toDegrees(Math.atan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
+        Constants.limelightTempDisabled = true;
         movedJoystick = true;
       } else if (movedJoystick){
         movedJoystick = false;
