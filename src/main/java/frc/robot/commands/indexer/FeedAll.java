@@ -46,7 +46,7 @@ public class FeedAll extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) { 
+  public void end(final boolean interrupted) {  
     m_indexer.setKickerOutput(0);
     m_indexer.setIndexerOutput(0);
   }
