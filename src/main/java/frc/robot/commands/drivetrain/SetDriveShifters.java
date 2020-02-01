@@ -5,40 +5,39 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.LED;
+package frc.robot.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.LED;
+import frc.robot.subsystems.DriveTrain;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class WhiteFlash extends CommandBase {
+public class SetDriveShifters extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final LED m_subsystem;
-
+  private final DriveTrain m_driveTrain;
+  private  boolean m_shifterState;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public WhiteFlash(LED subsystem) {
-    m_subsystem = subsystem;
+  public SetDriveShifters(DriveTrain subsystem, boolean shifterState) {
+    m_driveTrain = subsystem;
+    m_shifterState = shifterState;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setSolidColor();
-    Timer.delay(0.1);
-    m_subsystem.resetLED();
-    Timer.delay(0.1);
-    m_subsystem.setSolidColor();
-    Timer.delay(0.25);
-    end(false);
+    if(m_driveTrain.getDriveShifterStatus() != m_shifterState)
+      m_driveTrain.setDriveShifterStatus(m_shifterState);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,6 +53,6 @@ public class WhiteFlash extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

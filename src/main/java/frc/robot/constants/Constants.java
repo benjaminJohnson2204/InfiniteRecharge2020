@@ -34,6 +34,7 @@ public final class Constants {
     public static final int intakeMotor = 40;
     public static final int intakeMotor1 = 41;
     public static final int indexerMotor = 35;
+    public static final int kickerMotor = 36;
     public static final int flywheelMotorA = 40; // 40
     public static final int flywheelMotorB = 41;
     public static final int leftClimberMotor = 50;
