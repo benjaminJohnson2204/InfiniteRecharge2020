@@ -11,11 +11,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
+import edu.wpi.first.wpilibj.controller.PIDController;
 
 public class AlignToOuterPort extends CommandBase
 {
+    private final double kP = 1;
+    private final double kI = 0;
+    private final double kD = 0;
+
     private final DriveTrain driveTrain;
     private final Vision vision;
+    private PIDController visionPID = new PIDController(kP, kI, kD);
 
     /**
      * Creates a new AlignToOuterPort.
@@ -39,26 +45,26 @@ public class AlignToOuterPort extends CommandBase
     @Override
     public void execute()
     {
+        // TODO: Correction might be too much, might be overcompensating sending robot into loop
         // Make sure we have a target
         if (!vision.hasTarget())
         {
             return;
         }
 
-        double xOffset = vision.getTargetX();
+        visionPID.setSetpoint(0);
 
-        while (xOffset > 3 || xOffset < -3)
+        while (!visionPID.atSetpoint())
         {
-            if (xOffset < -3) // Target is to the left?
+            double pidOut = visionPID.calculate(vision.getTargetX());
+            if (pidOut < 0) // Target is to the left
             {
-                driveTrain.setMotorTankDrive(0, 0.5);
+                driveTrain.setMotorTankDrive(0, pidOut);
             }
-            else if (xOffset > 3) // Target is to the right?
+            else if (pidOut > 0) // Target is to the right
             {
-                driveTrain.setMotorTankDrive(0.5, 0);
+                driveTrain.setMotorTankDrive(pidOut, 0);
             }
-
-            xOffset = vision.getTargetX();
         }
     }
 

@@ -78,7 +78,7 @@ public class RobotContainer {
 
     m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
 
-    m_vision.initUSBCamera();
+    m_vision.openSightInit();
   }
 
   /**
