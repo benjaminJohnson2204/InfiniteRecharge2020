@@ -81,7 +81,7 @@ public class ColorSensor extends SubsystemBase {
     Shuffleboard.getTab("Color Sensor").addNumber("Green", ()-> getColor().green);
     Shuffleboard.getTab("Color Sensor").addNumber("Blue", ()-> getColor().blue);
     Shuffleboard.getTab("Color Sensor").addNumber("IR", ()-> getIR());
-    Shuffleboard.getTab("Color Sensor").addNumber("Poximity", ()-> getProximity());
+    Shuffleboard.getTab("Color Sensor").addNumber("Proximity", ()-> getProximity());
     Shuffleboard.getTab("Color Sensor").addNumber("Panel Color", ()-> panelColor());
     Shuffleboard.getTab("Color Sensor").addBoolean("Rotation Control Complete", ()-> rotationControlComplete());
     Shuffleboard.getTab("Color Sensor").addNumber("Semi Rotations", ()-> semiRotations);

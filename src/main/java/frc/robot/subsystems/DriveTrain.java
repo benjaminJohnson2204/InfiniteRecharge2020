@@ -200,12 +200,12 @@ DriveTrain extends SubsystemBase {
   public void initShuffleboardValues() {
     Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
     Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
-    Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
-            Units.metersToFeet(getRobotPose().getTranslation().getX()));
-    Shuffleboard.getTab("Drive Train").addNumber("yCoordinate", () ->
-            Units.metersToFeet(getRobotPose().getTranslation().getY()));
-    Shuffleboard.getTab("Drive Train").addNumber("Angle", () ->
-            getRobotPose().getRotation().getDegrees());
+//    Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
+//            Units.metersToFeet(getRobotPose().getTranslation().getX()));
+//    Shuffleboard.getTab("Drive Train").addNumber("yCoordinate", () ->
+//            Units.metersToFeet(getRobotPose().getTranslation().getY()));
+//    Shuffleboard.getTab("Drive Train").addNumber("Angle", () ->
+//            getRobotPose().getRotation().getDegrees());
     Shuffleboard.getTab("Drive Train").addNumber("leftSpeed", () ->
             Units.metersToFeet(getSpeeds().leftMetersPerSecond));
     Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
