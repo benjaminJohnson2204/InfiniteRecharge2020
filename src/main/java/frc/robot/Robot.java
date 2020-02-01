@@ -35,7 +35,6 @@ public class Robot extends TimedRobot {
     System.out.println("Test");
     String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/";
     System.out.println(filePath);
-
   }
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -51,7 +50,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
   }
 
   /**
