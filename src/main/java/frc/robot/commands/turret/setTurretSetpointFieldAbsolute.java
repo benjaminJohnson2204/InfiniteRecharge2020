@@ -9,11 +9,12 @@ package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
@@ -23,21 +24,26 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
   private final Turret m_turret;
   private final DriveTrain m_driveTrain;
   private final Vision m_vision;
+  private DoubleSupplier m_xInput;
+  private DoubleSupplier m_yInput;
   double setpoint;
   private final double deadZone = 0.1;
   private Timer timer = new Timer();
   boolean timeout = false;
   boolean limelightDisabled = false;
   boolean movedJoystick = false;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public setTurretSetpointFieldAbsolute(Turret subsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem) {
+  public setTurretSetpointFieldAbsolute(Turret subsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
     m_turret = subsystem;
     m_driveTrain = driveTrainSubsystem;
     m_vision = visionSybsystem;
+    m_xInput = xInput;
+    m_yInput = yInput;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -50,23 +56,23 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_turret.controlMode==1) {
-      if (Math.pow(RobotContainer.getLeftJoystickX(), 2) + Math.pow(RobotContainer.getLeftJoystickY(), 2) >= Math.pow(deadZone, 2)) {
-        setpoint = Math.toDegrees(Math.atan(RobotContainer.getLeftJoystickY() / RobotContainer.getLeftJoystickX())) - (90 + m_driveTrain.getAngle());
+    if(m_turret.controlMode == 1) {
+      if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
+        setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
         Constants.limelightTempDisabled = true;
         movedJoystick = true;
       } else if (movedJoystick){
         movedJoystick = false;
         limelightDisabled = false;
       }
-
+/*
       if (!limelightDisabled) {
         if (Constants.limelightTempDisabled) {
           if (m_turret.atTarget() && Constants.canSeeVisionTarget) {
             Constants.limelightTempDisabled = false;
           }
         } else if (Constants.canSeeVisionTarget) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
-          setpoint = m_turret.getAngle() + m_vision.getTargetX();
+          setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
           if (timeout) {
             timer.stop();
             timer.reset();
@@ -80,11 +86,11 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
             limelightDisabled = true;
           }
         }
-      }
+      }*/
       m_turret.setSetpoint(setpoint);
       m_turret.setClosedLoopPosition();
     } else {
-      m_turret.setPercentOutput(RobotContainer.getLeftJoystickX());
+      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2);
     }
   }
 

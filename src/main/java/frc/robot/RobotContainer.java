@@ -24,6 +24,7 @@ import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.skyhook.SetSkyhook;
+import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.commands.turret.setTurretSetpointFieldAbsolute;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
@@ -48,7 +49,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Shooter m_shooter = new Shooter();
   private final Skyhook m_skyhook = new Skyhook();
-  private final Turret m_turret = new Turret();
+  private final Turret m_turret = new Turret(m_driveTrain);
   private final Vision m_vision = new Vision();
   private final Indexer m_indexer = new Indexer();
 
@@ -60,6 +61,7 @@ public class RobotContainer {
   public Button[] xBoxButtons = new Button[10];
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
+
 
   private enum CommandSelector {
     DRIVE_STRAIGHT
@@ -98,7 +100,9 @@ public class RobotContainer {
 
     m_vision.initUSBCamera();
 
-    m_turret.setDefaultCommand(new setTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision));
+    m_turret.setDefaultCommand(new setTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
+            () -> xBoxController.getRawAxis(0),
+            () -> xBoxController.getRawAxis(1)));
   }
 
   /**
@@ -108,6 +112,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)
@@ -120,6 +125,7 @@ public class RobotContainer {
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
+    xBoxPOVButtons[4].whenPressed(new ZeroTurret(m_turret));
   }
 
   public static double getLeftJoystickX() {
@@ -174,6 +180,10 @@ public class RobotContainer {
   }
   public Command getAutonomousCommand() {
     return m_autoCommand;
+  }
+
+  public void robotPeriodic() {
+
   }
 
   public void teleOpInit() {

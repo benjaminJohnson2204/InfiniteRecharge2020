@@ -10,12 +10,10 @@ package frc.robot.subsystems;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.constants.Constants;
 
 public class Vision extends SubsystemBase
@@ -31,6 +29,7 @@ public class Vision extends SubsystemBase
 
     public Vision() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
+        setPipeline(1);
     }
 
     public double getTargetY() {
