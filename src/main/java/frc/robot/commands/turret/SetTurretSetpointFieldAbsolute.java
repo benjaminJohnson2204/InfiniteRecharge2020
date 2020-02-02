@@ -26,7 +26,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   private final Vision m_vision;
   private DoubleSupplier m_xInput;
   private DoubleSupplier m_yInput;
-  double setpoint;
+  double setpoint, radians;
   private final double deadZone = 0.1;
   private Timer timer = new Timer();
   boolean timeout = false;
@@ -36,10 +36,9 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
    */
-  public setTurretSetpointFieldAbsolute(Turret subsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
-    m_turret = subsystem;
+  public SetTurretSetpointFieldAbsolute(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
+    m_turret = turretSubsystem;
     m_driveTrain = driveTrainSubsystem;
     m_vision = visionSybsystem;
     m_xInput = xInput;
@@ -60,7 +59,25 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   public void execute() {
     if(m_turret.controlMode == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
-        setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
+
+        /*
+        if(m_yInput.getAsDouble() > 0 && m_xInput.getAsDouble() > = 0)
+
+        else if(m_yInput.getAsDouble() > 0 && m_xInput.getAsDouble() > 0) //quadrant 1
+          radians = Math.atan(m_yInput.getAsDouble()/ m_xInput.getAsDouble());
+        else if(m_yInput.getAsDouble() > 0 && m_xInput.getAsDouble() < 0) //quadrant 2
+          radians = Math.atan(m_yInput.getAsDouble()/ m_xInput.getAsDouble())+Math.PI;
+        else if(m_yInput.getAsDouble() < 0 && m_xInput.getAsDouble() < 0) //quadrant 3
+          radians = Math.atan(m_yInput.getAsDouble()/ m_xInput.getAsDouble())+Math.PI;
+        else //quadrant 4
+          radians = Math.atan(m_yInput.getAsDouble()/ m_xInput.getAsDouble())+2*Math.PI;
+        */
+        if(m_yInput.getAsDouble() >= 0)
+          radians = Math.atan2(m_yInput.getAsDouble(), m_xInput.getAsDouble());
+        else
+          radians = Math.atan2(m_yInput.getAsDouble(), m_xInput.getAsDouble()) + 2*Math.PI;
+
+        setpoint = Math.toDegrees(radians) - (90/* + m_driveTrain.navX.getAngle()*/);
         Constants.limelightTempDisabled = true;
         movedJoystick = true;
       } else if (movedJoystick){

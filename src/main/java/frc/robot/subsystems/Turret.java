@@ -25,7 +25,7 @@ public class Turret extends SubsystemBase {
    */
   double kP = 0.0171;
   double kI = 0;
-  double kD = 0.00781;
+  double kD = 0.00786;
   double kS = 0;
   double kV = 0.00103;
   double kA = 0.000164;
@@ -54,6 +54,7 @@ public class Turret extends SubsystemBase {
     turretMotor.setInverted(true);
     //encoder.configFactoryDefault();
     encoder.setPositionToAbsolute();
+    encoder.configSensorDirection(true);
 
     initShuffleboard();
   }
@@ -63,11 +64,11 @@ public class Turret extends SubsystemBase {
   }
 
   public double getTurretAngle(){
-    return gearRatio * -encoder.getPosition();
+    return gearRatio * encoder.getPosition();
   }
 
   public double getFieldRelativeAngle(){
-    return getTurretAngle()-m_driveTrain.navX.getAngle();
+    return getTurretAngle() - m_driveTrain.navX.getAngle();
   }
 
   public void setPercentOutput(double output){
@@ -76,18 +77,18 @@ public class Turret extends SubsystemBase {
   }
 
   public void setSetpoint(double setpoint){ //use degrees
-    if(setpoint>=maxAngle) {
+    /*if(setpoint>=maxAngle) {
         setpoint = setpoint - 360;
         Constants.limelightTempDisabled = true;
     } else if(setpoint<=minAngle) {
         setpoint = setpoint + 360;
         Constants.limelightTempDisabled = true;
-    }
+    }*/
     this.setpoint = setpoint;
   }
 
   public void setClosedLoopPosition(){
-    setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
+    setPercentOutput(-turretPID.calculate(getTurretAngle(), setpoint) / 12.0);
   }
 
   public boolean atTarget(){

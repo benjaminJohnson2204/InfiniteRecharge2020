@@ -18,21 +18,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.drivetrain.SetDriveShifters;
-import frc.robot.commands.shooter.SetRPM;
-import frc.robot.commands.shooter.StartShooterMotors;
-import frc.robot.commands.turret.ManualTurret;
-import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
-import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
+import frc.robot.commands.shooter.SetRPM;
 import frc.robot.commands.shooter.StartShooterMotors;
 import frc.robot.commands.skyhook.SetSkyhook;
+import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ZeroTurret;
-import frc.robot.commands.turret.setTurretSetpointFieldAbsolute;
 import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
@@ -113,7 +108,7 @@ public class RobotContainer {
 
     m_vision.initUSBCamera();
 
-    m_turret.setDefaultCommand(new setTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
+    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
     //m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
@@ -131,6 +126,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     leftJoystick.invertRawAxis(1, false);
     rightJoystick.invertRawAxis(0, true);
+    xBoxController.invertRawAxis(1, true);
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)
