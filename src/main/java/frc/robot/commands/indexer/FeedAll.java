@@ -25,10 +25,10 @@ public class FeedAll extends CommandBase {
    */
   double m_setpoint;
   private double startTime;
-  public FeedAll(Indexer subsystem) {
-    m_indexer = subsystem;
+  public FeedAll(Indexer indexer) {
+    m_indexer = indexer;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(indexer);
 
   }
 
