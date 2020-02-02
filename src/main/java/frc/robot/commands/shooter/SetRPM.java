@@ -5,56 +5,58 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.shooter;
 
-import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Shooter;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IncrementIndexer extends CommandBase {
+public class SetRPM extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Indexer m_indexer;
+  private final Shooter m_shooter;
+  private final double m_RPM;
+  private double time;
+  private boolean printed = false;
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
    */
-  double m_setpoint;
-  private double startTime;
-  public IncrementIndexer(Indexer subsystem) {
-    m_indexer = subsystem;
+  public SetRPM(Shooter shooter, double RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-
+    m_shooter = shooter;
+    m_RPM = RPM;
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
-    startTime = Timer.getFPGATimestamp();
+      time = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.incrementIndexer(m_setpoint);
-    m_indexer.setKickerOutput(-0.2);
+    m_shooter.setRPM(m_RPM);
+    if(m_shooter.encoderAtSetpoint(0) && printed == false){
+        SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp()-time);
+        printed = true;
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
-    SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
+  public void end(boolean interrupted) {
+    m_shooter.startSpin(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_indexer.onTarget();
+    return (false);
   }
 }

@@ -5,56 +5,55 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.LED;
 
-import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.LED;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IncrementIndexer extends CommandBase {
+public class WhiteFlash extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Indexer m_indexer;
+  private final LED m_subsystem;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  double m_setpoint;
-  private double startTime;
-  public IncrementIndexer(Indexer subsystem) {
-    m_indexer = subsystem;
+  public WhiteFlash(LED subsystem) {
+    m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
-
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
-    startTime = Timer.getFPGATimestamp();
+    m_subsystem.setSolidColor();
+    Timer.delay(0.1);
+    m_subsystem.resetLED();
+    Timer.delay(0.1);
+    m_subsystem.setSolidColor();
+    Timer.delay(0.25);
+    end(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.incrementIndexer(m_setpoint);
-    m_indexer.setKickerOutput(-0.2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
-    SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
+  public void end(boolean interrupted) {
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_indexer.onTarget();
+    return false;
   }
 }

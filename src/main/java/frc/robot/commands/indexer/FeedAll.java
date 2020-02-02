@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 /**
  * An example command that uses an example subsystem.
  */
-public class IncrementIndexer extends CommandBase {
+public class FeedAll extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Indexer m_indexer;
   /**
@@ -25,7 +25,7 @@ public class IncrementIndexer extends CommandBase {
    */
   double m_setpoint;
   private double startTime;
-  public IncrementIndexer(Indexer subsystem) {
+  public FeedAll(Indexer subsystem) {
     m_indexer = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -35,26 +35,32 @@ public class IncrementIndexer extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
-    startTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.incrementIndexer(m_setpoint);
-    m_indexer.setKickerOutput(-0.2);
+    m_indexer.setIndexerOutput(0.6);
+    m_indexer.setKickerOutput(0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
-    SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
+  public void end(final boolean interrupted) { 
+    m_indexer.setKickerOutput(0);
+    m_indexer.setIndexerOutput(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_indexer.onTarget();
+    double time = Timer.getFPGATimestamp();
+    if(m_indexer.topSensor()){
+      time = Timer.getFPGATimestamp();
+    }
+    if(time >= 2)
+      return true;
+    else
+      return false;
   }
 }

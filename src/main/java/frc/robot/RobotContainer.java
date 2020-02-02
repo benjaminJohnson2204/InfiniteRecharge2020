@@ -8,7 +8,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -19,15 +18,25 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.drivetrain.SetDriveShifters;
+import frc.robot.commands.shooter.SetRPM;
+import frc.robot.commands.shooter.StartShooterMotors;
+import frc.robot.commands.turret.ManualTurret;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
+import frc.robot.commands.indexer.IncrementIndexer;
+import frc.robot.commands.indexer.IndexerCommand;
+import frc.robot.commands.shooter.StartShooterMotors;
 import frc.robot.commands.skyhook.SetSkyhook;
 import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.commands.turret.setTurretSetpointFieldAbsolute;
+import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
+import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
 import java.util.Map;
@@ -43,7 +52,6 @@ import static java.util.Map.entry;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Climber m_climber = new Climber();
-  private final ColorSensor m_colorSensor = new ColorSensor();
   private final Controls m_controls = new Controls();
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Intake m_intake = new Intake();
@@ -51,11 +59,12 @@ public class RobotContainer {
   private final Skyhook m_skyhook = new Skyhook();
   private final Turret m_turret = new Turret(m_driveTrain);
   private final Vision m_vision = new Vision();
-  private final Indexer m_indexer = new Indexer();
+  public final Indexer m_indexer = new Indexer();
+  private final LED m_led = new LED();
 
-  static Joystick leftJoystick = new Joystick(Constants.leftJoystick);
-  static Joystick rightJoystick = new Joystick(Constants.rightJoystick);
-  static Joystick xBoxController = new Joystick(Constants.xBoxController);
+  static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
+  static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
+  static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
   public Button[] leftButtons = new Button[7];
   public Button[] rightButtons = new Button[7];
   public Button[] xBoxButtons = new Button[10];
@@ -77,6 +86,7 @@ public class RobotContainer {
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
+   * 
    */
   public RobotContainer() {
     m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
@@ -90,19 +100,26 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
+
   }
 
   public void initializeSubsystems() {
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain));
+    leftJoystick.invertRawAxis(1, false);
+    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
+            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
-
-    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
+    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, () -> xBoxController.getRawAxis(0)));
 
     m_vision.initUSBCamera();
 
     m_turret.setDefaultCommand(new setTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
+    //m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    //m_intake.setDefaultCommand(new SetIntake(m_intake));
+    //m_led.setDefaultCommand(new LEDCommand(m_led));
+    m_vision.openSightInit();
   }
 
   /**
@@ -112,7 +129,8 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
+    leftJoystick.invertRawAxis(1, false);
+    rightJoystick.invertRawAxis(0, true);
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)
@@ -122,51 +140,30 @@ public class RobotContainer {
     for (int i = 0; i < xBoxPOVButtons.length; i++)
       xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
 
+
+    leftButtons[0].whileHeld(new StartShooterMotors(m_shooter)); //Top (left) Button - Switch to high gear
+    leftButtons[1].whileHeld(new SetRPM(m_shooter, 2800)); //Bottom (right) Button - Switch to low gear
+    xBoxPOVButtons[4].whenPressed(new ZeroTurret(m_turret));
+
+    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
+    //leftButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-    xBoxPOVButtons[4].whenPressed(new ZeroTurret(m_turret));
-  }
+    //xBoxLeftTrigger.whileHeld(new Command()); //Deploy intake and pick up powercell
+    //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
+    //xBoxButtons[0].whenPressed(new Command()); //A - toggle driver climb mode
+    //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
+    //xBoxButtons[2].whenPressed(new Command()); //X - manual move uptake
+    //xBoxButtons[3].whenPressed(new Command()); //Y -
+    //xBoxButtons[4].whileHeld(new Command()); //left bumper - winch up
+    //xBoxButtons[5].whileHeld(new Command()); //right bumper - winch down
+    //xBoxButtons[6].whenPressed(new Command()); //start - toggle control mode turret
+    //xBoxButtons[7].whenPressed(new Command()); //select - toggle control mode uptake
+    //xBoxButtons[8].whenPressed(new Command()); //left stick
+    //xBoxButtons[9].whenPressed(new Command()); //right stick
 
-  public static double getLeftJoystickX() {
-    return -leftJoystick.getX();
-  }
-
-  public static double getLeftJoystickY() {
-    return leftJoystick.getY();
-  }
-
-  public static double getLeftJoystickZ() {
-    return -leftJoystick.getZ();
-  }
-
-  public static double getRightJoystickX() {
-    return -rightJoystick.getX();
-  }
-
-  public static double getRightJoystickY() {
-    return rightJoystick.getY();
-  }
-
-  public static double getRightJoystickZ() {
-    return -rightJoystick.getY();
-  }
-
-  // TODO: Verify axis values for xBox controller functions
-  public static double getXBoxLeftX() {
-    return xBoxController.getRawAxis(0);
-  }
-
-  public static double getXBoxLeftY() {
-    return xBoxController.getRawAxis(1);
-  }
-
-  public static double getXBoxRightX() {
-    return xBoxController.getRawAxis(4);
-  }
-
-  public static double getXBoxRightY() {
-    return xBoxController.getRawAxis(5);
   }
 
   /**

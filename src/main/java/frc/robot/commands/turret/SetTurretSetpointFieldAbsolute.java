@@ -19,7 +19,7 @@ import java.util.function.DoubleSupplier;
 /**
  * An example command that uses an example subsystem.
  */
-public class setTurretSetpointFieldAbsolute extends CommandBase {
+public class SetTurretSetpointFieldAbsolute extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   private final DriveTrain m_driveTrain;
@@ -45,7 +45,9 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
     m_xInput = xInput;
     m_yInput = yInput;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(turretSubsystem);
+//    addRequirements(driveTrainSubsystem);
+    addRequirements(visionSybsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -71,6 +73,7 @@ public class setTurretSetpointFieldAbsolute extends CommandBase {
           if (m_turret.atTarget() && Constants.canSeeVisionTarget) {
             Constants.limelightTempDisabled = false;
           }
+          // TODO: Change this to a function call
         } else if (Constants.canSeeVisionTarget) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
           setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
           if (timeout) {

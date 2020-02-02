@@ -1,4 +1,4 @@
-package frc.vitruvianlib.LEDs;
+package frc.vitruvianlib.I2C;
 
 import edu.wpi.first.wpilibj.I2C;
 

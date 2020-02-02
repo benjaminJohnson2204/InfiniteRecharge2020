@@ -22,10 +22,9 @@ public class Vision extends SubsystemBase
     private UsbCamera driverCam;
 
     // Variables for calculating distance
-    private final double OUTER_PORT_HEIGHT = 98.25; // Outer port height above carpet in inches
-    // Values from Carbon
-    private final double LIMELIGHT_MOUNT_ANGLE = 0; // Angle that the Limelight is mounted at
-    private final double LIMELIGHT_HEIGHT = 42.5; // Limelight height above the ground in inches
+    private final double TARGET_HEIGHT = 98.25; // Outer port height above carpet in inches
+    private final double LIMELIGHT_MOUNT_ANGLE = 26.5; // Angle that the Limelight is mounted at
+    private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
 
     public Vision() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -90,7 +89,7 @@ public class Vision extends SubsystemBase
 
     public double getTargetDistance() {
         double angleToTarget = getTargetY();
-        return (OUTER_PORT_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+        return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
     }
 
     public void initUSBCamera() {
@@ -106,7 +105,15 @@ public class Vision extends SubsystemBase
         }
     }
 
-    public void updateSmartDashboard() {
+    public void openSightInit()
+    {
+        // Seems to be necessary to get OpenSight cam to show up in Shuffleboard
+        // CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
+        CameraServer.getInstance().addServer("opensight.local");
+    }
+
+    public void updateSmartDashboard()
+    {
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
     }
 

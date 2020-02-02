@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -43,7 +44,7 @@ public class Turret extends SubsystemBase {
 
   private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
 
-  //private SimpleMotorFeedforward turretFF = new SimpleMotorFeedforward(kS, kV, kA);
+  private SimpleMotorFeedforward turretFF = new SimpleMotorFeedforward(kS, kV, kA);
   private PIDController turretPID = new PIDController(kP, kI, kD);
 
   public Turret(DriveTrain driveTrain) {

@@ -21,6 +21,7 @@ public final class Constants {
     public static boolean limelightTempDisabled = false;
 
     // USB PORTS
+
     public static final int leftJoystick = 0;
     public static final int rightJoystick = 1;
     public static final int xBoxController = 2;
@@ -30,9 +31,11 @@ public final class Constants {
     public static final int leftRearDriveMotor = 21;
     public static final int rightFrontDriveMotor = 22;
     public static final int rightRearDriveMotor = 23;
-    public static final int intakeMotor = 30;
+    public static final int intakeMotor = 40;
+    public static final int intakeMotor1 = 41;
     public static final int indexerMotor = 35;
-    public static final int flywheelMotorA = 40;
+    public static final int kickerMotor = 36;
+    public static final int flywheelMotorA = 40; // 40
     public static final int flywheelMotorB = 41;
     public static final int leftClimberMotor = 50;
     public static final int rightClimberMotor = 51;
@@ -42,9 +45,14 @@ public final class Constants {
 
     // DIO
     public static final int indexSensor = 0;
+    public static final int indexLimitSensor = 1;
 
     // PCM
     public static final int pcmOne = 11;
+
+    //Solenoid addresses
     public static final int driveTrainShiftersForward = 0;
     public static final int driveTrainShiftersReverse = 1;
+    public static final int intakePistonForward = 2;
+    public static final int intakePistonReverse = 3;
 }
