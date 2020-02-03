@@ -5,51 +5,53 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Turret;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetIntakePiston extends CommandBase {
-  boolean extend;
+public class ToggleIndexerControlMode extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake intake;
+  private final Indexer m_indexer;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetIntakePiston(Intake subsystem, boolean extend) {
-    intake = subsystem;
+  public ToggleIndexerControlMode(Indexer indexer) {
+    m_indexer = indexer;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-    this.extend = extend;
+    addRequirements(indexer);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.setintakePiston(extend);
+    m_indexer.toggleControlMode();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute(){
+  public void execute() {
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    return true;
+  }
+
+  @Override
+  public boolean runsWhenDisabled(){
     return true;
   }
 }

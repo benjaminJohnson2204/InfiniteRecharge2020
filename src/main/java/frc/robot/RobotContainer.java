@@ -18,24 +18,19 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.shooter.SetRPM;
 import frc.robot.commands.shooter.StartShooterMotors;
-import frc.robot.commands.turret.ManualTurret;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
-import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
-import frc.robot.commands.shooter.StartShooterMotors;
-import frc.robot.commands.skyhook.SetSkyhook;
+import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurret;
 import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
-import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
@@ -100,7 +95,6 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
-
   }
 
   public void initializeSubsystems() {
@@ -109,7 +103,7 @@ public class RobotContainer {
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
-    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, () -> xBoxController.getRawAxis(0)));
+    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
 
     m_vision.initUSBCamera();
 
@@ -163,7 +157,6 @@ public class RobotContainer {
     //xBoxButtons[7].whenPressed(new Command()); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
-
   }
 
   /**

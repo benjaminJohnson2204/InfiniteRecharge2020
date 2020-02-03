@@ -16,7 +16,7 @@ import java.util.function.DoubleSupplier;
 /**
  * An example command that uses an example subsystem.
  */
-public class ManualTurret extends CommandBase {
+public class SetTurretManualOutput extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   double xValue;
@@ -25,7 +25,7 @@ public class ManualTurret extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ManualTurret(Turret subsystem, DoubleSupplier xInput) {
+  public SetTurretManualOutput(Turret subsystem, DoubleSupplier xInput) {
     m_turret = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

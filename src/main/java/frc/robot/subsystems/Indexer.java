@@ -42,6 +42,8 @@ public class Indexer extends SubsystemBase {
   private double kI = 0;
   private double kD = 1070;
 
+  private int controlMode = 1;
+
   public Indexer() {
     master.restoreFactoryDefaults();
     pidController.setFF(kF);
@@ -60,6 +62,17 @@ public class Indexer extends SubsystemBase {
 //    SmartDashboard.putNumber("kP", kP);
 //    SmartDashboard.putNumber("kI", kI);
 //    SmartDashboard.putNumber("kD", kD);
+  }
+
+  public void toggleControlMode() {
+    if(controlMode == 0)
+      controlMode = 1;
+    else
+      controlMode = 0;
+  }
+
+  public int getControlMode() {
+    return controlMode;
   }
 
   public boolean sensorTripped(){

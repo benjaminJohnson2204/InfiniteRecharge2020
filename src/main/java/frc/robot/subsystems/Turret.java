@@ -34,7 +34,7 @@ public class Turret extends SubsystemBase {
   double gearRatio = 18.0 / 120.0;
   double setpoint = 0; //angle
 
-  public int controlMode = 1;
+  private int controlMode = 1;
 
   private final DriveTrain m_driveTrain;
 
@@ -60,6 +60,17 @@ public class Turret extends SubsystemBase {
 
   public void resetEncoder(){
     encoder.setPosition(0);
+  }
+
+  public void toggleControlMode() {
+    if(controlMode == 0)
+      controlMode = 1;
+    else
+      controlMode = 0;
+  }
+
+  public int getControlMode() {
+    return controlMode;
   }
 
   public double getTurretAngle(){

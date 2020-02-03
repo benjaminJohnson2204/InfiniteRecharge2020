@@ -5,51 +5,54 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.commands.skyhook;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Skyhook;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetIntakePiston extends CommandBase {
-  boolean extend;
+public class SetSkyhookOutput extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Intake intake;
+  private final Skyhook m_subsystem;
+  private final DoubleSupplier m_output;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetIntakePiston(Intake subsystem, boolean extend) {
-    intake = subsystem;
+  double value;
+  public SetSkyhookOutput(Skyhook subsystem, DoubleSupplier output) {
+    m_subsystem = subsystem;
+    m_output = output;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
-    this.extend = extend;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intake.setintakePiston(extend);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute(){
+  public void execute() {
+    m_subsystem.setSkyhook(m_output.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    m_subsystem.setSkyhook(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }
