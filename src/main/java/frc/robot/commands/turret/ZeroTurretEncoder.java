@@ -13,7 +13,7 @@ import frc.robot.subsystems.Turret;
 /**
  * An example command that uses an example subsystem.
  */
-public class ZeroTurret extends CommandBase {
+public class ZeroTurretEncoder extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   /**
@@ -21,7 +21,7 @@ public class ZeroTurret extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ZeroTurret(Turret subsystem) {
+  public ZeroTurretEncoder(Turret subsystem) {
     m_turret = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

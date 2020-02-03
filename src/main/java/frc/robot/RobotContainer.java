@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
-import frc.robot.commands.shooter.SetRPM;
-import frc.robot.commands.shooter.StartShooterMotors;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
@@ -31,7 +29,7 @@ import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
-import frc.robot.commands.turret.ZeroTurret;
+import frc.robot.commands.turret.ZeroTurretEncoder;
 import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
 import frc.vitruvianlib.utils.JoystickWrapper;
@@ -69,7 +67,6 @@ public class RobotContainer {
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
 
-
   private enum CommandSelector {
     DRIVE_STRAIGHT
   }
@@ -104,17 +101,17 @@ public class RobotContainer {
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
-    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
-    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
 
-    m_vision.initUSBCamera();
+    //m_intake.setDefaultCommand(new SetIntake(m_intake));
+    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
-    //m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
-    //m_intake.setDefaultCommand(new SetIntake(m_intake));
+    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
     //m_led.setDefaultCommand(new LEDCommand(m_led));
+
+    m_vision.initUSBCamera();
     m_vision.openSightInit();
   }
 
@@ -158,7 +155,7 @@ public class RobotContainer {
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
 
-    xBoxPOVButtons[4].whenPressed(new ZeroTurret(m_turret));
+    xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
   }
 
   /**
