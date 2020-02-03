@@ -18,9 +18,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.drivetrain.SetDriveShifters;
+import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.shooter.SetRPM;
 import frc.robot.commands.shooter.StartShooterMotors;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
+import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.autonomous.TestPathFollowing;
@@ -89,7 +92,6 @@ public class RobotContainer {
       if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
         m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
 
-
     SmartDashboard.putData(m_autoChooser);
 
     initializeSubsystems();
@@ -133,19 +135,17 @@ public class RobotContainer {
       xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
     for (int i = 0; i < xBoxPOVButtons.length; i++)
       xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
-
-
-    leftButtons[0].whileHeld(new StartShooterMotors(m_shooter)); //Top (left) Button - Switch to high gear
-    leftButtons[1].whileHeld(new SetRPM(m_shooter, 2800)); //Bottom (right) Button - Switch to low gear
-    xBoxPOVButtons[4].whenPressed(new ZeroTurret(m_turret));
-
-    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
-    //leftButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
-
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-    //xBoxLeftTrigger.whileHeld(new Command()); //Deploy intake and pick up powercell
+    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
+    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear
+
+    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
+    //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+
+    //xBoxLeftTrigger.whenPressed(new Command()); // Deploy intake
+    //xBoxLeftTrigger.whileHeld(new Command()); // Run Intake Motors
     //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
     //xBoxButtons[0].whenPressed(new Command()); //A - toggle driver climb mode
     //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
@@ -153,10 +153,12 @@ public class RobotContainer {
     //xBoxButtons[3].whenPressed(new Command()); //Y -
     //xBoxButtons[4].whileHeld(new Command()); //left bumper - winch up
     //xBoxButtons[5].whileHeld(new Command()); //right bumper - winch down
-    //xBoxButtons[6].whenPressed(new Command()); //start - toggle control mode turret
-    //xBoxButtons[7].whenPressed(new Command()); //select - toggle control mode uptake
+    xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
+    xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
+
+    xBoxPOVButtons[4].whenPressed(new ZeroTurret(m_turret));
   }
 
   /**
