@@ -14,7 +14,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants;
 
 public class Vision extends SubsystemBase
 {
@@ -114,12 +113,12 @@ public class Vision extends SubsystemBase
 
     public void updateSmartDashboard()
     {
+        SmartDashboard.putBoolean("Can see target", hasTarget());
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
     }
 
     @Override
     public void periodic() {
-        Constants.canSeeVisionTarget = hasTarget();
         // This method will be called once per scheduler run
         updateSmartDashboard();
     }

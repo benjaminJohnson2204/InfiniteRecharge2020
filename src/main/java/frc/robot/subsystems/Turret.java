@@ -23,16 +23,17 @@ public class Turret extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  double kP = 0.0171;
+  double kP = 0.0233; //0.133
   double kI = 0;
-  double kD = 0.00786;
+  double kD = 0.00918; //0.0488
   double kS = 0;
-  double kV = 0.00103;
-  double kA = 0.000164;
+  double kV = 0.00292; //0.0201
+  double kA = 0.000207; //0.00114
   double maxAngle = 290;
   double minAngle = -110;
   double gearRatio = 18.0 / 120.0;
-  double setpoint = 0; //angle
+  double setpoint = 0; //angle degrees
+
 
   public int controlMode = 1;
 
@@ -56,6 +57,8 @@ public class Turret extends SubsystemBase {
     encoder.setPositionToAbsolute();
     encoder.configSensorDirection(true);
 
+    //turretPID.enableContinuousInput(0, 360);
+
     initShuffleboard();
   }
 
@@ -77,18 +80,18 @@ public class Turret extends SubsystemBase {
   }
 
   public void setSetpoint(double setpoint){ //use degrees
-    /*if(setpoint>=maxAngle) {
+    if(setpoint>=maxAngle) {
         setpoint = setpoint - 360;
         Constants.limelightTempDisabled = true;
     } else if(setpoint<=minAngle) {
         setpoint = setpoint + 360;
         Constants.limelightTempDisabled = true;
-    }*/
+    }
     this.setpoint = setpoint;
   }
 
   public void setClosedLoopPosition(){
-    setPercentOutput(-turretPID.calculate(getTurretAngle(), setpoint) / 12.0);
+    setPercentOutput((-turretPID.calculate(getTurretAngle(), setpoint) + turretFF.calculate(90)) / 12.0);
   }
 
   public boolean atTarget(){
@@ -101,10 +104,11 @@ public class Turret extends SubsystemBase {
 
 
   public void updateSmartdashboard() {
-
+    SmartDashboard.putNumber("PID Error", turretPID.getPositionError());
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
     SmartDashboard.putNumber("Turret Setpoint", setpoint);
+    SmartDashboard.putBoolean("Limelight Temp Disabled", Constants.limelightTempDisabled);
 //    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
 
 
