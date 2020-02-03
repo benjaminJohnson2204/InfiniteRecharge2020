@@ -15,17 +15,17 @@ import frc.robot.subsystems.LED;
  */
 public class LEDCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final LED m_subsystem;
+  private final LED m_led;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public LEDCommand(LED subsystem) {
-    m_subsystem = subsystem;
+  public LEDCommand(LED led) {
+    m_led = led;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(led);
   }
 
   // Called when the command is initially scheduled.
@@ -36,7 +36,7 @@ public class LEDCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.setSolidColor(75, 20, 150);
+    m_led.setSolidColor(75, 20, 150);
   }
 
   // Called once the command ends or is interrupted.
