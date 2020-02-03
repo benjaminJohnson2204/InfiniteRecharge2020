@@ -5,39 +5,38 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.turret;
+package frc.robot.commands.LED;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.LED;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetTurretSetpoint extends CommandBase {
+public class LEDCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Turret m_turret;
-  double setpoint;
+  private final LED m_led;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetTurretSetpoint(Turret subsystem, double setpoint) {
-    m_turret = subsystem;
+  public LEDCommand(LED led) {
+    m_led = led;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-    this.setpoint = setpoint;
+    addRequirements(led);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.setSetpoint(setpoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_led.setSolidColor(75, 20, 150);
   }
 
   // Called once the command ends or is interrupted.
