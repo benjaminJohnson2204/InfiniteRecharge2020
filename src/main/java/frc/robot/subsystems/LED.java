@@ -18,7 +18,6 @@ public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  // TODO: Adjust code for two LED Strips
   AddressableLED LEDStripA, LEDStripB;
   AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
@@ -119,5 +118,6 @@ public class LED extends SubsystemBase {
     rainbows = SmartDashboard.getNumber("Rainbows", 0);
     speed = SmartDashboard.getNumber("Speed", 0);
     LEDStripA.setData(LEDBuffer);
+    LEDStripB.setData(LEDBuffer);
   }
 }

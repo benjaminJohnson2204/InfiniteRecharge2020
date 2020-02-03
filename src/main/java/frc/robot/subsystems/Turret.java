@@ -78,10 +78,8 @@ public class Turret extends SubsystemBase {
   public void setSetpoint(double setpoint){ //use degrees
     if(setpoint>=maxAngle) {
         setpoint = setpoint - 360;
-        Constants.limelightTempDisabled = true;
     } else if(setpoint<=minAngle) {
         setpoint = setpoint + 360;
-        Constants.limelightTempDisabled = true;
     }
     this.setpoint = setpoint;
   }

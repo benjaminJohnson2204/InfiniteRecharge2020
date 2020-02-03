@@ -38,8 +38,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public setTurretSetpointFieldAbsolute(Turret subsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
-    m_turret = subsystem;
+  public SetTurretSetpointFieldAbsolute(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
+    m_turret = turretSubsystem;
     m_driveTrain = driveTrainSubsystem;
     m_vision = visionSybsystem;
     m_xInput = xInput;
@@ -61,7 +61,6 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     if(m_turret.controlMode == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
         setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
-        Constants.limelightTempDisabled = true;
         movedJoystick = true;
       } else if (movedJoystick){
         movedJoystick = false;
