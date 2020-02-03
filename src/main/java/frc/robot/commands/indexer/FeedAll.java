@@ -25,10 +25,10 @@ public class FeedAll extends CommandBase {
    */
   double m_setpoint;
   private double startTime;
-  public FeedAll(Indexer subsystem) {
-    m_indexer = subsystem;
+  public FeedAll(Indexer indexer) {
+    m_indexer = indexer;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(indexer);
 
   }
 
@@ -46,7 +46,7 @@ public class FeedAll extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) { 
+  public void end(final boolean interrupted) {  
     m_indexer.setKickerOutput(0);
     m_indexer.setIndexerOutput(0);
   }

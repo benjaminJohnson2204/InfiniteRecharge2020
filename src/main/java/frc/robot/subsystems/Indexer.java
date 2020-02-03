@@ -37,10 +37,10 @@ public class Indexer extends SubsystemBase {
   DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);
 
   private double targetSetpoint;
-  private double kF = 0.0001;
-  private double kP = 0.000001;
-  private double kI = 80;
-  private double kD = 0.0001;
+  private double kF = 1.67;
+  private double kP = 2.36;
+  private double kI = 0;
+  private double kD = 1070;
 
   public Indexer() {
     master.restoreFactoryDefaults();
