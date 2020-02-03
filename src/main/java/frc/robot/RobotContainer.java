@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
@@ -109,7 +110,7 @@ public class RobotContainer {
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
-    //m_led.setDefaultCommand(new LEDCommand(m_led));
+    m_led.setDefaultCommand(new LEDCommand(m_led));
 
     m_vision.initUSBCamera();
     m_vision.openSightInit();
