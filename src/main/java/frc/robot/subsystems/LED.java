@@ -18,6 +18,7 @@ public class LED extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
   AddressableLED LEDStrip;
+  AddressableLED LEDStripB;
   AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
@@ -25,9 +26,11 @@ public class LED extends SubsystemBase {
 
   public LED() {
     LEDStrip = new AddressableLED(0);
+    LEDStripB = new AddressableLED(1);
     LEDBuffer = new AddressableLEDBuffer(60);
     LEDStrip.setLength(LEDBuffer.getLength());
     LEDStrip.setData(LEDBuffer);
+    LEDStripB.setData(LEDBuffer);
     LEDStrip.start();
     
     SmartDashboard.putNumber("Rainbows", rainbows);
