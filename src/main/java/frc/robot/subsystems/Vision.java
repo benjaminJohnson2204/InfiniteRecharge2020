@@ -90,7 +90,17 @@ public class Vision extends SubsystemBase
 
     public double getTargetDistance() {
         double angleToTarget = getTargetY();
-        return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+        switch((int) getPipeline()) {
+            case 2:
+                // TODO: Get values for 3x zoom
+                return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+            case 1:
+                // TODO: Get values for 2x zoom
+                return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+            case 0:
+            default:
+                return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+        }
     }
 
     public void initUSBCamera() {
@@ -113,6 +123,10 @@ public class Vision extends SubsystemBase
         CameraServer.getInstance().addServer("opensight.local");
     }
 
+    public void initShuffleboard() {
+
+    }
+
     public void updateSmartDashboard()
     {
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
@@ -120,7 +134,6 @@ public class Vision extends SubsystemBase
 
     @Override
     public void periodic() {
-        Constants.canSeeVisionTarget = hasTarget();
         // This method will be called once per scheduler run
         updateSmartDashboard();
     }

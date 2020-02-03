@@ -33,9 +33,6 @@ public class Shooter extends SubsystemBase {
           new TalonFX(41),
   };
 
-  //private VictorSPX turretMotor = new VictorSPX(42);
-
-
   private double rpmOutput;
   public Shooter() {
     //super();
@@ -58,11 +55,7 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[1].configClosedloopRamp(0);
     outtakeMotors[1].configOpenloopRamp(0);
 
-
-
-
-    SmartDashboard.putNumber("RPM Output", rpmOutput);
-
+    initShuffleboard();
   }
   
 
@@ -98,7 +91,10 @@ public class Shooter extends SubsystemBase {
     Shuffleboard.getTab("Shooter").addNumber("RPM Primary", () -> this.getRPM(0));
     Shuffleboard.getTab("Shooter").addNumber("RPM Secondary", () -> this.getRPM(1));
     Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
+
+    SmartDashboard.putNumber("RPM Output", rpmOutput);
   }
+
   public void updateShuffleboard(){
     SmartDashboard.putNumber("RPM", outtakeMotors[0].getSelectedSensorVelocity());
     SmartDashboard.putNumber("RPM 2", outtakeMotors[1].getSelectedSensorVelocity());
@@ -115,6 +111,6 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     updateShuffleboard();
     // This method will be called once per scheduler run
-    //output = SmartDashboard.getNumber("FW Output", 0);
+//    rpmOutput = SmartDashboard.getNumber("FW Output", 0);
   }
 }
