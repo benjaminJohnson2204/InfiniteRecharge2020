@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.constants.Constants;
 
 public class Turret extends SubsystemBase {
@@ -34,7 +33,10 @@ public class Turret extends SubsystemBase {
   double minAngle = -110;
   double gearRatio = 18.0 / 120.0;
   double setpoint = 0; //angle
+
   public int controlMode = 1;
+
+  private final DriveTrain m_driveTrain;
 
   private Timer timeout = new Timer();
 
@@ -45,60 +47,65 @@ public class Turret extends SubsystemBase {
   private SimpleMotorFeedforward turretFF = new SimpleMotorFeedforward(kS, kV, kA);
   private PIDController turretPID = new PIDController(kP, kI, kD);
 
-  public Turret() {
+  public Turret(DriveTrain driveTrain) {
+    m_driveTrain = driveTrain;
     turretMotor.configFactoryDefault();
     turretMotor.setNeutralMode(NeutralMode.Brake);
-    turretMotor.setInverted(false);
+    turretMotor.setInverted(true);
     //encoder.configFactoryDefault();
     encoder.setPositionToAbsolute();
+
+    initShuffleboard();
   }
 
   public void resetEncoder(){
     encoder.setPosition(0);
   }
 
-  public double getAngle(){
-    return gearRatio * encoder.getPosition();
+  public double getTurretAngle(){
+    return gearRatio * -encoder.getPosition();
+  }
+
+  public double getFieldRelativeAngle(){
+    return getTurretAngle()-m_driveTrain.navX.getAngle();
   }
 
   public void setPercentOutput(double output){
     turretMotor.set(ControlMode.PercentOutput, output);
-  }
 
-  public void incrementSetpoint(double increment){
-    setpoint = setpoint + increment;
-    if(Math.abs(setpoint)>=maxAngle) {
-      if (setpoint < 0) {
-        setpoint = setpoint + 360;
-      } else {
-        setpoint = setpoint - 360;
-      }
-      Constants.limelightTempDisabled = true;
-    }
   }
 
   public void setSetpoint(double setpoint){ //use degrees
-    if(Math.abs(setpoint)>=maxAngle) {
-      if (setpoint < 0) {
-        setpoint = setpoint + 360;
-      } else {
+    if(setpoint>=maxAngle) {
         setpoint = setpoint - 360;
-      }
-      Constants.limelightTempDisabled = true;
+        Constants.limelightTempDisabled = true;
+    } else if(setpoint<=minAngle) {
+        setpoint = setpoint + 360;
+        Constants.limelightTempDisabled = true;
     }
     this.setpoint = setpoint;
   }
 
   public void setClosedLoopPosition(){
-    setPercentOutput(turretPID.calculate(getAngle(), setpoint));
+    setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
   }
 
   public boolean atTarget(){
     return turretPID.atSetpoint();
   }
 
+  public void initShuffleboard() {
+    Shuffleboard.getTab("SmartDashboard").addNumber("Turret Motor Output", turretMotor::getMotorOutputPercent);
+  }
+
+
   public void updateSmartdashboard() {
-    SmartDashboard.putNumber("Turret Angle", getAngle());
+
+    SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
+    SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
+    SmartDashboard.putNumber("Turret Setpoint", setpoint);
+//    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
+
 
     //Shuffleboard.getTab("Turret").addNumber("Turret Angle", this::getAngle);
     //Shuffleboard.getTab("Turret").addNumber("Position", this::getPosition);
@@ -106,8 +113,10 @@ public class Turret extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(controlMode == 1)
-      setClosedLoopPosition();
+//    if(controlMode == 1)
+//      setClosedLoopPosition();
+//    else
+//      setPercentOutput(RobotContainer.getXBoxLeftX());
     // This method will be called once per scheduler run
     updateSmartdashboard();
   }
