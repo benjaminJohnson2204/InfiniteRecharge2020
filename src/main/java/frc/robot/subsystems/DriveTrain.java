@@ -121,18 +121,25 @@ DriveTrain extends SubsystemBase {
     double leftPWM = throttle + turn;
     double rightPWM = throttle - turn;
 
-    if(rightPWM > 1.0) {
-      leftPWM -= rightPWM - 1.0;
-      rightPWM = 1.0;
-    } else if(rightPWM < -1.0) {
-      leftPWM -= rightPWM + 1.0;
-      rightPWM = -1.0;
-    } else if(leftPWM > 1.0) {
-      rightPWM -= leftPWM - 1.0;
-      leftPWM = 1.0;
-    } else if(leftPWM < -1.0) {
-      rightPWM -= leftPWM + 1.0;
-      leftPWM = -1.0;
+//    if(rightPWM > 1.0) {
+//      leftPWM -= rightPWM - 1.0;
+//      rightPWM = 1.0;
+//    } else if(rightPWM < -1.0) {
+//      leftPWM -= rightPWM + 1.0;
+//      rightPWM = -1.0;
+//    } else if(leftPWM > 1.0) {
+//      rightPWM -= leftPWM - 1.0;
+//      leftPWM = 1.0;
+//    } else if(leftPWM < -1.0) {
+//      rightPWM -= leftPWM + 1.0;
+//      leftPWM = -1.0;
+//    }
+
+    // Normalization
+    double magnitude = Math.max(Math.abs(leftPWM), Math.abs(rightPWM));
+    if(magnitude > 1.0) {
+      leftPWM *=  1.0 / magnitude;
+      rightPWM *= 1.0 / magnitude;
     }
 
     setMotorPercentOutput(leftPWM, rightPWM);
