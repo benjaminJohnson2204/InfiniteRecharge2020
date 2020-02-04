@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.Timer;
@@ -52,6 +53,13 @@ public class Turret extends SubsystemBase {
     turretMotor.configFactoryDefault();
     turretMotor.setNeutralMode(NeutralMode.Brake);
     turretMotor.setInverted(true);
+    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
+    turretMotor.config_kF(0, kV);
+    turretMotor.config_kP(0, kP);
+    turretMotor.config_kI(0, kI);
+    turretMotor.config_kD(0, kD);
+    turretMotor.configMotionCruiseVelocity(18);
+    turretMotor.configMotionAcceleration(180);
     //encoder.configFactoryDefault();
     encoder.setPositionToAbsolute();
 
@@ -96,7 +104,8 @@ public class Turret extends SubsystemBase {
   }
 
   public void setClosedLoopPosition(){
-    setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
+    turretMotor.set(ControlMode.MotionMagic, setpoint);
+    //setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
   }
 
   public boolean atTarget(){
