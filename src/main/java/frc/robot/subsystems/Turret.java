@@ -104,7 +104,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void setClosedLoopPosition(){
-    turretMotor.set(ControlMode.MotionMagic, setpoint);
+    turretMotor.set(ControlMode.MotionMagic, setpoint / gearRatio);
     //setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
   }
 
