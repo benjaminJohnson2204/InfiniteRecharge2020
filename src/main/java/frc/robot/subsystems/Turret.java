@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -24,17 +25,18 @@ public class Turret extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  double kP = 0.0171;
+  double kP = 0.00295;
   double kI = 0;
-  double kD = 0.00781;
+  double kD = 0.00135;
   double kS = 0;
-  double kV = 0.00103;
-  double kA = 0.000164;
+  double kV = 0.00295;
+  double kA = 0.000186;
   double maxAngle = 290;
   double minAngle = -110;
   double gearRatio = 18.0 / 120.0;
   double setpoint = 0; //angle
 
+  private double degreesToUnits = 75.85185185185186;
   private int controlMode = 1;
 
   private final DriveTrain m_driveTrain;
@@ -54,14 +56,18 @@ public class Turret extends SubsystemBase {
     turretMotor.setNeutralMode(NeutralMode.Brake);
     turretMotor.setInverted(true);
     turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
+    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
     turretMotor.config_kF(0, kV);
     turretMotor.config_kP(0, kP);
     turretMotor.config_kI(0, kI);
     turretMotor.config_kD(0, kD);
-    turretMotor.configMotionCruiseVelocity(18);
-    turretMotor.configMotionAcceleration(180);
+    turretMotor.configMotionCruiseVelocity(2 * 4096);
+    turretMotor.configMotionAcceleration(20 * 4096);
+    turretMotor.configAllowableClosedloopError(0, 50);
+    turretMotor.selectProfileSlot(0,0);
     //encoder.configFactoryDefault();
-    encoder.setPositionToAbsolute();
+    encoder.configFactoryDefault();
+    //encoder.setPositionToAbsolute();
 
     initShuffleboard();
   }
@@ -104,7 +110,8 @@ public class Turret extends SubsystemBase {
   }
 
   public void setClosedLoopPosition(){
-    turretMotor.set(ControlMode.MotionMagic, setpoint / gearRatio);
+    SmartDashboard.putNumber("Turret Setpoint", setpoint * degreesToUnits);
+    turretMotor.set(ControlMode.MotionMagic, setpoint * degreesToUnits);
     //setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
   }
 
@@ -118,10 +125,10 @@ public class Turret extends SubsystemBase {
 
 
   public void updateSmartdashboard() {
-
+    SmartDashboard.putNumber("Turret Encoder Units", turretMotor.getSelectedSensorPosition());
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
-    SmartDashboard.putNumber("Turret Setpoint", setpoint);
+//    SmartDashboard.putNumber("Turret Setpoint", setpoint);
 //    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
 
 

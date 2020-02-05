@@ -62,10 +62,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
         setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
         movedJoystick = true;
-      } else if (movedJoystick){
-        movedJoystick = false;
-        limelightDisabled = false;
       }
+//      } else if (movedJoystick){
+//        movedJoystick = false;
+//        limelightDisabled = false;
+//      }
 /*
       if (!limelightDisabled) {
         if (Constants.limelightTempDisabled) {
