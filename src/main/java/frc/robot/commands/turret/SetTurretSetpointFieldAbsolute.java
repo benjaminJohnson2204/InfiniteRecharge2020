@@ -36,7 +36,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   *
    */
   public SetTurretSetpointFieldAbsolute(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
     m_turret = turretSubsystem;
@@ -60,7 +60,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   public void execute() {
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
-        setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
+        if(m_yInput.getAsDouble() > 0)
+          setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
+        else if(m_yInput.getAsDouble() < 0)
+          setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle()) + 360;
         movedJoystick = true;
       }
 //      } else if (movedJoystick){
@@ -90,8 +93,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
           }
         }
       }*/
-      m_turret.setSetpoint(setpoint);
-      m_turret.setClosedLoopPosition();
+//      m_turret.setSetpoint(setpoint);
+//      m_turret.setClosedLoopPosition();
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2);
     }

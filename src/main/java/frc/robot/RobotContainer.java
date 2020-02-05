@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
+import frc.robot.commands.intake.SetIntakeManual;
+import frc.robot.commands.shooter.SetShooterManual;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
@@ -103,7 +105,7 @@ public class RobotContainer {
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-    //m_intake.setDefaultCommand(new SetIntake(m_intake));
+//    m_intake.setDefaultCommand(new SetIntake(m_intake));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
@@ -142,7 +144,8 @@ public class RobotContainer {
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
     //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-    //xBoxLeftTrigger.whenPressed(new Command()); // Deploy intake
+    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
+    xBoxButtons[4].whileHeld(new SetShooterManual(m_shooter, m_indexer));
     //xBoxLeftTrigger.whileHeld(new Command()); // Run Intake Motors
     //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
     //xBoxButtons[0].whenPressed(new Command()); //A - toggle driver climb mode

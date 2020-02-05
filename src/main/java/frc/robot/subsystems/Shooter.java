@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants;
 
 public class Shooter extends SubsystemBase {
   /**
@@ -29,8 +30,8 @@ public class Shooter extends SubsystemBase {
   public double power = 1;
 
   private TalonFX[] outtakeMotors = {
-          new TalonFX(40),
-          new TalonFX(41),
+        new TalonFX(Constants.flywheelMotorA),
+        new TalonFX(Constants.flywheelMotorB),
   };
 
   private double rpmOutput;
@@ -72,14 +73,15 @@ public class Shooter extends SubsystemBase {
 
 
   public void setRPM(double setpoint){
-    outtakeMotors[0].set(ControlMode.Velocity, rpmOutput);
+    outtakeMotors[0].set(ControlMode.Velocity, setpoint);
   }
 
   public boolean encoderAtSetpoint(int motorIndex){
     return (Math.abs(outtakeMotors[motorIndex].getClosedLoopError()) < 100);
   }
   public double getRPM(int motorIndex) {
-    return falconUnitsToRPM(outtakeMotors[motorIndex].getSelectedSensorVelocity());
+    return outtakeMotors[motorIndex].getSelectedSensorVelocity();
+//    return falconUnitsToRPM(outtakeMotors[motorIndex].getSelectedSensorVelocity());
   }
   public double falconUnitsToRPM(double sensorUnits) {
     return (sensorUnits/2048.0)*600;
