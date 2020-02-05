@@ -25,8 +25,10 @@ public class ReadCsvTrajectory {
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.out.println("4201 Error: Could not find trajectory file");
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("4201 Error: Could not read trajectory file");
         }
         return  trajectoryPoints;
     }

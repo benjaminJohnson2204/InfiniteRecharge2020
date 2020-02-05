@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,11 +21,13 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.LEDCommand;
+import frc.robot.commands.autonomous.ReadTrajectory;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
+import frc.robot.commands.intake.SetIntake;
 import frc.robot.commands.skyhook.SetSkyhook;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.vision.AlignToOuterPort;
@@ -34,6 +37,7 @@ import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import static java.util.Map.entry;
 
@@ -57,6 +61,8 @@ public class RobotContainer {
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
+  private DoubleSupplier pi = () -> {return 3.14d;};
+
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
   static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
@@ -67,13 +73,19 @@ public class RobotContainer {
   public Button xBoxLeftTrigger, xBoxRightTrigger;
 
   private enum CommandSelector {
-    DRIVE_STRAIGHT
+    DRIVE_STRAIGHT,
+    SPLINE,
+    INITIATION_TO_ALLY_TRENCH,
+    ALLY_TRENCH_PICKUP
   }
 
   SendableChooser<Integer> m_autoChooser = new SendableChooser();
   private SelectCommand m_autoCommand = new SelectCommand(
     Map.ofEntries(
-      entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain))
+      entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
+            entry(CommandSelector.SPLINE, new ReadTrajectory(m_driveTrain, "spline")),
+            entry(CommandSelector.INITIATION_TO_ALLY_TRENCH, new ReadTrajectory(m_driveTrain, "initiationToAllyTrench")),
+            entry(CommandSelector.ALLY_TRENCH_PICKUP, new ReadTrajectory(m_driveTrain, "allyTrenchPickup"))
     ),
     this::selectCommand
   );
@@ -94,7 +106,7 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
-
+    LiveWindow.disableAllTelemetry();
   }
 
   public void initializeSubsystems() {
@@ -109,7 +121,7 @@ public class RobotContainer {
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
             m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
-    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook, pi));
     m_intake.setDefaultCommand(new SetIntake(m_intake));
     m_led.setDefaultCommand(new LEDCommand(m_led));
   }
@@ -135,6 +147,14 @@ public class RobotContainer {
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
     xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
+
+
+  }
+  public static double getLeftJoystickX(){
+    return leftJoystick.getX();
+  }
+  public static double getRightJoystickX(){
+    return rightJoystick.getX();
   }
 
   /**
@@ -149,6 +169,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return m_autoCommand;
   }
+
+  public Command trajectoryReader = new ReadTrajectory(m_driveTrain, "driveStraight");
 
   public void teleOpInit() {
     m_driveTrain.resetEncoderCounts();

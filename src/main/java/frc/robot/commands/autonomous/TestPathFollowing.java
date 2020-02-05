@@ -32,6 +32,7 @@ public class TestPathFollowing extends CommandBase implements Runnable {
   private Trajectory trajectory;
   private static double m_period = 0.02;
   private Notifier m_notifier;
+  private RamseteCommand followTrajectory;
   /**
    * Creates a new ExampleCommand.
    *
@@ -45,11 +46,12 @@ public class TestPathFollowing extends CommandBase implements Runnable {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_driveTrain.setDriveTrainNeutral();
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
 
     var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(-3), Rotation2d.fromDegrees(0));
+    var stopPosition = new Pose2d(Units.feetToMeters(5.5), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
 
     var trajectoryWaypoints = new ArrayList<Pose2d>();
     trajectoryWaypoints.add(startPosition);
@@ -57,10 +59,10 @@ public class TestPathFollowing extends CommandBase implements Runnable {
 
 
     var trajectoryConstraints = new DifferentialDriveKinematicsConstraint(m_driveTrain.getDriveTrainKinematics(),
-                                                    3);
+                                                    1);
 
 
-    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
+    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
 
     trajectoryConfig.setReversed(false);
 
@@ -69,7 +71,7 @@ public class TestPathFollowing extends CommandBase implements Runnable {
     m_notifier = new Notifier(this);
     m_notifier.startPeriodic(m_period);
 
-    RamseteCommand followTrajectory = new RamseteCommand(
+    followTrajectory = new RamseteCommand(
             trajectory,
             m_driveTrain::getRobotPose,
             new RamseteController(),
@@ -97,7 +99,12 @@ public class TestPathFollowing extends CommandBase implements Runnable {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if(followTrajectory == null)
+      return true;
+    else if(followTrajectory.isFinished())
+      return true;
+    else
+      return false;
   }
 
 }

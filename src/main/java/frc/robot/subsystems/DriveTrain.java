@@ -43,6 +43,8 @@ DriveTrain extends SubsystemBase {
   public double kI = 0;
   public double kD = 0;
 
+  public boolean coasting = true;
+
   public int controlMode = 0;
 
   private TalonSRX[] driveMotors = {
@@ -63,7 +65,7 @@ DriveTrain extends SubsystemBase {
   PIDController leftPIDController = new PIDController(kP, kI, kD);
   PIDController rightPIDController = new PIDController(kP, kI, kD);
 
-  Pose2d pose;
+  Pose2d pose = new Pose2d();
 
   public DriveTrain() {
     for (TalonSRX motor : driveMotors) {
@@ -115,6 +117,19 @@ DriveTrain extends SubsystemBase {
   public void resetEncoderCounts() {
     driveMotors[0].setSelectedSensorPosition(0);
     driveMotors[2].setSelectedSensorPosition(0);
+  }
+
+  public void setDriveTrainNeutral(){
+    for(TalonSRX motor : driveMotors){
+      if(coasting) {
+        motor.setNeutralMode(NeutralMode.Brake);
+        coasting = !coasting;
+      }
+      else{
+        motor.setNeutralMode(NeutralMode.Coast);
+        coasting = !coasting;
+      }
+    }
   }
 
   public void setMotorArcadeDrive(double throttle, double turn) {
