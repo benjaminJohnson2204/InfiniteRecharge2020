@@ -37,10 +37,14 @@ public class Indexer extends SubsystemBase {
   DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);
 
   private double targetSetpoint;
-  private double kF = 1.67;
-  private double kP = 2.36;
-  private double kI = 0;
-  private double kD = 1070;
+//  private double kF = 1.67;
+//  private double kP = 2.36;
+//  private double kI = 0;
+//  private double kD = 1070;
+  private double kF = 0.0001;
+  private double kP = 0.000001;
+  private double kI = 80;
+  private double kD = 0.0001;
 
   private int controlMode = 1;
 
@@ -54,8 +58,8 @@ public class Indexer extends SubsystemBase {
     pidController.setSmartMotionMaxAccel(1e6, 0); // Formerly 1e6
     pidController.setSmartMotionAllowedClosedLoopError(1, 0);
     pidController.setIZone(1);
-    master.setInverted(false);
-    kicker.setInverted(false);
+    master.setInverted(true);
+    kicker.setInverted(true);
     master.setIdleMode(IdleMode.kBrake);
 
 //    SmartDashboard.putNumber("kF", kF);
@@ -76,7 +80,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean sensorTripped(){
-    return (!sensor.get() && limitSensor.get());
+    return (!sensor.get());
   }
 
   public boolean topSensor(){

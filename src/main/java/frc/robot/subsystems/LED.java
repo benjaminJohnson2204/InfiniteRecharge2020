@@ -26,14 +26,14 @@ public class LED extends SubsystemBase {
 
   public LED() {
     LEDStripA = new AddressableLED(Constants.ledPortA);
-    LEDStripB = new AddressableLED(Constants.ledPortB);
+//    LEDStripB = new AddressableLED(Constants.ledPortB);
     LEDBuffer = new AddressableLEDBuffer(48);
     LEDStripA.setLength(LEDBuffer.getLength());
     LEDStripA.setData(LEDBuffer);
     LEDStripA.start();
-    LEDStripB.setLength(LEDBuffer.getLength());
-    LEDStripB.setData(LEDBuffer);
-    LEDStripB.start();
+//    LEDStripB.setLength(LEDBuffer.getLength());
+//    LEDStripB.setData(LEDBuffer);
+//    LEDStripB.start();
 
     SmartDashboard.putNumber("Rainbows", rainbows);
     SmartDashboard.putNumber("Speed", speed);
@@ -118,6 +118,6 @@ public class LED extends SubsystemBase {
     rainbows = SmartDashboard.getNumber("Rainbows", 0);
     speed = SmartDashboard.getNumber("Speed", 0);
     LEDStripA.setData(LEDBuffer);
-    LEDStripB.setData(LEDBuffer);
+//    LEDStripB.setData(LEDBuffer);
   }
 }
