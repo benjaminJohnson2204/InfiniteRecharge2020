@@ -5,67 +5,51 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.LED;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.LED.WhiteFlash;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.LED;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.LED;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IndexerCommand extends CommandBase {
+public class WhiteFlash extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Indexer m_indexer;
-  private final LED m_led;
+  private final LED m_subsystem;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  int tripped = -1;
-  double setpoint, startTime;
-  public IndexerCommand(Indexer indexer, LED led) {
-    m_indexer = indexer;
-    m_led = led;
-
+  public WhiteFlash(LED subsystem) {
+    m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer);
-    addRequirements(led);
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
+    m_subsystem.setRGB(255, 255, 255);
+    m_subsystem.setSolidColor();
+    Timer.delay(0.1);
+    m_subsystem.resetLED();
+    Timer.delay(0.1);
+    m_subsystem.setSolidColor();
+    Timer.delay(0.25);
+    end(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == -1){
-      tripped = 1;
-      startTime = Timer.getFPGATimestamp();
-    }
-    else if(!m_indexer.sensorTripped())
-      tripped = -1;
-    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
-      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
-      CommandScheduler.getInstance().schedule(new WhiteFlash(m_led));
-      tripped = 0;
-    }
-    if(m_indexer.indexerFull()){
-      m_led.setRGB(255, 0, 0);
-      m_led.setBlinkingColor(true);
-    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(boolean interrupted) {
   }
 
   // Returns true when the command should end.

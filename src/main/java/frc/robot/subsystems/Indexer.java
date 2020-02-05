@@ -63,7 +63,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean sensorTripped(){
-    return (!sensor.get() && limitSensor.get());
+    return !sensor.get() && limitSensor.get();
   }
 
   public boolean topSensor(){
@@ -86,6 +86,10 @@ public class Indexer extends SubsystemBase {
 
   public boolean onTarget() {
     return Math.abs(encoder.getPosition() - targetSetpoint) < 1; 
+  }
+
+  public boolean indexerFull(){
+    return !limitSensor.get();
   }
 
   public void setKickerOutput(double output) {
