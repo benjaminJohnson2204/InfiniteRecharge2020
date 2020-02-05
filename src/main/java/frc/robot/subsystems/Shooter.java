@@ -111,7 +111,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateShuffleboard();
+    //updateShuffleboard();
     // This method will be called once per scheduler run
 //    rpmOutput = SmartDashboard.getNumber("FW Output", 0);
   }

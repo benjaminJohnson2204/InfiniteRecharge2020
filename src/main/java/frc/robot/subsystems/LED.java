@@ -35,8 +35,8 @@ public class LED extends SubsystemBase {
 //    LEDStripB.setData(LEDBuffer);
 //    LEDStripB.start();
 
-    SmartDashboard.putNumber("Rainbows", rainbows);
-    SmartDashboard.putNumber("Speed", speed);
+//    SmartDashboard.putNumber("Rainbows", rainbows);
+//    SmartDashboard.putNumber("Speed", speed);
   }
 
   public void setRGB(int red, int green, int blue){
