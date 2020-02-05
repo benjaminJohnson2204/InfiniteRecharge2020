@@ -32,11 +32,12 @@ public class WhiteFlash extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setSolidColor(255, 255, 255);
+    m_subsystem.setRGB(255, 255, 255);
+    m_subsystem.setSolidColor();
     Timer.delay(0.1);
     m_subsystem.resetLED();
     Timer.delay(0.1);
-    m_subsystem.setSolidColor(255, 255, 255);
+    m_subsystem.setSolidColor();
     Timer.delay(0.25);
     end(false);
   }
