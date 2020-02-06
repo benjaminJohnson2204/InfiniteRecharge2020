@@ -28,7 +28,7 @@ public class Turret extends SubsystemBase {
   double kI = 0;
   double kD = 0.00135;
   double maxAngle = 290;
-  double minAngle = -110;
+  double minAngle = -10;
   double gearRatio = 18.0 / 120.0;
   double setpoint = 0; //angle
 
@@ -54,8 +54,8 @@ public class Turret extends SubsystemBase {
     turretMotor.config_kP(0, kP);
     turretMotor.config_kI(0, kI);
     turretMotor.config_kD(0, kD);
-    turretMotor.configMotionCruiseVelocity(2 * 4096);
-    turretMotor.configMotionAcceleration(20 * 4096);
+    turretMotor.configMotionCruiseVelocity(14000);
+    turretMotor.configMotionAcceleration(140000);
     turretMotor.configAllowableClosedloopError(0, 50);
     turretMotor.selectProfileSlot(0,0);
     //encoder.configFactoryDefault();
@@ -93,12 +93,23 @@ public class Turret extends SubsystemBase {
     turretMotor.set(ControlMode.PercentOutput, output);
   }
 
-  public void constrainSetpoint(double setpoint){ //use degrees
-    if(setpoint>=maxAngle) {
-        setpoint = setpoint - 360;
-    } else if(setpoint<=minAngle) {
-        setpoint = setpoint + 360;
-    }
+  public void setSetpoint(double setpoint){ //use degrees
+    // TODO: Add logic for overwrap
+    double distanceToSetpoint = Math.abs(setpoint - getTurretAngle());
+
+    // Case B: If inverse of the setpoint is closer, use that as the setpoint
+    distanceToSetpoint = Math.abs(setpoint - getTurretAngle());
+    if(Math.abs((setpoint - 360) - getTurretAngle()) <= distanceToSetpoint)
+      setpoint -= 360;
+    else if(Math.abs((setpoint + 360) - getTurretAngle()) <= distanceToSetpoint)
+      setpoint += 360;
+
+	// Case A: If the setpoint exceeds the min/max angle, use the inverse setpoint
+    if(setpoint < minAngle)
+      setpoint += 360;
+    else if(setpoint > maxAngle)
+      setpoint -= 360;
+
     this.setpoint = setpoint;
   }
 
@@ -107,7 +118,7 @@ public class Turret extends SubsystemBase {
   }
 
   public int degreesToEncoderUnits(double degrees) {
-    return (int)((degrees * (1.0 / gearRatio) * (encoderUnitsPerRotation / 360.0);
+    return (int)(degrees * (1.0 / gearRatio) * (encoderUnitsPerRotation / 360.0));
   }
 
   public double encoderUnitsToDegrees(double encoderUnits) {
@@ -127,7 +138,7 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("Turret Encoder Units", turretMotor.getSelectedSensorPosition());
     SmartDashboard.putNumber("Turret Setpoint Degrees", setpoint);
     SmartDashboard.putNumber("Turret Setpoint Units", degreesToEncoderUnits(setpoint));
-    SmartDashboard.putNumber("Turret Target Degrees", encoderUnitsToDegrees(turretMotor.getClosedLoopTarget());
+    SmartDashboard.putNumber("Turret Target Degrees", encoderUnitsToDegrees(turretMotor.getClosedLoopTarget()));
     SmartDashboard.putNumber("Turret Target Units", turretMotor.getClosedLoopTarget());
 
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());

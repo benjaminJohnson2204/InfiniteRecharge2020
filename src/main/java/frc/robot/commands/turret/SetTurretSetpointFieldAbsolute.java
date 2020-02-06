@@ -60,11 +60,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   public void execute() {
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
-        if(m_yInput.getAsDouble() > 0)
-          setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
-        else if(m_yInput.getAsDouble() < 0)
-          setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle()) + 360;
-        movedJoystick = true;
+          setpoint = -(90 - Math.toDegrees(Math.atan2(m_yInput.getAsDouble(), m_xInput.getAsDouble())));
       }
 //      } else if (movedJoystick){
 //        movedJoystick = false;
