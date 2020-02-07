@@ -21,7 +21,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
+import frc.robot.commands.intake.SetIntake;
 import frc.robot.commands.intake.SetIntakeManual;
+import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.SetShooterManual;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
@@ -146,7 +148,8 @@ public class RobotContainer {
 
     xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
     xBoxButtons[4].whileHeld(new SetShooterManual(m_shooter, m_indexer));
-    //xBoxLeftTrigger.whileHeld(new Command()); // Run Intake Motors
+    xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
+    xBoxLeftTrigger.whileHeld(new SetIntake(m_intake));
     //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
     //xBoxButtons[0].whenPressed(new Command()); //A - toggle driver climb mode
     //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
