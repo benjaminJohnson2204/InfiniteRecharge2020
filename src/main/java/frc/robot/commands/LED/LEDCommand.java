@@ -42,7 +42,14 @@ public class LEDCommand extends CommandBase {
   public void execute() {
     m_led.setRGB(75, 20, 150);
     m_led.setSolidColor();
-    if(m_indexer.topSensor()) {
+    if(/*climb mode enabled*/false){
+      m_led.setRainbow(3, 8);
+    }
+    else if(/*Turret is aligning to target*/false || /*Flywheel is spinning, but is not at the required velocity*/false){
+      m_led.setRGB(255, 200, 0);
+      m_led.setBlinkingColor(true);
+    }
+    else if(m_indexer.topSensor()) {
       m_led.setRGB(255, 0, 0);
       m_led.setBlinkingColor(true);
     }
