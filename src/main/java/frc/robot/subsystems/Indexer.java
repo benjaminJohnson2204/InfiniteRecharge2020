@@ -31,17 +31,22 @@ public class Indexer extends SubsystemBase {
    */
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
-  VictorSPX kicker = new VictorSPX(Constants.kicker);
+  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
   CANPIDController pidController = master.getPIDController();
   DigitalInput sensor = new DigitalInput(Constants.indexSensor);
   DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);
 
   private double targetSetpoint;
-  private double kF = 1.67;
-  private double kP = 2.36;
-  private double kI = 0;
-  private double kD = 1070;
+//  private double kF = 1.67;
+//  private double kP = 2.36;
+//  private double kI = 0;
+//  private double kD = 1070;
+  private double kF = 0.0001;
+  private double kP = 0.000001;
+  private double kI = 80;
+  private double kD = 0.0001;
 
+  private int controlMode = 1;
   public boolean newBall = false;
 
   public Indexer() {
@@ -54,18 +59,29 @@ public class Indexer extends SubsystemBase {
     pidController.setSmartMotionMaxAccel(1e6, 0); // Formerly 1e6
     pidController.setSmartMotionAllowedClosedLoopError(1, 0);
     pidController.setIZone(1);
-    master.setInverted(false);
-    kicker.setInverted(false);
+    master.setInverted(true);
+    kicker.setInverted(true);
     master.setIdleMode(IdleMode.kBrake);
 
-    SmartDashboard.putNumber("kF", kF);
-    SmartDashboard.putNumber("kP", kP);
-    SmartDashboard.putNumber("kI", kI);
-    SmartDashboard.putNumber("kD", kD);
+//    SmartDashboard.putNumber("kF", kF);
+//    SmartDashboard.putNumber("kP", kP);
+//    SmartDashboard.putNumber("kI", kI);
+//    SmartDashboard.putNumber("kD", kD);
+  }
+
+  public void toggleControlMode() {
+    if(controlMode == 0)
+      controlMode = 1;
+    else
+      controlMode = 0;
+  }
+
+  public int getControlMode() {
+    return controlMode;
   }
 
   public boolean sensorTripped(){
-    return !sensor.get() && limitSensor.get();
+    return (!sensor.get());
   }
 
   public boolean topSensor(){
@@ -122,7 +138,7 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateSmartDashboard();
-    updatePIDValues();
+    //updateSmartDashboard();
+    //updatePIDValues();
   }
 }

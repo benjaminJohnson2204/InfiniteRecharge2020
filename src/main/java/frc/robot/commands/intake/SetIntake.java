@@ -5,57 +5,49 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.intake;
 
-import frc.robot.subsystems.Indexer;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Intake;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IncrementIndexer extends CommandBase {
+public class SetIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Indexer m_indexer;
+  private final Intake m_intake;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  double m_setpoint;
-  private double startTime;
-  public IncrementIndexer(Indexer subsystem) {
-    m_indexer = subsystem;
+  public SetIntake(Intake intake) {
+    m_intake = intake;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
-    startTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.incrementIndexer(m_setpoint);
-    m_indexer.setKickerOutput(-0.2);
+    m_intake.setIntake(0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
-    m_indexer.setKickerOutput(0);
-    SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
+  public void end(boolean interrupted) {
+    m_intake.setIntake(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_indexer.onTarget();
+    return false;
   }
 }

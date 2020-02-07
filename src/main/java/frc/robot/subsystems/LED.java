@@ -12,27 +12,29 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants;
 
 public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  AddressableLED LEDStrip;
-  AddressableLED LEDStripB;
+  AddressableLED LEDStripA, LEDStripB;
   AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
   private int red, green, blue;
 
   public LED() {
-    LEDStrip = new AddressableLED(0);
-    LEDStripB = new AddressableLED(1);
-    LEDBuffer = new AddressableLEDBuffer(60);
-    LEDStrip.setLength(LEDBuffer.getLength());
-    LEDStrip.setData(LEDBuffer);
-    LEDStripB.setData(LEDBuffer);
-    LEDStrip.start();
-    
+    LEDStripA = new AddressableLED(Constants.ledPortA);
+//    LEDStripB = new AddressableLED(Constants.ledPortB);
+    LEDBuffer = new AddressableLEDBuffer(48);
+    LEDStripA.setLength(LEDBuffer.getLength());
+    LEDStripA.setData(LEDBuffer);
+    LEDStripA.start();
+//    LEDStripB.setLength(LEDBuffer.getLength());
+//    LEDStripB.setData(LEDBuffer);
+//    LEDStripB.start();
+
     SmartDashboard.putNumber("Rainbows", rainbows);
     SmartDashboard.putNumber("Speed", speed);
   }
@@ -115,6 +117,7 @@ public class LED extends SubsystemBase {
     setRainbow(rainbows, speed);
     rainbows = SmartDashboard.getNumber("Rainbows", 0);
     speed = SmartDashboard.getNumber("Speed", 0);
-    LEDStrip.setData(LEDBuffer);
+    LEDStripA.setData(LEDBuffer);
+//    LEDStripB.setData(LEDBuffer);
   }
 }

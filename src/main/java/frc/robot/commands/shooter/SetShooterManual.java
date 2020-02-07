@@ -5,57 +5,70 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.shooter;
 
-import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Shooter;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IncrementIndexer extends CommandBase {
+public class SetShooterManual extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+  private final Shooter m_shooter;
   private final Indexer m_indexer;
+  private double time;
+  private boolean printed = false;
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param RobotContainer.m_shooter The subsystem used by this command.
    */
-  double m_setpoint;
-  private double startTime;
-  public IncrementIndexer(Indexer subsystem) {
-    m_indexer = subsystem;
+  public SetShooterManual(Shooter shooter, Indexer indexer) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
-
+    m_shooter = shooter;
+    m_indexer = indexer;
+    addRequirements(shooter);
+    addRequirements(indexer);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
-    startTime = Timer.getFPGATimestamp();
+    time = Timer.getFPGATimestamp();
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.incrementIndexer(m_setpoint);
-    m_indexer.setKickerOutput(-0.2);
+    m_shooter.setRPM(12000);
+
+    if (Math.abs(m_shooter.getRPM(0) - 12000) < 500) {
+      m_indexer.setIndexerOutput(1);
+      m_indexer.setKickerOutput(1);
+    } else if (!m_indexer.topSensor()) {
+//      m_indexer.setIndexerOutput(1);
+//      m_indexer.setKickerOutput(0);
+    } else {
+      m_indexer.setIndexerOutput(0);
+      m_indexer.setKickerOutput(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(boolean interrupted) {
+    m_indexer.setIndexerOutput(0);
     m_indexer.setKickerOutput(0);
-    SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
+    m_shooter.setPower(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_indexer.onTarget();
+    return (false);
   }
 }
