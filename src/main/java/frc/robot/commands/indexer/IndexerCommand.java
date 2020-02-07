@@ -54,13 +54,11 @@ public class IndexerCommand extends CommandBase {
       tripped = -1;
     if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
       CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
-      CommandScheduler.getInstance().schedule(new WhiteFlash(m_led));
+      m_indexer.newBall = true;
       tripped = 0;
     }
-    if(m_indexer.indexerFull()){
-      m_led.setRGB(255, 0, 0);
-      m_led.setBlinkingColor(true);
-    }
+    else
+      m_indexer.newBall = false;
   }
 
   // Called once the command ends or is interrupted.

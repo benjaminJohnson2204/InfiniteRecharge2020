@@ -7,7 +7,9 @@
 
 package frc.robot.commands.LED;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.LED;
 
 /**
@@ -16,15 +18,18 @@ import frc.robot.subsystems.LED;
 public class LEDCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final LED m_led;
+  private final Indexer m_indexer;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public LEDCommand(LED led) {
+  public LEDCommand(LED led, Indexer indexer) {
     m_led = led;
-    // Use addRequirements() here to declare subsystem dependencies.    addRequirements(led);
+    m_indexer = indexer;
+    // Use addRequirements() here to declare subsystem dependencies.    
+    addRequirements(led);
   }
 
   // Called when the command is initially scheduled.
@@ -37,6 +42,19 @@ public class LEDCommand extends CommandBase {
   public void execute() {
     m_led.setRGB(75, 20, 150);
     m_led.setSolidColor();
+    if(m_indexer.topSensor()) {
+      m_led.setRGB(255, 0, 0);
+      m_led.setBlinkingColor(true);
+    }
+    else if(m_indexer.newBall) {
+      m_led.setRGB(255, 255, 255);
+      m_led.setSolidColor();
+      Timer.delay(0.1);
+      m_led.resetLED();
+      Timer.delay(0.1);
+      m_led.setSolidColor();
+      Timer.delay(0.25);
+    }
   }
 
   // Called once the command ends or is interrupted.
