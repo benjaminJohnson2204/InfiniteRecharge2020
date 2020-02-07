@@ -41,6 +41,7 @@ public class Indexer extends SubsystemBase {
   private double kP = 2.36;
   private double kI = 0;
   private double kD = 1070;
+  public boolean newBall = false;
 
   public Indexer() {
     master.restoreFactoryDefaults();
