@@ -27,7 +27,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   private final Vision m_vision;
   private DoubleSupplier m_xInput;
   private DoubleSupplier m_yInput;
-  double setpoint;
+  double setpoint, radians;
   private final double deadZone = 0.1;
   private Timer timer = new Timer();
   boolean timeout = false;
@@ -95,32 +95,37 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //        movedJoystick = false;
 //        limelightDisabled = false;
 //      }
+        movedJoystick = true;
+        Constants.limelightTempDisabled = true;
 /*
       if (!limelightDisabled) {
         if (Constants.limelightTempDisabled) {
-          if (m_turret.atTarget() && Constants.canSeeVisionTarget) {
+          if (m_turret.atTarget() && m_vision.hasTarget()) {
             Constants.limelightTempDisabled = false;
           }
           // TODO: Change this to a function call
-        } else if (Constants.canSeeVisionTarget) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
+          // ^ Done?
+        } else if (m_vision.hasTarget()) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
           setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
           if (timeout) {
             timer.stop();
             timer.reset();
+            timeout = false;
           }
-        } else { //if you can't see the target for 1 second, then disable the limelight
+        } else { //if you can't see the target for x seconds, then disable the limelight
           timer.start();
           timeout = true;
-          if (timer.get() > 1) {
+          if (timer.get() > 1) { //change value if needed
             timer.stop();
             timer.reset();
+            timeout = false;
             limelightDisabled = true;
           }
         }
       }*/
       m_turret.setSetpoint(setpoint);
     } else {
-      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2);
+      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode
     }
   }
 

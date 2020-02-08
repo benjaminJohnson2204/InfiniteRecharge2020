@@ -73,6 +73,8 @@ public class Turret extends SubsystemBase {
     turretMotor.configMotionAcceleration(1400000);
     turretMotor.configAllowableClosedloopError(0, kErrorBand);
 
+    //turretPID.enableContinuousInput(0, 360);
+
     initShuffleboard();
   }
 
@@ -142,9 +144,12 @@ public class Turret extends SubsystemBase {
 
 
   public void updateSmartdashboard() {
+    SmartDashboard.putNumber("PID Error", turretPID.getPositionError());
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
-    SmartDashboard.putNumber("Turret Setpoint ", setpoint);
+    SmartDashboard.putNumber("Turret Setpoint", setpoint);
+    SmartDashboard.putBoolean("Limelight Temp Disabled", Constants.limelightTempDisabled);
+//    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
 
     SmartDashboard.getBoolean("Turret Home", getTurretHome());
   }
