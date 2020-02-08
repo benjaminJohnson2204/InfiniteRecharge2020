@@ -102,7 +102,6 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    leftJoystick.invertRawAxis(1, false);
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
@@ -129,6 +128,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     leftJoystick.invertRawAxis(1, false);
     rightJoystick.invertRawAxis(0, true);
+    xBoxController.invertRawAxis(1, true);
+    xBoxController.invertRawAxis(5, true);
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)

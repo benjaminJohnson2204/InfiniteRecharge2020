@@ -8,12 +8,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,17 +25,18 @@ public class Turret extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  double kP = 0.0171;
+  double kF = 0.05;
+  double kP = 0.155;
   double kI = 0;
-  double kD = 0.00781;
-  double kS = 0;
-  double kV = 0.00103;
-  double kA = 0.000164;
-  double maxAngle = 290;
-  double minAngle = -110;
+  double kD = 0.00766;
+  int kI_Zone = 450;
+  int kErrorBand = 50;
+  double maxAngle = 315;
+  double minAngle = -135;
   double gearRatio = 18.0 / 120.0;
-  double setpoint = 0; //angle
+  private double setpoint = 0; //angle
 
+  private int encoderUnitsPerRotation = 4096;
   private int controlMode = 1;
 
   private final DriveTrain m_driveTrain;
@@ -42,23 +45,39 @@ public class Turret extends SubsystemBase {
 
   private CANCoder encoder = new CANCoder(Constants.turretEncoder);
 
-  private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
+  private TalonSRX turretMotor = new TalonSRX(30);
 
-  private SimpleMotorFeedforward turretFF = new SimpleMotorFeedforward(kS, kV, kA);
-  private PIDController turretPID = new PIDController(kP, kI, kD);
+  private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
+  private boolean turretHomeSensorLatch = false;
 
   public Turret(DriveTrain driveTrain) {
     m_driveTrain = driveTrain;
+    encoder.configFactoryDefault();
+    encoder.setPositionToAbsolute();
+    encoder.configSensorDirection(true);
+
     turretMotor.configFactoryDefault();
     turretMotor.setNeutralMode(NeutralMode.Brake);
     turretMotor.setInverted(true);
-    //encoder.configFactoryDefault();
-    encoder.setPositionToAbsolute();
+    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    turretMotor.setSensorPhase(true);
+    turretMotor.setSelectedSensorPosition(0);
+//    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
+//    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+    turretMotor.config_kF(0, kF);
+    turretMotor.config_kP(0, kP);
+    turretMotor.config_IntegralZone(0, kI_Zone);
+    turretMotor.config_kI(0, kI);
+    turretMotor.config_kD(0, kD);
+    turretMotor.configMotionCruiseVelocity(140000);
+    turretMotor.configMotionAcceleration(1400000);
+    turretMotor.configAllowableClosedloopError(0, kErrorBand);
 
     initShuffleboard();
   }
 
   public void resetEncoder(){
+    turretMotor.setSelectedSensorPosition(0);
     encoder.setPosition(0);
   }
 
@@ -74,33 +93,47 @@ public class Turret extends SubsystemBase {
   }
 
   public double getTurretAngle(){
-    return gearRatio * -encoder.getPosition();
+    return gearRatio * encoder.getPosition();
   }
 
   public double getFieldRelativeAngle(){
-    return getTurretAngle()-m_driveTrain.navX.getAngle();
+    return getTurretAngle() - m_driveTrain.navX.getAngle();
+  }
+
+  public double getMaxAngle() {
+    return maxAngle;
+  }
+
+  public double getMinAngle() {
+    return minAngle;
+  }
+
+  public boolean getTurretHome() {
+    return !turretHomeSensor.get();
   }
 
   public void setPercentOutput(double output){
     turretMotor.set(ControlMode.PercentOutput, output);
-
   }
 
-  public void setSetpoint(double setpoint){ //use degrees
-    if(setpoint>=maxAngle) {
-        setpoint = setpoint - 360;
-    } else if(setpoint<=minAngle) {
-        setpoint = setpoint + 360;
-    }
+  public void setSetpoint(double setpoint){
     this.setpoint = setpoint;
   }
 
   public void setClosedLoopPosition(){
-    setPercentOutput(turretPID.calculate(getTurretAngle(), setpoint));
+    turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(setpoint));
+  }
+
+  public int degreesToEncoderUnits(double degrees) {
+    return (int)(degrees * (1.0 / gearRatio) * (encoderUnitsPerRotation / 360.0));
+  }
+
+  public double encoderUnitsToDegrees(double encoderUnits) {
+    return encoderUnits * gearRatio * (360.0 / encoderUnitsPerRotation);
   }
 
   public boolean atTarget(){
-    return turretPID.atSetpoint();
+    return Math.abs(turretMotor.getClosedLoopError()) < kErrorBand;
   }
 
   public void initShuffleboard() {
@@ -109,24 +142,25 @@ public class Turret extends SubsystemBase {
 
 
   public void updateSmartdashboard() {
-
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
-    SmartDashboard.putNumber("Turret Setpoint", setpoint);
-//    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
+    SmartDashboard.putNumber("Turret Setpoint ", setpoint);
 
-
-    //Shuffleboard.getTab("Turret").addNumber("Turret Angle", this::getAngle);
-    //Shuffleboard.getTab("Turret").addNumber("Position", this::getPosition);
+    SmartDashboard.getBoolean("Turret Home", getTurretHome());
   }
 
   @Override
   public void periodic() {
-//    if(controlMode == 1)
-//      setClosedLoopPosition();
-//    else
-//      setPercentOutput(RobotContainer.getXBoxLeftX());
+    if(getControlMode() == 1)
+      setClosedLoopPosition();
+
     // This method will be called once per scheduler run
+    if(!turretHomeSensorLatch && getTurretHome()) {
+      turretMotor.setSelectedSensorPosition(0);
+      turretHomeSensorLatch = true;
+    } else if(turretHomeSensorLatch && !getTurretHome())
+      turretHomeSensorLatch = false;
+
     updateSmartdashboard();
   }
 }
