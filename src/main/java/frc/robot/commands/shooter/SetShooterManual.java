@@ -44,9 +44,9 @@ public class SetShooterManual extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setRPM(12000);
+    m_shooter.setRPM(3500);
 
-    if (Math.abs(m_shooter.getRPM(0) - 12000) < 500) {
+    if (Math.abs(m_shooter.getRPM(0) - 3500) < 50) {
       m_indexer.setIndexerOutput(1);
       m_indexer.setKickerOutput(1);
     } else if (!m_indexer.topSensor()) {
