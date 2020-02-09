@@ -12,42 +12,36 @@ public class Intake extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
 
-  private CANSparkMax intakeMotor[] ={
-          new CANSparkMax(Constants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless),
-          new CANSparkMax(Constants.intakeMotor1, CANSparkMaxLowLevel.MotorType.kBrushless)
-  };
+  private CANSparkMax intakeMotor = new CANSparkMax(Constants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
 
   DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
 
-  public boolean getintakePistonExtendStatus(){
+  public boolean getIntakePistonExtendStatus(){
     return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
   }
 
-  public void setintakePiston(boolean state){
+  public void setIntakePiston(boolean state){
     intakePiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
   }
 
   public Intake() {
-    for(CANSparkMax intakeMotor: intakeMotor) {
-      intakeMotor.restoreFactoryDefaults();
-      intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    }
-    intakeMotor[0].setInverted(true);
-    intakeMotor[1].setInverted(false);
-
+    intakeMotor.restoreFactoryDefaults();
+    intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    intakeMotor.setInverted(false);
   }
-  public void setIntake(double value){
-    intakeMotor[0].set(value);
-    intakeMotor[1].set(value);
 
+  public void setIntake(double value){
+    intakeMotor.set(value);
   }
 
   public void stop(){
     setIntake(0);
   }
+
 //  public double getIntakeVoltage(){
 //    return intakeMotor.getBusVoltage();
 //  }
+
   @Override
   public void periodic() {
   }
