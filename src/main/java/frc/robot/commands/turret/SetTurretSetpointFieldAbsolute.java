@@ -8,12 +8,13 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 
+import java.util.LinkedList;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -49,7 +50,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //    addRequirements(driveTrainSubsystem);
     addRequirements(visionSybsystem);
   }
-
+  private boolean direction, directionTripped;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -60,15 +61,40 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   public void execute() {
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
-        if(m_yInput.getAsDouble() > 0)
-          setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle());
-        else if(m_yInput.getAsDouble() < 0)
-          setpoint = Math.toDegrees(Math.atan(m_yInput.getAsDouble() / m_xInput.getAsDouble())) - (90 + m_driveTrain.getAngle()) + 360;
-        movedJoystick = true;
-      } else if (movedJoystick){
-        movedJoystick = false;
-        limelightDisabled = false;
-      }
+
+        if(!directionTripped) {
+          direction = m_yInput.getAsDouble() < 0;
+          directionTripped = true;
+        }
+
+        if(direction) {
+            if(m_xInput.getAsDouble() >= 0)
+              setpoint = -Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+            else
+              setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+
+          if(setpoint > m_turret.getMaxAngle()) {
+            setpoint -= 360;
+            direction = false;
+          }
+        } else {
+          if(m_xInput.getAsDouble() < 0)
+            setpoint = Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+          else
+            setpoint = -360 + Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+
+          if (setpoint < m_turret.getMinAngle()) {
+            direction = true;
+            setpoint += 360;
+          }
+        }
+
+      } else
+        directionTripped = false;
+//      } else if (movedJoystick){
+//        movedJoystick = false;
+//        limelightDisabled = false;
+//      }
 /*
       if (!limelightDisabled) {
         if (Constants.limelightTempDisabled) {
@@ -92,8 +118,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
           }
         }
       }*/
-//      m_turret.setSetpoint(setpoint);
-//      m_turret.setClosedLoopPosition();
+      m_turret.setSetpoint(setpoint);
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2);
     }

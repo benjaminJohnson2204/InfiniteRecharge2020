@@ -204,7 +204,7 @@ DriveTrain extends SubsystemBase {
     odometry.resetPosition(pose, rotation);
   }
 
-  public void initShuffleboardValues() {
+  private void initShuffleboardValues() {
     Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
     Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
     Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
@@ -218,7 +218,7 @@ DriveTrain extends SubsystemBase {
     Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
             Units.metersToFeet(getSpeeds().rightMetersPerSecond));
 
-    //Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX::getAngle);
+    Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX::getAngle);
   }
 
   @Override

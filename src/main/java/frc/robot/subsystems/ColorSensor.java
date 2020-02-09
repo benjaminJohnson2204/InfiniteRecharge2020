@@ -8,7 +8,6 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.ColorSensorV3;
-
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -76,7 +75,7 @@ public class ColorSensor extends SubsystemBase {
     return false;
   }
 
-  public void initShuffleboardValues() { //s
+  private void initShuffleboardValues() { //s
     Shuffleboard.getTab("Color Sensor").addNumber("Red", ()-> getColor().red);
     Shuffleboard.getTab("Color Sensor").addNumber("Green", ()-> getColor().green);
     Shuffleboard.getTab("Color Sensor").addNumber("Blue", ()-> getColor().blue);

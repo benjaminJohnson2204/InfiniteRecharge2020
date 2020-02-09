@@ -15,7 +15,7 @@ import frc.robot.subsystems.LED;
 /**
  * An example command that uses an example subsystem.
  */
-public class LEDCommand extends CommandBase {
+public class GetSubsystemStates extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final LED m_led;
   private final Indexer m_indexer;
@@ -23,9 +23,9 @@ public class LEDCommand extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param The subsystem used by this command.
    */
-  public LEDCommand(LED led, Indexer indexer) {
+  public GetSubsystemStates(LED led, Indexer indexer) {
     m_led = led;
     m_indexer = indexer;
     // Use addRequirements() here to declare subsystem dependencies.    
@@ -35,6 +35,8 @@ public class LEDCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_led.setRGB(0, 125, 0);
+    m_led.setSolidColor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,25 +45,19 @@ public class LEDCommand extends CommandBase {
     m_led.setRGB(75, 20, 150);
     m_led.setSolidColor();
     if(/*climb mode enabled*/false){
-      m_led.setRainbow(3, 8);
+      m_led.setState(0);
     }
     else if(/*Turret is aligning to target*/false || /*Flywheel is spinning, but is not at the required velocity*/false){
-      m_led.setRGB(255, 200, 0);
-      m_led.setBlinkingColor(true);
+      m_led.setState(1);
     }
     else if(m_indexer.topSensor()) {
-      m_led.setRGB(255, 0, 0);
-      m_led.setBlinkingColor(true);
+      m_led.setState(2);
     }
     else if(m_indexer.newBall) {
-      m_led.setRGB(255, 255, 255);
-      m_led.setSolidColor();
-      Timer.delay(0.1);
-      m_led.resetLED();
-      Timer.delay(0.1);
-      m_led.setSolidColor();
-      Timer.delay(0.25);
+      m_led.setState(3);
     }
+    else
+      m_led.setState(-1);
   }
 
   // Called once the command ends or is interrupted.
@@ -73,5 +69,10 @@ public class LEDCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  @Override
+  public boolean runsWhenDisabled(){
+    return true;
   }
 }

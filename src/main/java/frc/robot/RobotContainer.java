@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntake;
@@ -29,6 +28,7 @@ import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -102,19 +102,19 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    leftJoystick.invertRawAxis(1, false);
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
+    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
-    m_led.setDefaultCommand(new LEDCommand(m_led));
+    //m_led.setDefaultCommand(new LEDCommand(m_led));
 
     m_vision.initUSBCamera();
     m_vision.openSightInit();
@@ -129,6 +129,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     leftJoystick.invertRawAxis(1, false);
     rightJoystick.invertRawAxis(0, true);
+    xBoxController.invertRawAxis(1, true);
+    xBoxController.invertRawAxis(5, true);
     for (int i = 0; i < leftButtons.length; i++)
       leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
     for (int i = 0; i < rightButtons.length; i++)

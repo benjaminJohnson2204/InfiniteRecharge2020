@@ -47,7 +47,6 @@ public class Indexer extends SubsystemBase {
   private double kD = 0.0001;
 
   private int controlMode = 1;
-  public boolean newBall = false;
 
   public Indexer() {
     master.restoreFactoryDefaults();
@@ -84,6 +83,21 @@ public class Indexer extends SubsystemBase {
     return (!sensor.get());
   }
 
+  boolean pTripped = false;
+  public boolean newBall(){
+    boolean returnVal;
+    if(pTripped == false && sensorTripped()){
+      returnVal = true;
+    }
+    else 
+      returnVal = false;
+    if(sensorTripped())
+      pTripped = true;
+    else
+      pTripped = false;
+    return returnVal;
+  }
+
   public boolean topSensor(){
     return !limitSensor.get();
   }
@@ -118,7 +132,7 @@ public class Indexer extends SubsystemBase {
     master.set(output);
   }
 
-  public void updateSmartDashboard(){
+  private void updateSmartDashboard(){
     SmartDashboard.putNumber("Motor Output", master.getAppliedOutput());
     SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
     SmartDashboard.putNumber("Motor Position", getPosition());

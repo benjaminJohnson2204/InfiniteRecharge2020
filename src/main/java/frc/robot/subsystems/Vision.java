@@ -28,7 +28,9 @@ public class Vision extends SubsystemBase
 
     public Vision() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
-        setPipeline(1);
+        setPipeline(0);
+
+        initShuffleboard();
     }
 
     public double getTargetY() {
@@ -122,11 +124,11 @@ public class Vision extends SubsystemBase
         CameraServer.getInstance().addServer("opensight.local");
     }
 
-    public void initShuffleboard() {
+    private void initShuffleboard() {
 
     }
 
-    public void updateSmartDashboard()
+    private void updateSmartDashboard()
     {
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
     }
