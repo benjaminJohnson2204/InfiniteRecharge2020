@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.constants.Constants;
 
 public class LED extends SubsystemBase {
@@ -29,7 +31,7 @@ public class LED extends SubsystemBase {
   public LED() {
     LEDStripA = new AddressableLED(Constants.ledPortA);
 //    LEDStripB = new AddressableLED(Constants.ledPortB);
-    LEDBuffer = new AddressableLEDBuffer(40);
+    LEDBuffer = new AddressableLEDBuffer(39);
     LEDStripA.setLength(LEDBuffer.getLength());
     LEDStripA.setData(LEDBuffer);
     LEDStripA.start();
@@ -114,17 +116,56 @@ public class LED extends SubsystemBase {
     Timer.delay(0.03);
   }
 
+  public void flash(){
+    setSolidColor();
+    Timer.delay(0.1);
+    resetLED();
+    Timer.delay(0.1);
+    setSolidColor();
+    Timer.delay(0.25);
+  }
+
   public void setBuffer() {
     LEDStripA.setData(LEDBuffer);
 //    LEDStripB.setData(LEDBuffer);
+  }
+
+  int state = -1;
+  public void setLED(){
+    switch(state){
+      /*case 0:
+        setRainbow(3, 8);
+        break;*/
+      case 1:
+        setRGB(255, 200, 0);
+        setBlinkingColor(true);
+        break;
+      case 2:
+        setRGB(255, 0, 0);
+        setBlinkingColor(true);
+        break;
+      case 3:
+        setRGB(255, 255, 255);
+        flash();
+        break;
+      default:
+        setRGB(106, 90, 205);
+        setBlinkingColor(true);
+    }
+    LEDStripA.setData(LEDBuffer);
+  }
+
+  public void setState(int state){
+    this.state = state;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     //setRainbow(rainbows, speed);
-    rainbows = SmartDashboard.getNumber("Rainbows", 0);
+    /*rainbows = SmartDashboard.getNumber("Rainbows", 0);
     speed = SmartDashboard.getNumber("Speed", 0);
-    setBuffer();
+    setBuffer();*/
+    setLED();
   }
 }

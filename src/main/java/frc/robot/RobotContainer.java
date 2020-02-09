@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.LED.LEDCommand;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntake;
@@ -29,6 +28,7 @@ import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
@@ -107,7 +107,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
-//    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
+    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
+    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
