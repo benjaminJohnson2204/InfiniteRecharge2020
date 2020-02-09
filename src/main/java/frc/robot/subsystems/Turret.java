@@ -10,9 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
@@ -144,11 +142,9 @@ public class Turret extends SubsystemBase {
 
 
   public void updateSmartdashboard() {
-    SmartDashboard.putNumber("PID Error", turretPID.getPositionError());
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
     SmartDashboard.putNumber("Turret Setpoint", setpoint);
-    SmartDashboard.putBoolean("Limelight Temp Disabled", Constants.limelightTempDisabled);
 //    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
 
     SmartDashboard.getBoolean("Turret Home", getTurretHome());
