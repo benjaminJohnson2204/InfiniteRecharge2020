@@ -13,7 +13,7 @@ import frc.robot.subsystems.Climber;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetClimberMotor extends CommandBase {
+public class RetractClimber extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Climber m_climber;
 
@@ -22,7 +22,7 @@ public class SetClimberMotor extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetClimberMotor(Climber climber) {
+  public RetractClimber(Climber climber) {
     m_climber = climber;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climber);
@@ -32,8 +32,6 @@ public class SetClimberMotor extends CommandBase {
   @Override
   public void initialize() {
   }
-
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_climber.setClimber(0.5);

@@ -7,22 +7,25 @@
 
 package frc.robot.commands.Climber;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetClimberPiston extends CommandBase {
+public class ExtendClimber extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Climber m_climber;
+  private Timer timer;
+  private double timerState = 0;
 
   /*
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetClimberPiston(Climber climber) {
+  public ExtendClimber(Climber climber) {
     m_climber = climber;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climber);
@@ -31,7 +34,45 @@ public class SetClimberPiston extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_climber.setClimbPiston(!m_climber.getClimbPistonExtendStatus());
+    //engage the piston
+    m_climber.setClimbPiston(true);
+    //wait a tiny bit of time before the next step
+    timer.start();
+
+
+    if(timer.get() >= 0.5 && timerState == 0) {
+      //rotate the motor counter clockwise to nick the ratchet
+      m_climber.setClimber(0.25);
+      timer.stop();
+      timer.reset();
+      timerState++;
+      timer.start();
+    }
+
+    if(timer.get() >= 2 && timerState == 1) {
+      //rotate the motor clockwise to extend the climber
+      m_climber.setClimber(-0.15);
+      timer.stop();
+      timer.reset();
+      timerState++;
+      timer.start();
+    }
+
+    //stop the motor
+    m_climber.setClimber(0.0);
+    if(timer.get() >= 0.5 && timerState == 2) {
+      //pull the slack
+      m_climber.setClimber(0.1);
+      timer.stop();
+      timer.reset();
+      timerState++;
+      timer.start();
+    }
+    //stop the motor
+    m_climber.setClimber(0.0);
+    //disengage the piston
+    //engage the piston
+    m_climber.setClimbPiston(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,6 +83,8 @@ public class SetClimberPiston extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    //stop the motor
+    m_climber.setClimber(0.0);
   }
 
   // Returns true when the command should end.
