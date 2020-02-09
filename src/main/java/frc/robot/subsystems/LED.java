@@ -18,16 +18,18 @@ public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  AddressableLED LEDStripA, LEDStripB;
-  AddressableLEDBuffer LEDBuffer;
+  private AddressableLED LEDStripA, LEDStripB;
+  private AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
   private int red, green, blue;
+  double rainbows = 3;
+  double speed = 8;
 
   public LED() {
     LEDStripA = new AddressableLED(Constants.ledPortA);
 //    LEDStripB = new AddressableLED(Constants.ledPortB);
-    LEDBuffer = new AddressableLEDBuffer(48);
+    LEDBuffer = new AddressableLEDBuffer(40);
     LEDStripA.setLength(LEDBuffer.getLength());
     LEDStripA.setData(LEDBuffer);
     LEDStripA.start();
@@ -35,6 +37,10 @@ public class LED extends SubsystemBase {
 //    LEDStripB.setData(LEDBuffer);
 //    LEDStripB.start();
 
+    red = 0;
+    green = 125;
+    blue = 0;
+    setSolidColor();
 //    SmartDashboard.putNumber("Rainbows", rainbows);
 //    SmartDashboard.putNumber("Speed", speed);
   }
@@ -43,7 +49,7 @@ public class LED extends SubsystemBase {
     this.red = red;
     this.blue = blue;
     this.green = green;
-  };
+  }
 
   public void setSolidColor(){
     for(int i = 0; i < LEDBuffer.getLength(); i++){
@@ -108,16 +114,17 @@ public class LED extends SubsystemBase {
     Timer.delay(0.03);
   }
 
-  double rainbows = 3;
-  double speed = 8;
-  boolean uptakeSensorTripped = false;
+  public void setBuffer() {
+    LEDStripA.setData(LEDBuffer);
+//    LEDStripB.setData(LEDBuffer);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setRainbow(rainbows, speed);
+    //setRainbow(rainbows, speed);
     rainbows = SmartDashboard.getNumber("Rainbows", 0);
     speed = SmartDashboard.getNumber("Speed", 0);
-    LEDStripA.setData(LEDBuffer);
-//    LEDStripB.setData(LEDBuffer);
+    setBuffer();
   }
 }

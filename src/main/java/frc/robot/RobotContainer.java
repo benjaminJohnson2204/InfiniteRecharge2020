@@ -113,7 +113,7 @@ public class RobotContainer {
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
-    m_led.setDefaultCommand(new LEDCommand(m_led));
+    //m_led.setDefaultCommand(new LEDCommand(m_led));
 
     m_vision.initUSBCamera();
     m_vision.openSightInit();

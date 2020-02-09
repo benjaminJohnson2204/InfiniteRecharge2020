@@ -45,7 +45,7 @@ public class Turret extends SubsystemBase {
 
   private CANCoder encoder = new CANCoder(Constants.turretEncoder);
 
-  private TalonSRX turretMotor = new TalonSRX(30);
+  private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
 
   private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
   private boolean turretHomeSensorLatch = false;
@@ -59,18 +59,18 @@ public class Turret extends SubsystemBase {
     turretMotor.configFactoryDefault();
     turretMotor.setNeutralMode(NeutralMode.Brake);
     turretMotor.setInverted(true);
-    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    turretMotor.setSensorPhase(true);
+//    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+//    turretMotor.setSensorPhase(true);
     turretMotor.setSelectedSensorPosition(0);
-//    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
-//    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
+    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
     turretMotor.config_kF(0, kF);
     turretMotor.config_kP(0, kP);
     turretMotor.config_IntegralZone(0, kI_Zone);
     turretMotor.config_kI(0, kI);
     turretMotor.config_kD(0, kD);
-    turretMotor.configMotionCruiseVelocity(140000);
-    turretMotor.configMotionAcceleration(1400000);
+    turretMotor.configMotionCruiseVelocity(14000);
+    turretMotor.configMotionAcceleration(140000);
     turretMotor.configAllowableClosedloopError(0, kErrorBand);
 
     initShuffleboard();
@@ -112,6 +112,10 @@ public class Turret extends SubsystemBase {
     return !turretHomeSensor.get();
   }
 
+  public double getSetpoint() {
+    return setpoint;
+  }
+
   public void setPercentOutput(double output){
     turretMotor.set(ControlMode.PercentOutput, output);
   }
@@ -136,17 +140,17 @@ public class Turret extends SubsystemBase {
     return Math.abs(turretMotor.getClosedLoopError()) < kErrorBand;
   }
 
-  public void initShuffleboard() {
-    Shuffleboard.getTab("SmartDashboard").addNumber("Turret Motor Output", turretMotor::getMotorOutputPercent);
+  private void initShuffleboard() {
+    Shuffleboard.getTab("Turret").addNumber("Robot Relative Angle", this:: getTurretAngle);
+    Shuffleboard.getTab("Turret").addNumber("Field Relative Angle", this:: getFieldRelativeAngle);
+    Shuffleboard.getTab("Turret").addNumber("Output", turretMotor::getMotorOutputPercent);
+    Shuffleboard.getTab("Turret").addNumber("Error", turretMotor::getClosedLoopError);
+    Shuffleboard.getTab("Turret").addNumber("Setpoint", this::getSetpoint);
+    Shuffleboard.getTab("Turret").addBoolean("Home", this::getTurretHome);
   }
 
-
   public void updateSmartdashboard() {
-    SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
-    SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
-    SmartDashboard.putNumber("Turret Setpoint ", setpoint);
 
-    SmartDashboard.getBoolean("Turret Home", getTurretHome());
   }
 
   @Override

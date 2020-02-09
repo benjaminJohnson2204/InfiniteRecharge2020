@@ -20,7 +20,7 @@ public class LEDCommand extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param The subsystem used by this command.
    */
   public LEDCommand(LED led) {
     m_led = led;
@@ -31,13 +31,13 @@ public class LEDCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_led.setRGB(0, 125, 0);
+    m_led.setSolidColor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_led.setRGB(75, 20, 150);
-    m_led.setSolidColor();
   }
 
   // Called once the command ends or is interrupted.

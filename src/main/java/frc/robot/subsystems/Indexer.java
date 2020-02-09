@@ -113,7 +113,7 @@ public class Indexer extends SubsystemBase {
     master.set(output);
   }
 
-  public void updateSmartDashboard(){
+  private void updateSmartDashboard(){
     SmartDashboard.putNumber("Motor Output", master.getAppliedOutput());
     SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
     SmartDashboard.putNumber("Motor Position", getPosition());

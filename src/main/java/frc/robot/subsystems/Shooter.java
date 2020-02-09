@@ -45,7 +45,6 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[0].setInverted(true);
     outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
 
-
     outtakeMotors[0].config_kF(0, kF);
     outtakeMotors[0].config_kP(0, kP);
     outtakeMotors[0].config_kI(0, kI);
@@ -58,38 +57,30 @@ public class Shooter extends SubsystemBase {
 
     initShuffleboard();
   }
-  
-
-  public void startSpin(double output){
-    outtakeMotors[0].set(ControlMode.PercentOutput, rpmOutput);
-  }
 
   public void setPower(double output) {
-    outtakeMotors[0].set(ControlMode.PercentOutput, output/1.2);
+    outtakeMotors[0].set(ControlMode.PercentOutput, output);
   }
-  public void spinTurret(double output, int direction){
-    //turretMotor.set(ControlMode.PercentOutput, output*direction);
-  }
-
 
   public void setRPM(double setpoint){
-    outtakeMotors[0].set(ControlMode.Velocity, setpoint);
+    outtakeMotors[0].set(ControlMode.Velocity, RPMtoFalconUnits(setpoint));
   }
 
   public boolean encoderAtSetpoint(int motorIndex){
     return (Math.abs(outtakeMotors[motorIndex].getClosedLoopError()) < 100);
   }
   public double getRPM(int motorIndex) {
-    return outtakeMotors[motorIndex].getSelectedSensorVelocity();
-//    return falconUnitsToRPM(outtakeMotors[motorIndex].getSelectedSensorVelocity());
+    return falconUnitsToRPM(outtakeMotors[motorIndex].getSelectedSensorVelocity());
   }
   public double falconUnitsToRPM(double sensorUnits) {
     return (sensorUnits/2048.0)*600;
   }
+
   public double RPMtoFalconUnits(double RPM) {
     return (RPM/600.0)*2048.0;
   }
-  public void initShuffleboard() {
+
+  private void initShuffleboard() {
     Shuffleboard.getTab("Shooter").addNumber("RPM Primary", () -> this.getRPM(0));
     Shuffleboard.getTab("Shooter").addNumber("RPM Secondary", () -> this.getRPM(1));
     Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
@@ -97,7 +88,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("RPM Output", rpmOutput);
   }
 
-  public void updateShuffleboard(){
+  private void updateShuffleboard(){
     SmartDashboard.putNumber("RPM", outtakeMotors[0].getSelectedSensorVelocity());
     SmartDashboard.putNumber("RPM 2", outtakeMotors[1].getSelectedSensorVelocity());
     SmartDashboard.putNumber("Voltage", outtakeMotors[0].getBusVoltage());
@@ -105,9 +96,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Position", outtakeMotors[0].getSelectedSensorPosition());
     rpmOutput = SmartDashboard.getNumber("RPM Output", 0);
   }
-
-
-
 
   @Override
   public void periodic() {
