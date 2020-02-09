@@ -59,12 +59,12 @@ public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
   @Override
   public void execute() {
     if(m_turret.getControlMode() == 1) {
-      if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
+      if(limelightDisabled)
+        m_vision.ledsOff(); //TODO: make this automatically go towards where it thinks the target is.
+      else
+        m_vision.ledsOn();
 
-        if(!limelightDisabled){
-          directionTripped = false;
-          limelightDisabled = true;
-        }
+      if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
 
         if(!directionTripped) {
           direction = m_yInput.getAsDouble() < 0;
@@ -93,65 +93,38 @@ public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
           }
         }
         movedJoystick = true;
-      } else {
-        directionTripped = false;
-        if(movedJoystick){
-          movedJoystick = false;
-          limelightDisabled = false;
+      } else if (m_vision.hasTarget()){
+        setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
+
+        if(setpoint > m_turret.getMaxAngle())
+          setpoint -= 360;
+        else if(setpoint < m_turret.getMinAngle())
+          setpoint += 360;
+
+        if (timeout) {
+          timer.stop();
+          timer.reset();
+          timeout = false;
+        }
+      } else { //if you can't see the target for x seconds, then disable the limelight
+        timer.start();
+        timeout = true;
+        if (timer.get() > 1) { //change value if needed
+          timer.stop();
+          timer.reset();
+          timeout = false;
+          limelightDisabled = true;
         }
       }
 
-      if(limelightDisabled)
-        m_vision.ledsOff(); //TODO: make this automatically go towards where it thinks the target is.
-      else
-        m_vision.ledsOn();
-
-      if (!limelightDisabled) {
-        if (limelightMovementDisabled) {
-          if (m_turret.atTarget() && m_vision.hasTarget()) {
-            limelightMovementDisabled = false;
-          }
-        } else if (m_vision.hasTarget()) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
-
-          if(!directionTripped) {
-            direction = (m_turret.getTurretAngle() + m_vision.getTargetX()) < 0;
-            directionTripped = true;
-          }
-
-          setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
-
-          if(direction) {
-            if(setpoint > m_turret.getMaxAngle()) {
-              setpoint -= 360;
-              direction = false;
-            }
-          } else {
-            if (setpoint < m_turret.getMinAngle()) {
-              direction = true;
-              setpoint += 360;
-            }
-          }
-
-          if (timeout) {
-            timer.stop();
-            timer.reset();
-            timeout = false;
-          }
-        } else { //if you can't see the target for x seconds, then disable the limelight
-          timer.start();
-          timeout = true;
-          if (timer.get() > 1) { //change value if needed
-            timer.stop();
-            timer.reset();
-            timeout = false;
-            limelightDisabled = true;
-            directionTripped = false;
-          }
-        }
+      if(movedJoystick){
+        movedJoystick = false;
+        limelightDisabled = false;
       }
+
       m_turret.setSetpoint(setpoint);
     } else {
-      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode
+      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode TODO: re-tune
     }
   }
 
