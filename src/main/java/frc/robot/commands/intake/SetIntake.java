@@ -17,13 +17,15 @@ import frc.robot.subsystems.Intake;
 public class SetIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Intake m_intake;
+  private double m_output;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetIntake(Intake intake) {
+  public SetIntake(Intake intake, double output) {
     m_intake = intake;
+    m_output = output;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake);
   }
@@ -36,7 +38,7 @@ public class SetIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_intake.setIntake(0.5);
+    m_intake.setIntake(m_output);
   }
 
   // Called once the command ends or is interrupted.

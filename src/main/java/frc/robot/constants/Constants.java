@@ -52,8 +52,8 @@ public final class Constants {
     //Solenoid addresses
     public static final int driveTrainShiftersForward = 0;
     public static final int driveTrainShiftersReverse = 1;
-    public static final int intakePistonForward = 2;
-    public static final int intakePistonReverse = 3;
+    public static final int intakePistonForward = 4; // 2
+    public static final int intakePistonReverse = 5; // 3
     public static final int climbPistonForward = 4;
     public static final int climbPistonReverse = 5;
 }
