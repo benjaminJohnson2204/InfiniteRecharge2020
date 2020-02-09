@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,10 +19,7 @@ import frc.robot.constants.Constants;
 
 public class Climber extends SubsystemBase {
 
-  private TalonSRX[] climberMotors = {
-          new TalonSRX(Constants.climbMotorA),
-          new TalonSRX(Constants.climbMotorB),
-  };
+  private CANSparkMax climbMotor = new CANSparkMax(Constants.climbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
 
   DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne,  Constants.climbPistonForward, Constants.climbPistonReverse);
 
@@ -33,17 +32,50 @@ public class Climber extends SubsystemBase {
   }
 
   public Climber() {
-    climberMotors[0].configFactoryDefault();
-    climberMotors[0].setNeutralMode(NeutralMode.Coast);
-    climberMotors[1].configFactoryDefault();
-    climberMotors[1].setNeutralMode(NeutralMode.Coast);
+    climbMotor.restoreFactoryDefaults();
+    climbMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    climbMotor.setInverted(false);
   }
 
-  public void setClimber(float value) {
-    climberMotors[0].set(ControlMode.PercentOutput, value);
-    climberMotors[0].set(ControlMode.PercentOutput, value);
+  public void setClimber(double value) {
+    climbMotor.set(value);
   }
   public void stop() {
     setClimber(0);
   }
 }
+
+//  private CANSparkMax intakeMotor = new CANSparkMax(Constants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+//
+//  DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
+//
+//  public boolean getIntakePistonExtendStatus(){
+//    return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
+//  }
+//
+//  public void setIntakePiston(boolean state){
+//    intakePiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+//  }
+//
+//  public Intake() {
+//    intakeMotor.restoreFactoryDefaults();
+//    intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+//    intakeMotor.setInverted(false);
+//  }
+//
+//  public void setIntake(double value){
+//    intakeMotor.set(value);
+//  }
+//
+//  public void stop(){
+//    setIntake(0);
+//  }
+//
+////  public double getIntakeVoltage(){
+////    return intakeMotor.getBusVoltage();
+////  }
+//
+//  @Override
+//  public void periodic() {
+//  }
+//}

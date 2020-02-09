@@ -31,8 +31,7 @@ public final class Constants {
     public static final int kickerMotor = 36;
     public static final int flywheelMotorA = 40;
     public static final int flywheelMotorB = 41;
-    public static final int climbMotorA = 50;
-    public static final int climbMotorB = 51;
+    public static final int climbMotor = 50;
     public static final int skyhookMotor = 55;
     public static final int turretMotor = 60;
     public static final int turretEncoder = 61;
