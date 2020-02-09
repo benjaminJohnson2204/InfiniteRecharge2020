@@ -33,21 +33,12 @@ public class Intake extends SubsystemBase {
       intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
     intakeMotor[0].setInverted(false);
-//    intakeMotor[1].setInverted(false);
-
   }
+
   public void setIntake(double value){
     intakeMotor[0].set(value);
-//    intakeMotor[1].set(value);
-
   }
 
-  public void stop(){
-    setIntake(0);
-  }
-//  public double getIntakeVoltage(){
-//    return intakeMotor.getBusVoltage();
-//  }
   @Override
   public void periodic() {
   }
