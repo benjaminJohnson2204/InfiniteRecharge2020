@@ -7,56 +7,54 @@
 
 package frc.robot.commands.indexer;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IndexerCommand extends CommandBase {
+public class EjectAll extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Indexer m_indexer;
+  private final Intake m_shooter;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  int tripped = 0;
-  double setpoint, startTime;
-  public IndexerCommand(Indexer indexer) {
+  double m_setpoint;
+  private double startTime;
+  public EjectAll(Indexer indexer, Intake shooter) {
     m_indexer = indexer;
-
+    m_shooter = shooter;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexer);
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == 0){
-      tripped = 1;
-      startTime = Timer.getFPGATimestamp();
-    }
-    if(tripped == 1)
-      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
-
-    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
-      tripped = 0;
-    }
-
+    m_indexer.setIndexerOutput(-0.6);
+    m_indexer.setKickerOutput(-0.5);
+    m_shooter.setIntake(-0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(final boolean interrupted) {  
+    m_indexer.setKickerOutput(0);
+    m_indexer.setIndexerOutput(0);
+    m_shooter.setIntake(0);
   }
 
   // Returns true when the command should end.
