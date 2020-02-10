@@ -5,58 +5,49 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.skyhook;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Indexer;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.Skyhook;
+
+import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IndexerCommand extends CommandBase {
+public class SetSkyhookOutput extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Indexer m_indexer;
+  private final Skyhook m_subsystem;
+  private final DoubleSupplier m_output;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  int tripped = 0;
-  double setpoint, startTime;
-  public IndexerCommand(Indexer indexer) {
-    m_indexer = indexer;
-
+  double value;
+  public SetSkyhookOutput(Skyhook subsystem, DoubleSupplier output) {
+    m_subsystem = subsystem;
+    m_output = output;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer);
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == 0){
-      tripped = 1;
-      startTime = Timer.getFPGATimestamp();
-    }
-    if(tripped == 1)
-      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
-
-    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
-      tripped = 0;
-    }
-
+    m_subsystem.setSkyhook(m_output.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(boolean interrupted) {
+    m_subsystem.setSkyhook(0);
   }
 
   // Returns true when the command should end.

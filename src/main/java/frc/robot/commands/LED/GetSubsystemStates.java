@@ -5,63 +5,74 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.LED;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.LED;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IndexerCommand extends CommandBase {
+public class GetSubsystemStates extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+  private final LED m_led;
   private final Indexer m_indexer;
+
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param The subsystem used by this command.
    */
-  int tripped = 0;
-  double setpoint, startTime;
-  public IndexerCommand(Indexer indexer) {
+  public GetSubsystemStates(LED led, Indexer indexer) {
+    m_led = led;
     m_indexer = indexer;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer);
+    // Use addRequirements() here to declare subsystem dependencies.    
+    addRequirements(led);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
+    m_led.setRGB(0, 125, 0);
+    m_led.setSolidColor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == 0){
-      tripped = 1;
-      startTime = Timer.getFPGATimestamp();
+    m_led.setRGB(75, 20, 150);
+    m_led.setSolidColor();
+    if(/*climb mode enabled*/false){
+      m_led.setState(0);
     }
-    if(tripped == 1)
-      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
-
-    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
-      tripped = 0;
+    else if(/*Turret is aligning to target*/false || /*Flywheel is spinning, but is not at the required velocity*/false){
+      m_led.setState(1);
     }
-
+    else if(m_indexer.topSensor()) {
+      m_led.setState(2);
+    }
+    else if(m_indexer.newBall()) {
+      m_led.setState(3);
+    }
+    else
+      m_led.setState(-1);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(boolean interrupted) {
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  @Override
+  public boolean runsWhenDisabled(){
+    return true;
   }
 }

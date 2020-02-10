@@ -49,6 +49,7 @@ public class IncrementIndexer extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(final boolean interrupted) {
+    m_indexer.setKickerOutput(0);
     SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
   }
 

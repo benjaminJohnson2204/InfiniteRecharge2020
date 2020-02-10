@@ -8,8 +8,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.ColorSensorV3;
-
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,7 +23,7 @@ public class ColorSensor extends SubsystemBase {
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   
   public ColorSensor() {
-
+    initShuffleboardValues();
   }
 
   public Color getColor() {
@@ -75,21 +75,21 @@ public class ColorSensor extends SubsystemBase {
     return false;
   }
 
-  public void updateSmartDashboard() { //s
-    SmartDashboard.putNumber("Red", getColor().red);
-    SmartDashboard.putNumber("Green", getColor().green);
-    SmartDashboard.putNumber("Blue", getColor().blue);
-    SmartDashboard.putNumber("IR", getIR());
-    SmartDashboard.putNumber("Proximity", getProximity());
-    SmartDashboard.putNumber("Panel Color", panelColor());
-    SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
-    SmartDashboard.putNumber("Semi-Rotations", semiRotations);
+  private void initShuffleboardValues() { //s
+    Shuffleboard.getTab("Color Sensor").addNumber("Red", ()-> getColor().red);
+    Shuffleboard.getTab("Color Sensor").addNumber("Green", ()-> getColor().green);
+    Shuffleboard.getTab("Color Sensor").addNumber("Blue", ()-> getColor().blue);
+    Shuffleboard.getTab("Color Sensor").addNumber("IR", ()-> getIR());
+    Shuffleboard.getTab("Color Sensor").addNumber("Poximity", ()-> getProximity());
+    Shuffleboard.getTab("Color Sensor").addNumber("Panel Color", ()-> panelColor());
+    Shuffleboard.getTab("Color Sensor").addBoolean("Rotation Control Complete", ()-> rotationControlComplete());
+    Shuffleboard.getTab("Color Sensor").addNumber("Semi Rotations", ()-> semiRotations);
     //SmartDashboard.putString("Color", getColorString());
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateSmartDashboard();
+    //updateSmartDashboard();
   }
 }

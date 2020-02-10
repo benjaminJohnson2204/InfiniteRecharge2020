@@ -5,63 +5,58 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Shooter;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class IndexerCommand extends CommandBase {
+public class SetRPM extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Indexer m_indexer;
+  private final Shooter m_shooter;
+  private final double m_RPM;
+  private double time;
+  private boolean printed = false;
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
    */
-  int tripped = 0;
-  double setpoint, startTime;
-  public IndexerCommand(Indexer indexer) {
-    m_indexer = indexer;
-
+  public SetRPM(Shooter shooter, double RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(indexer);
+    m_shooter = shooter;
+    m_RPM = RPM;
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
+      time = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == 0){
-      tripped = 1;
-      startTime = Timer.getFPGATimestamp();
+    m_shooter.setRPM(m_RPM);
+    if(m_shooter.encoderAtSetpoint(0) && printed == false){
+        SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp()-time);
+        printed = true;
     }
-    if(tripped == 1)
-      CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
-
-    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
-      tripped = 0;
-    }
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(boolean interrupted) {
+    m_shooter.setPower(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (false);
   }
 }

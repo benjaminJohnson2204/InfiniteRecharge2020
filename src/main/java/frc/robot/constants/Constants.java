@@ -7,8 +7,6 @@
 
 package frc.robot.constants;
 
-import edu.wpi.first.wpilibj.util.Units;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -30,19 +28,33 @@ public final class Constants {
     public static final int rightRearDriveMotor = 23;
     public static final int intakeMotor = 30;
     public static final int indexerMotor = 35;
-    public static final int kicker = 36;
-    public static final int flywheelMotorA = 40; // 40
+    public static final int kickerMotor = 36;
+    public static final int flywheelMotorA = 40;
     public static final int flywheelMotorB = 41;
-    public static final int leftClimberMotor = 50;
-    public static final int rightClimberMotor = 51;
+    public static final int climbMotorA = 50;
+    public static final int climbMotorB = 51;
     public static final int skyhookMotor = 55;
+    public static final int turretMotor = 60;
+    public static final int turretEncoder = 61;
+
+    // PWM
+    public static final int ledPortA = 0;
+    public static final int ledPortB = 1;
 
     // DIO
     public static final int indexSensor = 0;
     public static final int indexLimitSensor = 1;
+    public static final int secondIndexSensor = 2;
+    public static final int turretHomeSensor = 3;
 
     // PCM
     public static final int pcmOne = 11;
+
+    //Solenoid addresses
     public static final int driveTrainShiftersForward = 0;
     public static final int driveTrainShiftersReverse = 1;
+    public static final int intakePistonForward = 2;
+    public static final int intakePistonReverse = 3;
+    public static final int climbPistonForward = 4;
+    public static final int climbPistonReverse = 5;
 }

@@ -7,8 +7,11 @@
 
 package frc.robot.commands.shooter;
 
-import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.Shooter;
 
 /**
  * An example command that uses an example subsystem.
@@ -16,10 +19,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class StartShooterMotors extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter m_shooter;
+  private double time;
+  private boolean printed = false;
   /**
    * Creates a new ExampleCommand.
    *
-   * @param m_shooter The subsystem used by this command.
+   * @param RobotContainer.m_shooter The subsystem used by this command.
    */
   public StartShooterMotors(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -30,19 +35,20 @@ public class StartShooterMotors extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooter.startSpin(1);
+    time = Timer.getFPGATimestamp();
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    m_shooter.setRPM(m_shooter.power);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.startSpin(0);
+    m_shooter.setPower(0);
   }
 
   // Returns true when the command should end.

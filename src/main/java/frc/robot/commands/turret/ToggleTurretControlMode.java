@@ -5,38 +5,37 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.LED;
+package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.LED;
+import frc.robot.subsystems.Turret;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class LEDCommand extends CommandBase {
+public class ToggleTurretControlMode extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final LED m_led;
-
+  private final Turret m_turret;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public LEDCommand(LED led) {
-    m_led = led;
-    // Use addRequirements() here to declare subsystem dependencies.    addRequirements(led);
+  public ToggleTurretControlMode(Turret subsystem) {
+    m_turret = subsystem;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_turret.toggleControlMode();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_led.setRGB(75, 20, 150);
-    m_led.setSolidColor();
   }
 
   // Called once the command ends or is interrupted.
@@ -47,6 +46,11 @@ public class LEDCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
+  }
+
+  @Override
+  public boolean runsWhenDisabled(){
+    return true;
   }
 }
