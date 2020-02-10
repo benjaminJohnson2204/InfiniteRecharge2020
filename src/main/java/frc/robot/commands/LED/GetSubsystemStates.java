@@ -53,7 +53,7 @@ public class GetSubsystemStates extends CommandBase {
     else if(m_indexer.topSensor()) {
       m_led.setState(2);
     }
-    else if(m_indexer.newBall) {
+    else if(m_indexer.newBall()) {
       m_led.setState(3);
     }
     else

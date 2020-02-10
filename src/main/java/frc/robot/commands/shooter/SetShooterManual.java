@@ -8,6 +8,7 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Shooter;
@@ -20,6 +21,7 @@ public class SetShooterManual extends CommandBase {
   private final Shooter m_shooter;
   private final Indexer m_indexer;
   private double time;
+  private boolean test, stopTest;
   private boolean printed = false;
   /**
    * Creates a new ExampleCommand.
@@ -38,7 +40,6 @@ public class SetShooterManual extends CommandBase {
   @Override
   public void initialize() {
     time = Timer.getFPGATimestamp();
-    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,9 +50,16 @@ public class SetShooterManual extends CommandBase {
     if (Math.abs(m_shooter.getRPM(0) - 3500) < 50) {
       m_indexer.setIndexerOutput(1);
       m_indexer.setKickerOutput(1);
+      if(!test) {
+        test = true;
+        time = Timer.getFPGATimestamp();
+      } else if(!stopTest){
+        SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
+        stopTest = true;
+      }
     } else if (!m_indexer.topSensor()) {
-//      m_indexer.setIndexerOutput(1);
-//      m_indexer.setKickerOutput(0);
+      m_indexer.setIndexerOutput(1);
+      m_indexer.setKickerOutput(-0.25);
     } else {
       m_indexer.setIndexerOutput(0);
       m_indexer.setKickerOutput(0);

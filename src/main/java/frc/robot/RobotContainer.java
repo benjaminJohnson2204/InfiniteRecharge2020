@@ -149,7 +149,8 @@ public class RobotContainer {
     //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
     xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
-    xBoxLeftTrigger.whileHeld(new SetIntake(m_intake, 0.5)); // Deploy intake
+    //xBoxLeftTrigger.whileHeld(new SetIntake(m_intake, 0.5)); // Deploy intake
+    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
     xBoxButtons[4].whenPressed(new SetIntakePiston(m_intake, false));
     xBoxButtons[5].whileHeld(new SetShooterManual(m_shooter, m_indexer));
     //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
