@@ -80,6 +80,10 @@ public class Indexer extends SubsystemBase {
     return (!intakeSensor.get());
   }
 
+  public boolean secondSensor(){
+    return !secondSensor.get();
+  }
+
   boolean pTripped = false;
   public boolean newBall(){
     boolean returnVal;

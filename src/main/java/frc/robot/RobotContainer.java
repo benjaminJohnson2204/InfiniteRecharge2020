@@ -35,6 +35,8 @@ import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
+import frc.robot.commands.indexer.ControlledIntake;
+import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
@@ -110,7 +112,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
-    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
+    //m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
     m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
 
 //    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
@@ -154,10 +156,9 @@ public class RobotContainer {
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
     //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
+    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_indexer, m_intake)); // Deploy intake
     xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
-    //xBoxLeftTrigger.whileHeld(new SetIntake(m_intake, 0.5)); // Deploy intake
-    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
-    xBoxButtons[4].whenPressed(new SetIntakePiston(m_intake, false));
+    xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     xBoxButtons[5].whileHeld(new SetShooterManual(m_shooter, m_indexer));
     //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
     xBoxButtons[0].whenPressed(new ExtendClimber(m_climber)); //A - toggle driver climb mode
