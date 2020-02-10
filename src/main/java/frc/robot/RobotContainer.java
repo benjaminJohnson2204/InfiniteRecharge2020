@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.climber.ExtendClimber;
+import frc.robot.commands.climber.RetractClimber;
+import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntake;
@@ -102,22 +105,24 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
-            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
+//    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
+//            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
     m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
-            () -> xBoxController.getRawAxis(0),
-            () -> xBoxController.getRawAxis(1)));
+//    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
+//            () -> xBoxController.getRawAxis(0),
+//            () -> xBoxController.getRawAxis(1)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
     //m_led.setDefaultCommand(new LEDCommand(m_led));
 
     m_vision.initUSBCamera();
     m_vision.openSightInit();
+
+    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
   }
 
   /**
@@ -154,7 +159,8 @@ public class RobotContainer {
     xBoxButtons[4].whenPressed(new SetIntakePiston(m_intake, false));
     xBoxButtons[5].whileHeld(new SetShooterManual(m_shooter, m_indexer));
     //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
-    //xBoxButtons[0].whenPressed(new Command()); //A - toggle driver climb mode
+    xBoxButtons[0].whenPressed(new ExtendClimber(m_climber)); //A - toggle driver climb mode
+    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
     //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
     //xBoxButtons[2].whenPressed(new Command()); //X - manual move uptake
     //xBoxButtons[3].whenPressed(new Command()); //Y -

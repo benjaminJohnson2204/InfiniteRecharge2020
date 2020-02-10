@@ -42,9 +42,10 @@ public final class Constants {
     public static final int ledPortB = 1;
 
     // DIO
-    public static final int indexSensor = 0;
-    public static final int indexLimitSensor = 1;
-    public static final int turretHomeSensor = 2;
+    public static final int intakeSensor = 0;
+    public static final int indexerTopSensor = 1;
+    public static final int indexerBottomSensor = 2;
+    public static final int turretHomeSensor = 3;
 
     // PCM
     public static final int pcmOne = 11;
@@ -54,6 +55,6 @@ public final class Constants {
     public static final int driveTrainShiftersReverse = 1;
     public static final int intakePistonForward = 4; // 2
     public static final int intakePistonReverse = 5; // 3
-    public static final int climbPistonForward = 4;
-    public static final int climbPistonReverse = 5;
+    public static final int climbPistonForward = 6;
+    public static final int climbPistonReverse = 7;
 }

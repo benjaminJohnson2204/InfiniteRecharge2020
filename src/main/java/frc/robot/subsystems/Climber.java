@@ -9,30 +9,33 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class Climber extends SubsystemBase {
 
-  private CANSparkMax[] climberMotors = {
-      new CANSparkMax(Constants.climbMotorA, MotorType.kBrushless),
-      new CANSparkMax(Constants.climbMotorB, MotorType.kBrushless)
-  };
+  private CANSparkMax climbMotor = new CANSparkMax(Constants.climbMotorA, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+  DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne,  Constants.climbPistonForward, Constants.climbPistonReverse);
+
   public Climber() {
-    for(CANSparkMax motor: climberMotors) {
-      motor.restoreFactoryDefaults();
-      motor.setIdleMode(IdleMode.kBrake);
-    }
-    climberMotors[1].follow(climberMotors[0], true);
+    climbMotor.restoreFactoryDefaults();
+    climbMotor.setIdleMode(IdleMode.kBrake);
+    climbMotor.setInverted(true);
+  }
+
+  public boolean getClimbPistonExtendStatus(){
+    return climbPiston.get() == DoubleSolenoid.Value.kForward ? true : false;
+  }
+
+  public void setClimbPiston(boolean state){
+    climbPiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
   }
 
   public void setClimber(double value) {
-    climberMotors[0].set(value);
-  }
-
-  public void stop() {
-    setClimber(0);
+    climbMotor.set(value);
   }
 
   @Override

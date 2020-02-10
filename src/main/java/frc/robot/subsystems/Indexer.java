@@ -8,19 +8,15 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.SparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
@@ -33,8 +29,9 @@ public class Indexer extends SubsystemBase {
   CANEncoder encoder = master.getEncoder();
   VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
   CANPIDController pidController = master.getPIDController();
-  DigitalInput sensor = new DigitalInput(Constants.indexSensor);
-  DigitalInput limitSensor = new DigitalInput(Constants.indexLimitSensor);
+  DigitalInput intakeSensor = new DigitalInput(Constants.intakeSensor);
+  DigitalInput indexerTopSensor = new DigitalInput(Constants.indexerTopSensor);
+  DigitalInput indexerBottomSensor = new DigitalInput(Constants.indexerBottomSensor);
 
   private double targetSetpoint;
 //  private double kF = 1.67;
@@ -80,7 +77,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean sensorTripped(){
-    return (!sensor.get());
+    return (!intakeSensor.get());
   }
 
   boolean pTripped = false;
@@ -99,7 +96,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean topSensor(){
-    return !limitSensor.get();
+    return !indexerTopSensor.get();
   }
 
   public void incrementIndexer(double setpoint){
@@ -121,7 +118,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean indexerFull(){
-    return !limitSensor.get();
+    return !indexerTopSensor.get();
   }
 
   public void setKickerOutput(double output) {
