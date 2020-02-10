@@ -116,13 +116,14 @@ public class RobotContainer {
 //    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
 //            () -> xBoxController.getRawAxis(0),
 //            () -> xBoxController.getRawAxis(1)));
-    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
     //m_led.setDefaultCommand(new LEDCommand(m_led));
 
     m_vision.initUSBCamera();
     m_vision.openSightInit();
 
+    // TODO: Update these to use the correct axis
     m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
+    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(0)));
   }
 
   /**

@@ -38,6 +38,7 @@ public class SetClimberOutput extends CommandBase {
   }
   @Override
   public void execute() {
+    if(m_climber.getClimbState())
       m_climber.setClimber(m_input.getAsDouble());
   }
 

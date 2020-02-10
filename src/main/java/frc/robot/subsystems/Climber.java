@@ -20,6 +20,8 @@ public class Climber extends SubsystemBase {
 
   DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne,  Constants.climbPistonForward, Constants.climbPistonReverse);
 
+  private boolean climbState;
+
   public Climber() {
     climbMotor.restoreFactoryDefaults();
     climbMotor.setIdleMode(IdleMode.kBrake);
@@ -32,6 +34,14 @@ public class Climber extends SubsystemBase {
 
   public void setClimbPiston(boolean state){
     climbPiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+  }
+
+  public boolean getClimbState() {
+    return climbState;
+  }
+
+  public void setClimbState(boolean climbState) {
+    this.climbState = climbState;
   }
 
   public void setClimber(double value) {
