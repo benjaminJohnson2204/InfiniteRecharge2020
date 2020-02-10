@@ -43,10 +43,17 @@ public class Indexer extends SubsystemBase {
   private double kI = 80;
   private double kD = 0.0001;
 
+  private double kI_Zone = 1;
+
+  private double gearRatio = 1.0 / 27.0;
+
   private int controlMode = 1;
 
   public Indexer() {
     master.restoreFactoryDefaults();
+    master.setInverted(true);
+    master.setIdleMode(IdleMode.kBrake);
+
     pidController.setFF(kF);
     pidController.setP(kP);
     pidController.setI(kI);
@@ -54,10 +61,10 @@ public class Indexer extends SubsystemBase {
     pidController.setSmartMotionMaxVelocity(1.1e4, 0); // Formerly 1.1e4
     pidController.setSmartMotionMaxAccel(1e6, 0); // Formerly 1e6
     pidController.setSmartMotionAllowedClosedLoopError(1, 0);
-    pidController.setIZone(1);
-    master.setInverted(true);
+    pidController.setIZone(kI_Zone);
+
+    kicker.configFactoryDefault();
     kicker.setInverted(true);
-    master.setIdleMode(IdleMode.kBrake);
 
 //    SmartDashboard.putNumber("kF", kF);
 //    SmartDashboard.putNumber("kP", kP);
@@ -81,7 +88,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public boolean secondSensor(){
-    return !secondSensor.get();
+    return !indexerBottomSensor.get();
   }
 
   boolean pTripped = false;
@@ -109,6 +116,12 @@ public class Indexer extends SubsystemBase {
     pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
   }
 
+  public void setRPM(double rpm) {
+    double setpoint = rpm * gearRatio;
+    pidController.setReference(targetSetpoint, ControlType.kSmartVelocity);
+
+  }
+
   public void resetEncoderPosition(){
     encoder.setPosition(0);
   }
@@ -133,11 +146,21 @@ public class Indexer extends SubsystemBase {
     master.set(output);
   }
 
+  public double getRPM() {
+    return encoder.getVelocity() * gearRatio;
+  }
+
+  double maxRPM;
   private void updateSmartDashboard(){
-    SmartDashboard.putNumber("Motor Output", master.getAppliedOutput());
-    SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
-    SmartDashboard.putNumber("Motor Position", getPosition());
-    
+//    SmartDashboard.putNumber("Motor Output", master.getAppliedOutput());
+//    SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
+//    SmartDashboard.putNumber("Motor Position", getPosition());
+
+    SmartDashboard.putNumber("Indexer RPM", getRPM());
+    if(getRPM() > maxRPM) {
+      maxRPM = getRPM();
+      SmartDashboard.putNumber("Indexer Max RPM", maxRPM);
+    }
   }
 
   private void updatePIDValues() {
@@ -150,10 +173,11 @@ public class Indexer extends SubsystemBase {
     pidController.setI(kI);
     pidController.setD(kD);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //updateSmartDashboard();
+    updateSmartDashboard();
     //updatePIDValues();
   }
 }

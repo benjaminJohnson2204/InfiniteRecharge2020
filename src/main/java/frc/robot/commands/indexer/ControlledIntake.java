@@ -59,7 +59,7 @@ public class ControlledIntake extends CommandBase {
     SmartDashboard.putString("Intake State", intakeState.toString());
     
     if(intakeState != IntakeStates.INTAKE_FIVE_BALLS){
-      m_intake.setIntake(0.75);
+      m_intake.setIntakePercentOutput(0.75);
       m_indexer.setKickerOutput(-0.2);
     }
     if(!setpointCommand){
@@ -98,7 +98,7 @@ public class ControlledIntake extends CommandBase {
   @Override
   public void end(final boolean interrupted) {
     m_indexer.setKickerOutput(0);
-    m_intake.setIntake(0);
+    m_intake.setIntakePercentOutput(0);
     SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
   }
 
