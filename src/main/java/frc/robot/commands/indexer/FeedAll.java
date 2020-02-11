@@ -9,7 +9,6 @@ package frc.robot.commands.indexer;
 
 import frc.robot.subsystems.Indexer;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -55,7 +54,7 @@ public class FeedAll extends CommandBase {
   @Override
   public boolean isFinished() {
     double time = Timer.getFPGATimestamp();
-    if(m_indexer.topSensor()){
+    if(m_indexer.getIndexerTopSensor()){
       time = Timer.getFPGATimestamp();
     }
     if(time >= 2)

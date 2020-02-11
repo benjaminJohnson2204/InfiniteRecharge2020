@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setRPM(double rpm){
-    double setpoint =  rpm * gearRatio;
+    double setpoint =  rpm / gearRatio;
     canPidController.setReference(setpoint, ControlType.kSmartVelocity);
   }
 

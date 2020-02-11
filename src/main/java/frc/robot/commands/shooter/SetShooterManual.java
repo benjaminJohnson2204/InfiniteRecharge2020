@@ -57,7 +57,7 @@ public class SetShooterManual extends CommandBase {
         SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
         stopTest = true;
       }
-    } else if (!m_indexer.topSensor()) {
+    } else if (!m_indexer.getIndexerTopSensor()) {
       m_indexer.setIndexerOutput(1);
       m_indexer.setKickerOutput(-0.25);
     } else {

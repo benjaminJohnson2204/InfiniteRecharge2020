@@ -22,15 +22,17 @@ public class ControlledIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Indexer m_indexer;
   private final Intake m_intake;
+
+  private double intakeRPM = 400;
+  private double startTime;
+  private boolean intaking;
+
+  private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  double m_setpoint;
-  private double startTime;
-  private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
-  boolean setpointCommand, timerLatch;
   public ControlledIntake(Indexer indexer, Intake intake) {
     m_indexer = indexer;
     m_intake = intake;
@@ -42,64 +44,73 @@ public class ControlledIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intakeState = IntakeStates.INTAKE_EMPTY;
+    if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
+      intakeState = IntakeStates.INTAKE_FIVE_BALLS;
+    else if(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
+      intakeState = IntakeStates.INTAKE_FOUR_BALLS;
+    else if(m_indexer.getIndexerBottomSensor())
+      intakeState = IntakeStates.INTAKE_ONE_BALL;
+    else
+      intakeState = IntakeStates.INTAKE_EMPTY;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(m_indexer.topSensor() && m_indexer.secondSensor() && m_indexer.sensorTripped())
-      intakeState = IntakeStates.INTAKE_FIVE_BALLS;
-    else if(m_indexer.topSensor())
-      intakeState = IntakeStates.INTAKE_FOUR_BALLS;
-    else if(m_indexer.secondSensor())
-      intakeState = IntakeStates.INTAKE_ONE_BALL;
-
     SmartDashboard.putString("Intake State", intakeState.toString());
-    
-    if(intakeState != IntakeStates.INTAKE_FIVE_BALLS){
-      m_intake.setIntakePercentOutput(0.75);
-      m_indexer.setKickerOutput(-0.2);
-    }
-    if(!setpointCommand){
-      if(intakeState == IntakeStates.INTAKE_EMPTY){
-        if(m_indexer.sensorTripped()){
-          m_setpoint = m_indexer.getPosition() + 12 / (1.25 * Math.PI) * 20;
-          m_indexer.incrementIndexer(m_setpoint);
-          setpointCommand = true;
+
+    switch (intakeState) {
+      case INTAKE_FIVE_BALLS:
+        m_intake.setRPM(0);
+        m_indexer.setKickerOutput(0);
+        m_indexer.setIndexerOutput(0);
+        break;
+      case INTAKE_FOUR_BALLS:
+        m_intake.setRPM(intakeRPM);
+        if (m_indexer.getIntakeSensor()) {
+          startTime = Timer.getFPGATimestamp();
+          intaking = true;
         }
-      }
-      else if(intakeState == IntakeStates.INTAKE_ONE_BALL){
-        if(m_indexer.sensorTripped()){
-          if(!timerLatch) {
-            startTime = Timer.getFPGATimestamp();
-            timerLatch = true;
-          } else if(timerLatch && Timer.getFPGATimestamp() - startTime > 0.1) {
-            m_setpoint = m_indexer.getPosition() + 4 / (1.25 * Math.PI) * 20;
-            m_indexer.incrementIndexer(m_setpoint);
-            setpointCommand = true;
-            timerLatch = false;
+        if(Timer.getFPGATimestamp() - startTime > 0.1) {
+          intaking = false;
+          intakeState = IntakeStates.INTAKE_FIVE_BALLS;
+        }
+        break;
+      case INTAKE_ONE_BALL:
+        m_intake.setRPM(intakeRPM);
+        if (m_indexer.getIntakeSensor() && !intaking) {
+          m_indexer.setRPM(intakeRPM);
+          startTime = Timer.getFPGATimestamp();
+          intaking = true;
+        } else if (Timer.getFPGATimestamp() - startTime > 0.1) {
+          if (m_indexer.getIndexerBottomSensor()) {
+            m_indexer.setRPM(0);
+            intaking = false;
           }
         }
-      }
-      else if(intakeState == IntakeStates.INTAKE_FOUR_BALLS){
-        if(m_indexer.sensorTripped()){
-          m_setpoint = m_indexer.getPosition() + 1 / (1.25 * Math.PI) * 20;
-          m_indexer.incrementIndexer(m_setpoint);
-          setpointCommand = true;
+        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor())
+          intakeState = IntakeStates.INTAKE_FOUR_BALLS;
+        break;
+      case INTAKE_EMPTY:
+      default:
+        m_intake.setRPM(intakeRPM);
+        if (m_indexer.getIntakeSensor()) {
+          m_indexer.setRPM(intakeRPM);
+          intaking = true;
+        } else if (m_indexer.getIndexerBottomSensor()) {
+          m_indexer.setRPM(0);
+          intaking = false;
+          intakeState = IntakeStates.INTAKE_ONE_BALL;
         }
-      }
+        break;
     }
-    if(m_indexer.onTarget() )
-      setpointCommand = false;
   }
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
-    m_indexer.setKickerOutput(0);
+  public void end(boolean interrupted) {
     m_intake.setIntakePercentOutput(0);
-    SmartDashboard.putNumber("Execution Time", Timer.getFPGATimestamp() - startTime);
+    m_indexer.setIndexerOutput(0);
+    m_indexer.setKickerOutput(0);
   }
 
   // Returns true when the command should end.

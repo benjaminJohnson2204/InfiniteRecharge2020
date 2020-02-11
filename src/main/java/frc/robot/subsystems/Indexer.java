@@ -83,32 +83,33 @@ public class Indexer extends SubsystemBase {
     return controlMode;
   }
 
-  public boolean sensorTripped(){
+  public boolean getIntakeSensor(){
     return (!intakeSensor.get());
   }
 
-  public boolean secondSensor(){
+  public boolean getIndexerBottomSensor(){
     return !indexerBottomSensor.get();
+  }
+
+  public boolean getIndexerTopSensor(){
+    return !indexerTopSensor.get();
   }
 
   boolean pTripped = false;
   public boolean newBall(){
     boolean returnVal;
-    if(pTripped == false && sensorTripped()){
+    if(pTripped == false && getIntakeSensor()){
       returnVal = true;
     }
     else 
       returnVal = false;
-    if(sensorTripped())
+    if(getIntakeSensor())
       pTripped = true;
     else
       pTripped = false;
     return returnVal;
   }
 
-  public boolean topSensor(){
-    return !indexerTopSensor.get();
-  }
 
   public void incrementIndexer(double setpoint){
     targetSetpoint = setpoint;
@@ -117,9 +118,8 @@ public class Indexer extends SubsystemBase {
   }
 
   public void setRPM(double rpm) {
-    double setpoint = rpm * gearRatio;
-    pidController.setReference(targetSetpoint, ControlType.kSmartVelocity);
-
+    double setpoint = rpm / gearRatio;
+    pidController.setReference(setpoint, ControlType.kSmartVelocity);
   }
 
   public void resetEncoderPosition(){

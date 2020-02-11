@@ -7,7 +7,6 @@
 
 package frc.robot.commands.LED;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.LED;
@@ -50,7 +49,7 @@ public class GetSubsystemStates extends CommandBase {
     else if(/*Turret is aligning to target*/false || /*Flywheel is spinning, but is not at the required velocity*/false){
       m_led.setState(1);
     }
-    else if(m_indexer.topSensor()) {
+    else if(m_indexer.getIndexerTopSensor()) {
       m_led.setState(2);
     }
     else if(m_indexer.newBall()) {
