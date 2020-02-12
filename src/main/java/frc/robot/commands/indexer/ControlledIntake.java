@@ -45,10 +45,10 @@ public class ControlledIntake extends CommandBase {
   @Override
   public void initialize() {
     intaking = false;
-    if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor())// && m_indexer.getIndexerTopSensor())
+    if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
-//    else if(m_indexer.getIndexerBottomSensor())// && m_indexer.getIndexerTopSensor())
-//      intakeState = IntakeStates.INTAKE_FOUR_BALLS;
+    else if(m_indexer.getIndexerBottomSensor()) && m_indexer.getIndexerTopSensor())
+      intakeState = IntakeStates.INTAKE_FOUR_BALLS;
     else if(m_indexer.getIndexerBottomSensor())
       intakeState = IntakeStates.INTAKE_ONE_BALL;
     else
@@ -59,7 +59,6 @@ public class ControlledIntake extends CommandBase {
   @Override
   public void execute() {
     SmartDashboard.putString("Intake State", intakeState.toString());
-    //m_indexer.setRPM(intakeRPM);
 
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:

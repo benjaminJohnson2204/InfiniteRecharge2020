@@ -50,19 +50,19 @@ public class SetShooterManual extends CommandBase {
     if (Math.abs(m_shooter.getRPM(0) - 3500) < 50) {
       m_indexer.setIndexerOutput(1);
       m_indexer.setKickerOutput(1);
-      if(!test) {
-        test = true;
-        time = Timer.getFPGATimestamp();
-      } else if(!stopTest){
-        SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
-        stopTest = true;
-      }
-    } else if (!m_indexer.getIndexerTopSensor()) {
-      m_indexer.setIndexerOutput(1);
-      m_indexer.setKickerOutput(-0.25);
-    } else {
-      m_indexer.setIndexerOutput(0);
-      m_indexer.setKickerOutput(0);
+//      if(!test) {
+//        test = true;
+//        time = Timer.getFPGATimestamp();
+//      } else if(!stopTest){
+//        SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
+//        stopTest = true;
+//      }
+//    } else if (!m_indexer.getIndexerTopSensor()) {
+//      m_indexer.setIndexerOutput(1);
+//      m_indexer.setKickerOutput(-0.25);
+//    } else {
+//      m_indexer.setIndexerOutput(0);
+//      m_indexer.setKickerOutput(0);
     }
   }
 
