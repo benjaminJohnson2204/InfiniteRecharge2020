@@ -17,16 +17,17 @@ public class Orchestra extends SubsystemBase {
    * https://www.ctr-electronics.com/downloads/api/java/html/classcom_1_1ctre_1_1phoenix_1_1music_1_1_orchestra.html
    */
   public Orchestra() {
-    addInstrument(Constants.flywheelMotorA);
-    addInstrument(Constants.flywheelMotorB);
+    addInstrument(Constants.leftRearDriveMotor);
   }
 
   public void loadSong(String path){
     loadMusic(path);
   }
+
   public void playSong() {
     play();
   }
+
   public void stopSong() {
     stop();
   }

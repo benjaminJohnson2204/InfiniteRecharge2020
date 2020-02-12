@@ -26,6 +26,7 @@ import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntake;
 import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.intake.SetIntakePiston;
+import frc.robot.commands.orchestra.SetSong;
 import frc.robot.commands.shooter.SetShooterManual;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
@@ -77,29 +78,29 @@ public class RobotContainer {
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
 
-  private enum CommandSelector {
-    DRIVE_STRAIGHT
-  }
-
-  SendableChooser<Integer> m_autoChooser = new SendableChooser();
-  private SelectCommand m_autoCommand = new SelectCommand(
-    Map.ofEntries(
-      entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain))
-    ),
-    this::selectCommand
-  );
+//  private enum CommandSelector {
+//    DRIVE_STRAIGHT
+//  }
+//
+//  SendableChooser<Integer> m_autoChooser = new SendableChooser();
+//  private SelectCommand m_autoCommand = new SelectCommand(
+//    Map.ofEntries(
+//      entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain))
+//    ),
+//    this::selectCommand
+//  );
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    * 
    */
   public RobotContainer() {
-    m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-    for(Enum commandEnum : CommandSelector.values())
-      if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
-        m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
-
-    SmartDashboard.putData(m_autoChooser);
+//    m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
+//    for(Enum commandEnum : CommandSelector.values())
+//      if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+//        m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
+//
+//    SmartDashboard.putData(m_autoChooser);
 
     initializeSubsystems();
     // Configure the button bindings
@@ -107,24 +108,24 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-//    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
-//            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
-    CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
-
-//    m_intake.setDefaultCommand(new SetIntake(m_intake));
-    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
-    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
-
-//    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
-//            () -> xBoxController.getRawAxis(0),
-//            () -> xBoxController.getRawAxis(1)));
-    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
-    //m_led.setDefaultCommand(new LEDCommand(m_led));
-
-    m_vision.initUSBCamera();
-    m_vision.openSightInit();
-
-    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
+////    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
+////            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
+//    CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
+//
+////    m_intake.setDefaultCommand(new SetIntake(m_intake));
+//    m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
+//    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
+//
+////    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
+////            () -> xBoxController.getRawAxis(0),
+////            () -> xBoxController.getRawAxis(1)));
+//    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));
+//    //m_led.setDefaultCommand(new LEDCommand(m_led));
+//
+//    m_vision.initUSBCamera();
+//    m_vision.openSightInit();
+//
+//    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
   }
 
   /**
@@ -149,31 +150,33 @@ public class RobotContainer {
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
-    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear
+      leftButtons[0].whileHeld(new SetSong(m_orchestra)); // runs the set orchestra command. it'll run flight of the bumblebee
 
-    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
-    //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
-
-    xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
-    //xBoxLeftTrigger.whileHeld(new SetIntake(m_intake, 0.5)); // Deploy intake
-    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
-    xBoxButtons[4].whenPressed(new SetIntakePiston(m_intake, false));
-    xBoxButtons[5].whileHeld(new SetShooterManual(m_shooter, m_indexer));
-    //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
-    xBoxButtons[0].whenPressed(new ExtendClimber(m_climber)); //A - toggle driver climb mode
-    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
-    //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
-    //xBoxButtons[2].whenPressed(new Command()); //X - manual move uptake
-    //xBoxButtons[3].whenPressed(new Command()); //Y -
-    //xBoxButtons[4].whileHeld(new Command()); //left bumper - winch up
-    //xBoxButtons[5].whileHeld(new Command()); //right bumper - winch down
-    xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
-    xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
-    //xBoxButtons[8].whenPressed(new Command()); //left stick
-    //xBoxButtons[9].whenPressed(new Command()); //right stick
-
-    xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+//    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
+//    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear
+//
+//    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
+//    //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+//
+//    xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
+//    //xBoxLeftTrigger.whileHeld(new SetIntake(m_intake, 0.5)); // Deploy intake
+//    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
+//    xBoxButtons[4].whenPressed(new SetIntakePiston(m_intake, false));
+//    xBoxButtons[5].whileHeld(new SetShooterManual(m_shooter, m_indexer));
+//    //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
+//    xBoxButtons[0].whenPressed(new ExtendClimber(m_climber)); //A - toggle driver climb mode
+//    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
+//    //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
+//    //xBoxButtons[2].whenPressed(new Command()); //X - manual move uptake
+//    //xBoxButtons[3].whenPressed(new Command()); //Y -
+//    //xBoxButtons[4].whileHeld(new Command()); //left bumper - winch up
+//    //xBoxButtons[5].whileHeld(new Command()); //right bumper - winch down
+//    xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
+//    xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
+//    //xBoxButtons[8].whenPressed(new Command()); //left stick
+//    //xBoxButtons[9].whenPressed(new Command()); //right stick
+//
+//    xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
   }
 
   /**

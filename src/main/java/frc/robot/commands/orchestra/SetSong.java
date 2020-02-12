@@ -32,6 +32,7 @@ public class SetSong extends CommandBase {
   @Override
   public void initialize() {
     m_orchestra.loadSong("src/main/deploy/bumble_bee.mid");
+    m_orchestra.playSong();
 
   }
 
