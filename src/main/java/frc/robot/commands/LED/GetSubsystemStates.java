@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.LED;
 
-/**
+/*
  * An example command that uses an example subsystem.
  */
 public class GetSubsystemStates extends CommandBase {
@@ -20,7 +20,7 @@ public class GetSubsystemStates extends CommandBase {
   private final LED m_led;
   private final Indexer m_indexer;
 
-  /**
+  /*
    * Creates a new ExampleCommand.
    *
    * @param The subsystem used by this command.
@@ -53,7 +53,7 @@ public class GetSubsystemStates extends CommandBase {
     else if(m_indexer.topSensor()) {
       m_led.setState(2);
     }
-    else if(m_indexer.newBall) {
+    else if(m_indexer.newBall()) {
       m_led.setState(3);
     }
     else
