@@ -156,7 +156,8 @@ public class RobotContainer {
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
     //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_indexer, m_intake)); // Deploy intake
+    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+    //xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
     xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
     xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     xBoxButtons[5].whileHeld(new SetShooterManual(m_shooter, m_indexer));
@@ -186,6 +187,7 @@ public class RobotContainer {
     return CommandSelector.values()[m_autoChooser.getSelected()];
   }
   public Command getAutonomousCommand() {
+    // TODO: Uncomment this reference in Robot.java
     return m_autoCommand;
   }
 

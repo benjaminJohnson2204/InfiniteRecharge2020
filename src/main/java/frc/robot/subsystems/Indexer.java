@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
@@ -44,6 +45,8 @@ public class Indexer extends SubsystemBase {
   private double kD = 0.0001;
 
   private double kI_Zone = 1;
+  private double maxVel = 1.1e4;
+  private double maxAccel = 1e6;
 
   private double gearRatio = 1.0 / 27.0;
 
@@ -52,14 +55,15 @@ public class Indexer extends SubsystemBase {
   public Indexer() {
     master.restoreFactoryDefaults();
     master.setInverted(true);
+
     master.setIdleMode(IdleMode.kBrake);
 
     pidController.setFF(kF);
     pidController.setP(kP);
     pidController.setI(kI);
     pidController.setD(kD);
-    pidController.setSmartMotionMaxVelocity(1.1e4, 0); // Formerly 1.1e4
-    pidController.setSmartMotionMaxAccel(1e6, 0); // Formerly 1e6
+    pidController.setSmartMotionMaxVelocity(maxVel, 0); // Formerly 1.1e4
+    pidController.setSmartMotionMaxAccel(maxAccel, 0); // Formerly 1e6
     pidController.setSmartMotionAllowedClosedLoopError(1, 0);
     pidController.setIZone(kI_Zone);
 
@@ -119,6 +123,7 @@ public class Indexer extends SubsystemBase {
 
   public void setRPM(double rpm) {
     double setpoint = rpm / gearRatio;
+    SmartDashboard.putNumber("Indexer Setpoint", setpoint);
     pidController.setReference(setpoint, ControlType.kSmartVelocity);
   }
 
@@ -156,6 +161,9 @@ public class Indexer extends SubsystemBase {
 //    SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
 //    SmartDashboard.putNumber("Motor Position", getPosition());
 
+    SmartDashboard.putBoolean("Intake Sensor", getIntakeSensor());
+    SmartDashboard.putBoolean("IndexerBottom Sensor", getIndexerBottomSensor());
+    SmartDashboard.putBoolean("IndexerTop Sensor", getIndexerTopSensor());
     SmartDashboard.putNumber("Indexer RPM", getRPM());
     if(getRPM() > maxRPM) {
       maxRPM = getRPM();

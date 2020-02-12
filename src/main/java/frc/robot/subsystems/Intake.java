@@ -16,15 +16,15 @@ public class Intake extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  private double kFF;
-  private double kP;
-  private double kI;
-  private double kD;
+  private double kFF = 0.00068; //0.06; //0.122
+  private double kP = 6e-5; //0.492
+  private double kI = 0;
+  private double kD = 0;
 
-  private double kI_Zone;
-  private double allowableError;
-  private double maxVel;
-  private double maxAccel;
+  private double kI_Zone = 0;
+  private double allowableError = 50;
+  private double maxVel = 5880;
+  private double maxAccel = 58800;
   private double gearRatio = 1.0/3.0;
 
   private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
@@ -43,8 +43,8 @@ public class Intake extends SubsystemBase {
     canPidController.setI(kI);
     canPidController.setIZone(kI_Zone);
     canPidController.setD(kD);
-    canPidController.setSmartMotionMaxVelocity(maxVel, 9);
-    canPidController.setSmartMotionMaxVelocity(maxAccel, 0);
+    canPidController.setSmartMotionMaxVelocity(maxVel, 0);
+    canPidController.setSmartMotionMaxAccel(maxAccel, 0);
     canPidController.setSmartMotionAllowedClosedLoopError(allowableError, 0);
   }
 
