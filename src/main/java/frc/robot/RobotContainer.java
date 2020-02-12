@@ -65,6 +65,8 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
+  private Orchestra m_orchestra = new Orchestra();
+
 
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
