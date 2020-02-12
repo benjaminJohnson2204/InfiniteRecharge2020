@@ -19,7 +19,7 @@ import frc.robot.constants.Constants;
 
 public class Climber extends SubsystemBase {
 
-  private CANSparkMax climbMotor = new CANSparkMax(Constants.climbMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private CANSparkMax climbMotor = new CANSparkMax(Constants.climbMotorA, CANSparkMaxLowLevel.MotorType.kBrushless);
 
   DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne,  Constants.climbPistonForward, Constants.climbPistonReverse);
 
@@ -40,42 +40,13 @@ public class Climber extends SubsystemBase {
   public void setClimber(double value) {
     climbMotor.set(value);
   }
+
   public void stop() {
     setClimber(0);
   }
-}
 
-//  private CANSparkMax intakeMotor = new CANSparkMax(Constants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
-//
-//  DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
-//
-//  public boolean getIntakePistonExtendStatus(){
-//    return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
-//  }
-//
-//  public void setIntakePiston(boolean state){
-//    intakePiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
-//  }
-//
-//  public Intake() {
-//    intakeMotor.restoreFactoryDefaults();
-//    intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-//    intakeMotor.setInverted(false);
-//  }
-//
-//  public void setIntake(double value){
-//    intakeMotor.set(value);
-//  }
-//
-//  public void stop(){
-//    setIntake(0);
-//  }
-//
-////  public double getIntakeVoltage(){
-////    return intakeMotor.getBusVoltage();
-////  }
-//
-//  @Override
-//  public void periodic() {
-//  }
-//}
+  @Override
+  public void periodic() {
+
+  }
+}
