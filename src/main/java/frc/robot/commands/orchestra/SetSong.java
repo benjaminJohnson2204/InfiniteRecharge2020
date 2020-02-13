@@ -17,13 +17,16 @@ import frc.robot.subsystems.Orchestra;
 public class SetSong extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Orchestra m_orchestra;
+  private String m_song;
+
   /*
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetSong(Orchestra orchestra) {
+  public SetSong(Orchestra orchestra, String song) {
     m_orchestra = orchestra;
+    m_song = song;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(orchestra);
   }
@@ -31,7 +34,13 @@ public class SetSong extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_orchestra.loadSong("src/main/deploy/bumble_bee.mid");
+    if(m_song=="bumble") {
+      m_orchestra.loadSong("src/main/deploy/bumble_bee.mid");
+    }else if(m_song=="saber") {
+      //m_orchestra.loadSong("lightsaber sound.mid");
+    }else if(m_song=="death") {
+      //m_orchestra.loadSong("death sound.mid");
+    }
     m_orchestra.playSong();
 
   }
@@ -44,6 +53,7 @@ public class SetSong extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+  m_orchestra.stopSong();
   }
 
   // Returns true when the command should end.

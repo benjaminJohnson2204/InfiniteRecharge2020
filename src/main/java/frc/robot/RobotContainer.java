@@ -150,7 +150,7 @@ public class RobotContainer {
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-      leftButtons[0].whileHeld(new SetSong(m_orchestra)); // runs the set orchestra command. it'll run flight of the bumblebee
+      leftButtons[0].whileHeld(new SetSong(m_orchestra, "bumble")); // runs the set orchestra command. it'll run flight of the bumblebee
 
 //    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
 //    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear

@@ -17,6 +17,7 @@ public class Orchestra extends SubsystemBase {
    * https://www.ctr-electronics.com/downloads/api/java/html/classcom_1_1ctre_1_1phoenix_1_1music_1_1_orchestra.html
    */
   public Orchestra() {
+    //using the leftRearDriveMotor as the speaker motor
     addInstrument(Constants.leftRearDriveMotor);
   }
 
@@ -30,6 +31,7 @@ public class Orchestra extends SubsystemBase {
 
   public void stopSong() {
     stop();
+    //note: dont import the badLog stuff, thats the wrong thing
   }
 
   @Override
