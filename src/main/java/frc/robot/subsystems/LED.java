@@ -29,7 +29,7 @@ public class LED extends SubsystemBase {
   double speed = 8;
 
   public LED() {
-    LEDStripA = new AddressableLED(Constants.ledPortA);
+    LEDStripA = new AddressableLED(Constants.ledPort);
 //    LEDStripB = new AddressableLED(Constants.ledPortB);
     LEDBuffer = new AddressableLEDBuffer(39);
     LEDStripA.setLength(LEDBuffer.getLength());
