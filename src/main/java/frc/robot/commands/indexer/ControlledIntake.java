@@ -7,6 +7,7 @@
 
 package frc.robot.commands.indexer;
 
+import com.team254.lib.util.MinTimeBoolean;
 import frc.robot.constants.Enums.IntakeStates;
 
 import frc.robot.subsystems.Indexer;
@@ -24,8 +25,10 @@ public class ControlledIntake extends CommandBase {
   private final Intake m_intake;
 
   private double intakeRPM = 400;
-  private double startTime, timerTwo, stopTime;
-  private boolean intaking, intakingTwo;
+  private double timestamp, intakeTimestamp, indexerTimestamp;
+  private MinTimeBoolean intakeSensorTimed, indexerBottomTimed, indexerToppedTimed;
+  private MinTimeBoolean fourBallTrigger = new MinTimeBoolean(0.1);
+  private boolean intaking;
 
   private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
   /**
@@ -44,7 +47,7 @@ public class ControlledIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    intaking = false;
+    timestamp = Timer.getFPGATimestamp();
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
     else if(m_indexer.getIndexerBottomSensor()) && m_indexer.getIndexerTopSensor())
@@ -70,37 +73,23 @@ public class ControlledIntake extends CommandBase {
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor()) {
-          startTime = Timer.getFPGATimestamp();
+          intakeTimestamp = Timer.getFPGATimestamp();
           intaking = true;
         }
-        if(Timer.getFPGATimestamp() - startTime > 0.1 && intaking) {
+        if(timestamp - intakeTimestamp > 0.1) {
           intaking = false;
-          //intakeState = IntakeStates.INTAKE_FIVE_BALLS;
+          intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         }
         break;
       case INTAKE_ONE_BALL:
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
         if (m_indexer.getIntakeSensor() && !intaking) {
-          startTime = Timer.getFPGATimestamp();
-          intaking = true;
-        } else if ((Timer.getFPGATimestamp() - startTime) > 0.01 && intaking) {
-          m_indexer.setRPM(intakeRPM/2.0);
+          indexerTimestamp = Timer.getFPGATimestamp();
+        }
 
-          if(!intakingTwo) {
-            startTime = Timer.getFPGATimestamp();
-            intakingTwo = true;
-          }
-          if ((Timer.getFPGATimestamp() - startTime) > 0.6) {
-            m_indexer.setRPM(0);
-            intaking = false;
-            intakingTwo = false;
-          }
-        }
-        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor()) {
-          stopTime = Timer.getFPGATimestamp();
-        }
-        if((Timer.getFPGATimestamp() - stopTime) >0.5) {
+        boolean haveFour = fourBallTrigger.update(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor(), timestamp);
+        if(haveFour) {
           m_indexer.setRPM(0);
           intakeState = IntakeStates.INTAKE_FOUR_BALLS;
         }
@@ -110,7 +99,7 @@ public class ControlledIntake extends CommandBase {
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
         if (m_indexer.getIntakeSensor()) {
-          m_indexer.setRPM(intakeRPM/2.0);
+          m_indexer.setRPM(intakeRPM / 2.0);
           intaking = true;
         } else if (m_indexer.getIndexerBottomSensor() && intaking) {
           m_indexer.setRPM(0);
@@ -119,7 +108,22 @@ public class ControlledIntake extends CommandBase {
         }
         break;
     }
+    timestamp = Timer.getFPGATimestamp();
+    updateTimedRollers();
   }
+
+  private void updateTimedRollers() {
+//    if(timestamp - intakeTimestamp < 0.1)
+//      m_intake.setRPM(intakeRPM / 2.0);
+//    else
+//      m_intake.setRPM(0);
+    if(timestamp - indexerTimestamp < 0.1)
+      m_indexer.setRPM(intakeRPM / 2.0);
+    else
+      m_indexer.setRPM(0);
+  }
+
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
