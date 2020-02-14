@@ -50,7 +50,7 @@ public class ControlledIntake extends CommandBase {
     timestamp = Timer.getFPGATimestamp();
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
-    else if(m_indexer.getIndexerBottomSensor()) && m_indexer.getIndexerTopSensor())
+    else if(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FOUR_BALLS;
     else if(m_indexer.getIndexerBottomSensor())
       intakeState = IntakeStates.INTAKE_ONE_BALL;
@@ -77,6 +77,7 @@ public class ControlledIntake extends CommandBase {
           intaking = true;
         }
         if(timestamp - intakeTimestamp > 0.1) {
+          m_intake.setRPM(0);
           intaking = false;
           intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         }
@@ -85,9 +86,16 @@ public class ControlledIntake extends CommandBase {
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
         if (m_indexer.getIntakeSensor() && !intaking) {
+          intaking = true;
+          intakeTimestamp = Timer.getFPGATimestamp();
+        }
+        // Delay the indexer until the ball has moved a bit
+        if(timestamp - intakeTimestamp > 0.2) {
+          intaking = false;
+          // Set this timestamp to have the indexer move for a set time period
+          // Alternatively, indexer should index first?
           indexerTimestamp = Timer.getFPGATimestamp();
         }
-
         boolean haveFour = fourBallTrigger.update(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor(), timestamp);
         if(haveFour) {
           m_indexer.setRPM(0);
