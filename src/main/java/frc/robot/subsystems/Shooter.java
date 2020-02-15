@@ -24,8 +24,8 @@ public class Shooter extends SubsystemBase {
  * @return 
    */
   public double kF = 0.0558;
-  public double kP = 0.000452;
-  public double kI = 0.0000287;
+  public double kP = 0.00047; //0.000452
+  public double kI = 0.00003; //0.0000287
   public double kD = 0.0;
   public double power = 1;
 
@@ -48,9 +48,9 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[0].config_kF(0, kF);
     outtakeMotors[0].config_kP(0, kP);
     outtakeMotors[0].config_kI(0, kI);
-    outtakeMotors[0].config_IntegralZone(0,100);
+    outtakeMotors[0].config_IntegralZone(0,200);
     outtakeMotors[0].config_kD(0, kD);
-    outtakeMotors[0].configAllowableClosedloopError(0, 100);
+    outtakeMotors[0].configAllowableClosedloopError(0, 50);
 
     outtakeMotors[1].configClosedloopRamp(0);
     outtakeMotors[1].configOpenloopRamp(0);
