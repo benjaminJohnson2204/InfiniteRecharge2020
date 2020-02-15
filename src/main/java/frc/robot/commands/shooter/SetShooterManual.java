@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 /**
@@ -20,6 +21,7 @@ public class SetShooterManual extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter m_shooter;
   private final Indexer m_indexer;
+  private final Intake m_intake;
   private double time;
   private boolean test, stopTest;
   private boolean printed = false;
@@ -28,10 +30,11 @@ public class SetShooterManual extends CommandBase {
    *
    * @param RobotContainer.m_shooter The subsystem used by this command.
    */
-  public SetShooterManual(Shooter shooter, Indexer indexer) {
+  public SetShooterManual(Shooter shooter, Indexer indexer, Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_indexer = indexer;
+    m_intake = intake;
     addRequirements(shooter);
     addRequirements(indexer);
   }
@@ -45,11 +48,12 @@ public class SetShooterManual extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setRPM(3500);
+    m_shooter.setRPM(3625);
 
-    if (Math.abs(m_shooter.getRPM(0) - 3500) < 50) {
+    if (Math.abs(m_shooter.getRPM(0) - 3625) < 25) {
       m_indexer.setIndexerOutput(1);
       m_indexer.setKickerOutput(1);
+      m_intake.setIntakePercentOutput(1);
 //      if(!test) {
 //        test = true;
 //        time = Timer.getFPGATimestamp();
@@ -69,6 +73,7 @@ public class SetShooterManual extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_intake.setIntakePercentOutput(0);
     m_indexer.setIndexerOutput(0);
     m_indexer.setKickerOutput(0);
     m_shooter.setPower(0);
