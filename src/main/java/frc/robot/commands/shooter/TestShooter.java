@@ -17,7 +17,7 @@ import frc.robot.subsystems.Shooter;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetShooterManual extends CommandBase {
+public class TestShooter extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter m_shooter;
   private final Indexer m_indexer;
@@ -30,7 +30,7 @@ public class SetShooterManual extends CommandBase {
    *
    * @param RobotContainer.m_shooter The subsystem used by this command.
    */
-  public SetShooterManual(Shooter shooter, Indexer indexer, Intake intake) {
+  public TestShooter(Shooter shooter, Indexer indexer, Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_indexer = indexer;
@@ -48,9 +48,9 @@ public class SetShooterManual extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooter.setRPM(3625);
+    m_shooter.setTestRPM();
 
-    if (Math.abs(m_shooter.getRPM(0) - 3625) < 25) {
+    if (Math.abs(m_shooter.getRPM(0) - m_shooter.rpmOutput) < m_shooter.rpmTolerance) {
       m_indexer.setIndexerOutput(1);
       m_indexer.setKickerOutput(1);
       m_intake.setIntakePercentOutput(1);

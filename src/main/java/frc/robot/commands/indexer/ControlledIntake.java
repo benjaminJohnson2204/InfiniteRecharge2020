@@ -27,8 +27,7 @@ public class ControlledIntake extends CommandBase {
   private double intakeRPM = 500;
   private double indexRPM = 200;
   private double timestamp, intakeTimestamp, indexerTimestamp;
-  private MinTimeBoolean intakeSensorTimed, indexerBottomTimed, indexerToppedTimed;
-  private MinTimeBoolean fourBallTrigger = new MinTimeBoolean(1);
+  private MinTimeBoolean fourBallTrigger;
   private boolean intaking, delaying, haveFour;
 
   private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
@@ -49,6 +48,7 @@ public class ControlledIntake extends CommandBase {
   @Override
   public void initialize() {
     haveFour = false;
+    fourBallTrigger = new MinTimeBoolean(1);
     timestamp = Timer.getFPGATimestamp();
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
@@ -72,6 +72,8 @@ public class ControlledIntake extends CommandBase {
         m_indexer.setIndexerOutput(0);
         break;
       case INTAKE_FOUR_BALLS:
+        // TODO: Verify this logic
+        intaking = false;
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor() && !intaking) {
