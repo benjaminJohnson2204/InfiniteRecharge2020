@@ -32,18 +32,19 @@ public class Vision extends SubsystemBase
     private boolean validTarget;
 
     public Vision() {
+        PortForwarder.add(6000, "opensight.local", 80);
         PortForwarder.add(5800, "10.42.1.11", 5800);
         PortForwarder.add(5801, "10.42.1.11", 5801);
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
 
         // Test
-        setPipeline(3);
+        setPipeline(1);
 
         initShuffleboard();
     }
 
     private void updateValidTarget() {
-        if (hasTarget() || true) {
+        if (hasTarget()) {
             setLastValidTargetTime();
         }
         if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 5) {
@@ -68,6 +69,11 @@ public class Vision extends SubsystemBase
     }
 
     public double getTargetX() {
+        return limelight.getEntry("tx").getDouble(0);
+    }
+
+    public double getInnerTargetX() {
+        // TODO: Add adjustment for inner port
         return limelight.getEntry("tx").getDouble(0);
     }
 

@@ -38,7 +38,7 @@ public class Turret extends SubsystemBase {
   private double setpoint = 0; //angle
 
   private int encoderUnitsPerRotation = 4096;
-  private int controlMode = 1;
+  private int controlMode = 0;
 
   private final DriveTrain m_driveTrain;
 
