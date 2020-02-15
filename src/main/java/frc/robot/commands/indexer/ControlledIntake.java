@@ -24,11 +24,12 @@ public class ControlledIntake extends CommandBase {
   private final Indexer m_indexer;
   private final Intake m_intake;
 
-  private double intakeRPM = 400;
+  private double intakeRPM = 500;
+  private double indexRPM = 200;
   private double timestamp, intakeTimestamp, indexerTimestamp;
   private MinTimeBoolean intakeSensorTimed, indexerBottomTimed, indexerToppedTimed;
-  private MinTimeBoolean fourBallTrigger = new MinTimeBoolean(0.1);
-  private boolean intaking;
+  private MinTimeBoolean fourBallTrigger = new MinTimeBoolean(1);
+  private boolean intaking, delaying, haveFour;
 
   private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
   /**
@@ -47,6 +48,7 @@ public class ControlledIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    haveFour = false;
     timestamp = Timer.getFPGATimestamp();
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
@@ -72,12 +74,12 @@ public class ControlledIntake extends CommandBase {
       case INTAKE_FOUR_BALLS:
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(0);
-        if (m_indexer.getIntakeSensor()) {
+        if (m_indexer.getIntakeSensor() && !intaking) {
           intakeTimestamp = Timer.getFPGATimestamp();
+          indexerTimestamp = Timer.getFPGATimestamp();
           intaking = true;
         }
-        if(timestamp - intakeTimestamp > 0.1) {
-          m_intake.setRPM(0);
+        if(intaking && (timestamp - intakeTimestamp) > 0.05) {
           intaking = false;
           intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         }
@@ -85,18 +87,17 @@ public class ControlledIntake extends CommandBase {
       case INTAKE_ONE_BALL:
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
-        if (m_indexer.getIntakeSensor() && !intaking) {
-          intaking = true;
+        if (m_indexer.getIntakeSensor() && !delaying) {
           intakeTimestamp = Timer.getFPGATimestamp();
+          delaying = true;
         }
-        // Delay the indexer until the ball has moved a bit
-        if(timestamp - intakeTimestamp > 0.2) {
-          intaking = false;
-          // Set this timestamp to have the indexer move for a set time period
-          // Alternatively, indexer should index first?
+        if(delaying && (timestamp - intakeTimestamp) > 0.1){
+          delaying = false;
           indexerTimestamp = Timer.getFPGATimestamp();
+          intaking = true;
         }
-        boolean haveFour = fourBallTrigger.update(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor(), timestamp);
+
+        haveFour = fourBallTrigger.update(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor(), timestamp);
         if(haveFour) {
           m_indexer.setRPM(0);
           intakeState = IntakeStates.INTAKE_FOUR_BALLS;
@@ -104,12 +105,20 @@ public class ControlledIntake extends CommandBase {
         break;
       case INTAKE_EMPTY:
       default:
+//        m_intake.setRPM(intakeRPM);
+//        m_indexer.setKickerOutput(-0.25);
+//        if (m_indexer.getIntakeSensor() && !intaking) {
+//          indexerTimestamp = Timer.getFPGATimestamp();
+//          intaking = true;
+//        } else if(intaking && m_indexer.getRPM() == 0)
+//          intakeState = IntakeStates.INTAKE_ONE_BALL;
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
         if (m_indexer.getIntakeSensor()) {
-          m_indexer.setRPM(intakeRPM / 2.0);
+          m_indexer.setRPM(225);
           intaking = true;
-        } else if (m_indexer.getIndexerBottomSensor() && intaking) {
+        }
+        if (m_indexer.getIndexerBottomSensor() && intaking) {
           m_indexer.setRPM(0);
           intaking = false;
           intakeState = IntakeStates.INTAKE_ONE_BALL;
@@ -125,10 +134,14 @@ public class ControlledIntake extends CommandBase {
 //      m_intake.setRPM(intakeRPM / 2.0);
 //    else
 //      m_intake.setRPM(0);
-    if(timestamp - indexerTimestamp < 0.1)
-      m_indexer.setRPM(intakeRPM / 2.0);
-    else
-      m_indexer.setRPM(0);
+    if(intakeState != IntakeStates.INTAKE_EMPTY)
+      if(indexerTimestamp != 0)
+        if(timestamp - indexerTimestamp < 0.1)
+          m_indexer.setRPM(indexRPM);
+        else {
+          m_indexer.setRPM(0);
+          intaking = false;
+        }
   }
 
 
@@ -138,8 +151,8 @@ public class ControlledIntake extends CommandBase {
     m_intake.setIntakePercentOutput(0);
     m_indexer.setIndexerOutput(0);
     m_indexer.setKickerOutput(0);
-    if(intakeState == IntakeStates.INTAKE_FIVE_BALLS)
-      m_intake.setintakePiston(false);
+    //if(intakeState == IntakeStates.INTAKE_FIVE_BALLS)
+      //m_intake.setintakePiston(false);
   }
 
   // Returns true when the command should end.
