@@ -27,9 +27,10 @@ public final class Constants {
 	public static void initRobot() {
     	String macAddress = getMacAddress();
     	readRobotConfig(macAddress);
+    	System.out.println(macAddress);
     }
     
-	private static final String greeMacAddress = "A";
+	private static final String greeMacAddress = "00:80:2F:17:DB:65";
 	private static final String jangoMacAddress = "B";
 	
     private static String getMacAddress() {
