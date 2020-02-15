@@ -12,8 +12,11 @@ import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.net.PortForwarder;
 
 public class Vision extends SubsystemBase
 {
@@ -25,9 +28,39 @@ public class Vision extends SubsystemBase
     private final double LIMELIGHT_MOUNT_ANGLE = 26.5; // Angle that the Limelight is mounted at
     private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
 
+    private double lastValidTargetTime;
+    private boolean validTarget;
+
     public Vision() {
+        PortForwarder.add(5800, "10.42.1.11", 5800);
+        PortForwarder.add(5801, "10.42.1.11", 5801);
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
-        setPipeline(1);
+
+        // Test
+        setPipeline(3);
+
+        initShuffleboard();
+    }
+
+    private void updateValidTarget() {
+        if (hasTarget() || true) {
+            setLastValidTargetTime();
+        }
+        if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 5) {
+            ledsOn();
+            validTarget = true;
+        } else {
+            ledsOff();
+            validTarget = false;
+        }
+    }
+
+    public boolean getValidTarget() {
+        return validTarget;
+    }
+
+    public void setLastValidTargetTime() {
+        lastValidTargetTime = Timer.getFPGATimestamp();
     }
 
     public double getTargetY() {
@@ -121,11 +154,12 @@ public class Vision extends SubsystemBase
         CameraServer.getInstance().addServer("opensight.local");
     }
 
-    public void initShuffleboard() {
-
+    private void initShuffleboard() {
+        Shuffleboard.getTab("Turret").addBoolean("Valid Limelight Target", this::hasTarget);
+        Shuffleboard.getTab("Turret").addNumber("Limelight Target x", this::getTargetX);
     }
 
-    public void updateSmartDashboard()
+    private void updateSmartDashboard()
     {
         SmartDashboard.putBoolean("Can see target", hasTarget());
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
@@ -135,5 +169,6 @@ public class Vision extends SubsystemBase
     public void periodic() {
         // This method will be called once per scheduler run
         updateSmartDashboard();
+        updateValidTarget();
     }
 }

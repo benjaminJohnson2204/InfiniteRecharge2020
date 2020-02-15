@@ -18,7 +18,7 @@ import java.util.function.DoubleSupplier;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
+public class SetTurretSetpointFieldAbsoluteWithVisionOld extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   private final DriveTrain m_driveTrain;
@@ -38,7 +38,7 @@ public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
    *
    *
    */
-  public SetTurretSetpointFieldAbsoluteWithVision(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
+  public SetTurretSetpointFieldAbsoluteWithVisionOld(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
     m_turret = turretSubsystem;
     m_driveTrain = driveTrainSubsystem;
     m_vision = visionSybsystem;
