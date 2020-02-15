@@ -51,18 +51,20 @@ public class TestPathFollowing extends CommandBase implements Runnable {
     m_driveTrain.resetEncoderCounts();
 
     var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    var stopPosition = new Pose2d(Units.feetToMeters(5.5), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
+    var midPosition = new Pose2d(Units.feetToMeters(1), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
+    //var stopPosition = new Pose2d(Units.feetToMeters(-6), Units.feetToMeters(2), Rotation2d.fromDegrees(0));
 
     var trajectoryWaypoints = new ArrayList<Pose2d>();
     trajectoryWaypoints.add(startPosition);
-    trajectoryWaypoints.add(stopPosition);
+    trajectoryWaypoints.add(midPosition);
+   // trajectoryWaypoints.add(stopPosition);
 
 
     var trajectoryConstraints = new DifferentialDriveKinematicsConstraint(m_driveTrain.getDriveTrainKinematics(),
                                                     1);
 
 
-    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
+    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(1), Units.feetToMeters(1));
 
     trajectoryConfig.setReversed(false);
 

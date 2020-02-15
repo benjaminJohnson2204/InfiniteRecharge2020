@@ -10,6 +10,7 @@ package frc.robot.commands.autonomous;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -35,7 +36,10 @@ public class ReadTrajectory extends CommandBase {
   private Trajectory trajectory;
   private String m_filename;
   private boolean m_isInverted = false;
+  private Timer testTimer = new Timer();
+  private double firstTime;
   private DifferentialDriveKinematicsConstraint m_kinematicsConstraint;
+  RamseteCommand followTrajectory;
   /**
    * Creates a new ExampleCommand.
    *
@@ -66,10 +70,12 @@ public class ReadTrajectory extends CommandBase {
     addRequirements(driveTrain);
   }
 
-  // Called when the command is initially scheduled.
+
+    // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    firstTime = testTimer.getFPGATimestamp();
+//    m_driveTrain.navX.reset();
     m_driveTrain.setDriveTrainNeutral();
 //    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
 //    m_driveTrain.resetEncoderCounts();
@@ -86,15 +92,15 @@ public class ReadTrajectory extends CommandBase {
 
     // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
     for(Pose2d point : fileTrajectory) {
-      if(point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0)
+      if(point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0 && point.getRotation().getDegrees() ==0)
         continue;
 
-      trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + startPosition.getTranslation().getX(),
-                                         startPosition.getTranslation().getY() + startPosition.getTranslation().getY(),
+      trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + point.getTranslation().getX(),
+                                         startPosition.getTranslation().getY() + point.getTranslation().getY(),
                                             point.getRotation()));
     }
 
-    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
+    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(16),  Units.feetToMeters(8));
 
     if(m_kinematicsConstraint != null)
       trajectoryConfig.addConstraint(m_kinematicsConstraint);
@@ -103,7 +109,7 @@ public class ReadTrajectory extends CommandBase {
 
     trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
 
-    RamseteCommand followTrajectory = new RamseteCommand(
+    followTrajectory = new RamseteCommand(
             trajectory,
             m_driveTrain::getRobotPose,
             new RamseteController(),
@@ -126,7 +132,7 @@ public class ReadTrajectory extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return followTrajectory.isFinished();
   }
 
 }

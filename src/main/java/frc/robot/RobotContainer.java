@@ -21,8 +21,10 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.LEDCommand;
+import frc.robot.commands.autonomous.EnemyPath;
 import frc.robot.commands.autonomous.ReadTrajectory;
 import frc.robot.commands.autonomous.TestPathFollowing;
+import frc.robot.commands.drivetrain.AlignTarget;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IncrementIndexer;
@@ -75,8 +77,15 @@ public class RobotContainer {
   private enum CommandSelector {
     DRIVE_STRAIGHT,
     SPLINE,
-    INITIATION_TO_ALLY_TRENCH,
-    ALLY_TRENCH_PICKUP
+    ALLY_TRENCH,
+    ALLY_TRENCH_PICKUP,
+    RENDEZVOUS_2,
+    RENDEZVOUS2_TRENCH,
+    TRENCH2_INITIATION,
+    ENEMY_TRENCH,
+    BACK_UP,
+    SHOOTING_POINT,
+    ENEMY_PATH
   }
 
   SendableChooser<Integer> m_autoChooser = new SendableChooser();
@@ -84,8 +93,17 @@ public class RobotContainer {
     Map.ofEntries(
       entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
             entry(CommandSelector.SPLINE, new ReadTrajectory(m_driveTrain, "spline")),
-            entry(CommandSelector.INITIATION_TO_ALLY_TRENCH, new ReadTrajectory(m_driveTrain, "initiationToAllyTrench")),
-            entry(CommandSelector.ALLY_TRENCH_PICKUP, new ReadTrajectory(m_driveTrain, "allyTrenchPickup"))
+            entry(CommandSelector.ALLY_TRENCH, new ReadTrajectory(m_driveTrain, "initiationToAllyTrench")),
+            entry(CommandSelector.ALLY_TRENCH_PICKUP, new ReadTrajectory(m_driveTrain, "allyTrenchPickup")),
+            entry(CommandSelector.RENDEZVOUS_2, new ReadTrajectory(m_driveTrain, "rendezvous2")),
+            entry(CommandSelector.RENDEZVOUS2_TRENCH, new ReadTrajectory(m_driveTrain, "rendezvous2Trench")),
+            entry(CommandSelector.TRENCH2_INITIATION, new ReadTrajectory(m_driveTrain, "trench2Initiation", true)),
+            entry(CommandSelector.ENEMY_TRENCH, new ReadTrajectory(m_driveTrain, "enemyTrench", true)),
+            entry(CommandSelector.BACK_UP, new ReadTrajectory(m_driveTrain, "backUp")),
+            entry(CommandSelector.SHOOTING_POINT, new ReadTrajectory(m_driveTrain, "shootingPoint")),
+            entry(CommandSelector.ENEMY_PATH, new EnemyPath(m_driveTrain))
+
+
     ),
     this::selectCommand
   );
@@ -147,7 +165,7 @@ public class RobotContainer {
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
     xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
     rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
-
+    xBoxButtons[0].whenPressed(new AlignTarget(m_turret, m_vision));
 
   }
   public static double getLeftJoystickX(){

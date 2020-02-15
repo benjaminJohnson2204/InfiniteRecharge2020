@@ -99,7 +99,10 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].configOpenloopRamp(0);
     driveMotors[3].configOpenloopRamp(0);
 
+
     initShuffleboardValues();
+    resetEncoderCounts();
+    navX.reset();
   }
 
   public int getEncoderCount(int sensorIndex) {
@@ -114,6 +117,7 @@ DriveTrain extends SubsystemBase {
     return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }
 
+
   public void resetEncoderCounts() {
     driveMotors[0].setSelectedSensorPosition(0);
     driveMotors[2].setSelectedSensorPosition(0);
@@ -121,14 +125,7 @@ DriveTrain extends SubsystemBase {
 
   public void setDriveTrainNeutral(){
     for(TalonSRX motor : driveMotors){
-      if(coasting) {
-        motor.setNeutralMode(NeutralMode.Brake);
-        coasting = !coasting;
-      }
-      else{
-        motor.setNeutralMode(NeutralMode.Coast);
-        coasting = !coasting;
-      }
+      motor.setNeutralMode(NeutralMode.Brake);
     }
   }
 
