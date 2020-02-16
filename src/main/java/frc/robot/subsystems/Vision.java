@@ -27,13 +27,19 @@ public class Vision extends SubsystemBase {
     private final double LIMELIGHT_MOUNT_ANGLE = 63.5; // Angle that the Limelight is mounted at
     private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
 
+    private double lastValidTargetTime;
+    private boolean validTarget;
+
+    double[] distances = new double[5];
+    int index = 0;
+
     public Vision() {
         PortForwarder.add(5800, "10.42.1.11", 5800);
         PortForwarder.add(5801, "10.42.1.11", 5801);
-    public Vision() {
+
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
-        setPipeline(0);
         openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
+        setPipeline(1);
     }
 
     private void updateValidTarget() {
@@ -58,7 +64,6 @@ public class Vision extends SubsystemBase {
     }
 
     public double getTargetY() {
-    public double getTargetY() {
         return limelight.getEntry("ty").getDouble(0);
     }
 
@@ -71,7 +76,6 @@ public class Vision extends SubsystemBase {
         return limelight.getEntry("tx").getDouble(0);
     }
 
-    public boolean hasTarget() {
     public boolean hasTarget() {
         return limelight.getEntry("tv").getDouble(0) == 1;
     }
@@ -121,12 +125,9 @@ public class Vision extends SubsystemBase {
     }
 
     public double getTargetDistance() {
-        double[] distances = new double[5];
-        for (int i = 0; i < distances.length; i++) {
-            double angleToTarget = getTargetY();
-            double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
-            distances[i] = inches / 12;
-        }
+        double angleToTarget = getTargetY();
+        double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+        distances[index++ % distances.length] = inches / 12;
 
         double distance = computeMode(distances);
 
@@ -154,7 +155,7 @@ public class Vision extends SubsystemBase {
         double[] counts = new double[data.length]; // Does this need to be zero initialized?
         for (int i = 0; i < data.length; i++)
         {
-            for (int j = 0; j < data.length; i++)
+            for (int j = 0; j < data.length; j++)
             {
                 if (data[i] == data[j])
                 {
@@ -200,6 +201,8 @@ public class Vision extends SubsystemBase {
      */
 
     public void updateSmartDashboard() {
+        SmartDashboard.putBoolean("Limelight Has Target", hasTarget());
+        SmartDashboard.putNumber("Limelight Target X", getTargetX());
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
         SmartDashboard.putNumber("Limelight Pipeline", getPipeline());
     }

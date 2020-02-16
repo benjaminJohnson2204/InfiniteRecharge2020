@@ -33,7 +33,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   boolean timeout = false;
   boolean limelightDisabled = false;
   boolean movedJoystick = false;
-  boolean turning;
+  boolean turning, usingVisionSetpoint;
   /**
    * Creates a new ExampleCommand.
    *
@@ -96,6 +96,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
       }
 
       if(m_vision.getValidTarget() && !joystickMoved) {
+        usingVisionSetpoint = true;
         if(!turning) {
           setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
@@ -110,10 +111,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
           if(m_turret.atTarget())
             turning = false;
         }
+      } else if(!m_vision.getValidTarget() && !joystickMoved) {
+        usingVisionSetpoint = false;
+        setpoint = m_turret.getTurretAngle();
       }
 
-      SmartDashboard.putBoolean("Joystick Moved", joystickMoved);
-      SmartDashboard.putNumber("SetTurret setpoint", setpoint);
       m_turret.setSetpoint(setpoint);
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode

@@ -76,7 +76,7 @@ public class Turret extends SubsystemBase {
 
     //turretPID.enableContinuousInput(0, 360);
 
-    initShuffleboard();
+    //initShuffleboard();
   }
 
   public void resetEncoder(){
@@ -161,6 +161,7 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
     SmartDashboard.putNumber("Turret Setpoint", setpoint);
+    SmartDashboard.putNumber("Turret Error Degrees", encoderUnitsToDegrees(turretMotor.getClosedLoopError()));
 //    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
 
   }

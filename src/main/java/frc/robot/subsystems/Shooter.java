@@ -61,7 +61,7 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[1].configClosedloopRamp(0);
     outtakeMotors[1].configOpenloopRamp(0);
 
-    initShuffleboard();
+    //initShuffleboard();
   }
 
   public void setPower(double output) {
