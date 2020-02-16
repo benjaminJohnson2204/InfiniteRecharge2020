@@ -74,6 +74,7 @@ public class Indexer extends SubsystemBase {
 //    SmartDashboard.putNumber("kP", kP);
 //    SmartDashboard.putNumber("kI", kI);
 //    SmartDashboard.putNumber("kD", kD);
+    //initShuffleboard();
   }
 
   public void toggleControlMode() {
@@ -155,20 +156,13 @@ public class Indexer extends SubsystemBase {
     return encoder.getVelocity() * gearRatio;
   }
 
-  double maxRPM;
+  private void initShuffleboard() {
+    Shuffleboard.getTab("Indexer").addBoolean("Intake Sensor", this::getIntakeSensor);
+    Shuffleboard.getTab("Indexer").addBoolean("Indexer Bottom Sensor", this::getIndexerBottomSensor);
+    Shuffleboard.getTab("Indexer").addBoolean("Indexer Top Sensor", this::getIndexerTopSensor);
+  }
   private void updateSmartDashboard(){
-//    SmartDashboard.putNumber("Motor Output", master.getAppliedOutput());
-//    SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
-//    SmartDashboard.putNumber("Motor Position", getPosition());
 
-    SmartDashboard.putBoolean("Intake Sensor", getIntakeSensor());
-    SmartDashboard.putBoolean("IndexerBottom Sensor", getIndexerBottomSensor());
-    SmartDashboard.putBoolean("IndexerTop Sensor", getIndexerTopSensor());
-    SmartDashboard.putNumber("Indexer RPM", getRPM());
-    if(getRPM() > maxRPM) {
-      maxRPM = getRPM();
-      SmartDashboard.putNumber("Indexer Max RPM", maxRPM);
-    }
   }
 
   private void updatePIDValues() {

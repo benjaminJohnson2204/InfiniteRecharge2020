@@ -8,7 +8,6 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -17,7 +16,7 @@ import frc.robot.subsystems.Shooter;
 /**
  * An example command that uses an example subsystem.
  */
-public class TestShooter extends CommandBase {
+public class TestShooterDelayed extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter m_shooter;
   private final Indexer m_indexer;
@@ -30,7 +29,7 @@ public class TestShooter extends CommandBase {
    *
    * @param RobotContainer.m_shooter The subsystem used by this command.
    */
-  public TestShooter(Shooter shooter, Indexer indexer, Intake intake) {
+  public TestShooterDelayed(Shooter shooter, Indexer indexer, Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_indexer = indexer;
@@ -55,19 +54,12 @@ public class TestShooter extends CommandBase {
         m_indexer.setIndexerOutput(0.95);
         m_indexer.setKickerOutput(0.95);
         m_intake.setIntakePercentOutput(0.95);
-  //      if(!test) {
-  //        test = true;
-  //        time = Timer.getFPGATimestamp();
-  //      } else if(!stopTest){
-  //        SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
-  //        stopTest = true;
-  //      }
-  //    } else if (!m_indexer.getIndexerTopSensor()) {
-  //      m_indexer.setIndexerOutput(1);
-  //      m_indexer.setKickerOutput(-0.25);
-  //    } else {
-  //      m_indexer.setIndexerOutput(0);
-  //      m_indexer.setKickerOutput(0);
+      } else if (!m_indexer.getIndexerTopSensor()) {
+        m_indexer.setIndexerOutput(1);
+        m_indexer.setKickerOutput(-0.25);
+      } else {
+        m_indexer.setIndexerOutput(0);
+        m_indexer.setKickerOutput(0);
       }
   }
 

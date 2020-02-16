@@ -79,6 +79,11 @@ public class Shooter extends SubsystemBase {
   public double getTestRPM() {
     return rpmOutput;
   }
+
+  public double getRPMTolerance() {
+    return rpmTolerance;
+  }
+
   public boolean encoderAtSetpoint(int motorIndex){
     return (Math.abs(outtakeMotors[motorIndex].getClosedLoopError()) < 100);
   }
@@ -112,8 +117,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
     SmartDashboard.putNumber("RPM 2", falconUnitsToRPM(outtakeMotors[1].getSelectedSensorVelocity()));
     SmartDashboard.putNumber("Voltage", outtakeMotors[0].getBusVoltage());
-
-    updatePIDValues();
   }
 
   public void updatePIDValues() {
@@ -132,6 +135,7 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     updateShuffleboard();
+    updatePIDValues();
     // This method will be called once per scheduler run
 //    rpmOutput = SmartDashboard.getNumber("FW Output", 0);
   }

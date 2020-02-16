@@ -23,7 +23,8 @@ public class ColorSensor extends SubsystemBase {
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   
   public ColorSensor() {
-    initShuffleboardValues();
+
+    //initShuffleboardValues();
   }
 
   public Color getColor() {

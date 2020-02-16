@@ -32,13 +32,12 @@ public class Vision extends SubsystemBase
     private boolean validTarget;
 
     public Vision() {
-        PortForwarder.add(6000, "opensight.local", 80);
         PortForwarder.add(5800, "10.42.1.11", 5800);
         PortForwarder.add(5801, "10.42.1.11", 5801);
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
         setPipeline(0);
 
-        initShuffleboard();
+        //initShuffleboard();
     }
 
     private void updateValidTarget() {
@@ -156,6 +155,7 @@ public class Vision extends SubsystemBase
         // Seems to be necessary to get OpenSight cam to show up in Shuffleboard
         // CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
         CameraServer.getInstance().addServer("opensight.local");
+        PortForwarder.add(6000, "opensight.local", 80);
     }
 
     private void initShuffleboard() {
@@ -163,8 +163,7 @@ public class Vision extends SubsystemBase
         Shuffleboard.getTab("Turret").addNumber("Limelight Target x", this::getTargetX);
     }
 
-    private void updateSmartDashboard()
-    {
+    private void updateSmartDashboard() {
         SmartDashboard.putBoolean("Can see target", hasTarget());
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
     }
@@ -172,7 +171,7 @@ public class Vision extends SubsystemBase
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        updateSmartDashboard();
+        //updateSmartDashboard();
         updateValidTarget();
     }
 }

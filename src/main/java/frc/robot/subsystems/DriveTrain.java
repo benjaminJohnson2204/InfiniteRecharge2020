@@ -97,7 +97,7 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].configOpenloopRamp(0);
     driveMotors[3].configOpenloopRamp(0);
 
-    initShuffleboardValues();
+    //initShuffleboardValues();
   }
 
   public int getEncoderCount(int sensorIndex) {

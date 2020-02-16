@@ -25,6 +25,7 @@ import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.TestShooter;
+import frc.robot.commands.shooter.TestShooterDelayed;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
@@ -157,7 +158,7 @@ public class RobotContainer {
     xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
     xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));
-    //xBoxRightTrigger.whenPressed(new Command()); //flywheel on toggle
+    xBoxRightTrigger.whenPressed(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
     xBoxButtons[0].whenPressed(new ExtendClimber(m_climber)); //A - toggle driver climb mode
     xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
     //xBoxButtons[1].whenPressed(new Command()); //B - manual eject

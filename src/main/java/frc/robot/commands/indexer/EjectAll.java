@@ -26,8 +26,7 @@ public class EjectAll extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  double m_setpoint;
-  private double startTime;
+
   public EjectAll(Indexer indexer, Intake shooter) {
     m_indexer = indexer;
     m_shooter = shooter;
@@ -45,7 +44,7 @@ public class EjectAll extends CommandBase {
   @Override
   public void execute() {
     m_indexer.setIndexerOutput(-0.6);
-    m_indexer.setKickerOutput(-1);
+    m_indexer.setKickerOutput(-0.5);
     m_shooter.setIntakePercentOutput(-0.5);
   }
 
