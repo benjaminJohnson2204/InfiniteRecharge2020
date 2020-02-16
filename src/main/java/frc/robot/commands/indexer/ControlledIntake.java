@@ -65,11 +65,6 @@ public class ControlledIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putString("Intake State", intakeState.toString());
-    SmartDashboard.putBoolean("Have Four Tripped", haveFourTripped);
-    SmartDashboard.putBoolean("Have Four", haveFour);
-    SmartDashboard.putNumber("Four Ball Timestamp", fourBallTimestamp);
-
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:
         m_intake.setRPM(0);
@@ -77,7 +72,6 @@ public class ControlledIntake extends CommandBase {
         m_indexer.setIndexerOutput(0);
         break;
       case INTAKE_FOUR_BALLS:
-        // TODO: Verify this logic
         m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor())

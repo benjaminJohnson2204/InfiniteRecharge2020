@@ -23,13 +23,13 @@ public class Shooter extends SubsystemBase {
    * Creates a new ExampleSubsystem.
  * @return 
    */
-  public double kF = 0.0558;
-  public double kP = 0.00047; //0.000452
+  public double kF = 0.052;  //0.0558
+  public double kP = 0.00438; //0.00047
   public double kI = 0.00003; //0.0000287
   public double kD = 0.0;
 
   public int kI_Zone = 100;
-  public double kAllowableError = 50.0;
+  public int kAllowableError = 50;
 
 
   private TalonFX[] outtakeMotors = {
@@ -46,6 +46,8 @@ public class Shooter extends SubsystemBase {
     for(TalonFX outtakeMotor : outtakeMotors){
       outtakeMotor.configFactoryDefault();
       outtakeMotor.setNeutralMode(NeutralMode.Coast);
+      outtakeMotor.configVoltageCompSaturation(11);
+      outtakeMotor.enableVoltageCompensation(true);
     }
     outtakeMotors[0].setInverted(true);
     outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
@@ -55,7 +57,7 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[0].config_kI(0, kI);
     outtakeMotors[0].config_IntegralZone(0,kI_Zone);
     outtakeMotors[0].config_kD(0, kD);
-    outtakeMotors[0].configAllowableClosedloopError(0, 50);
+    outtakeMotors[0].configAllowableClosedloopError(0, kAllowableError);
     outtakeMotors[1].configClosedloopRamp(0);
     outtakeMotors[1].configOpenloopRamp(0);
 
@@ -110,17 +112,22 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
     SmartDashboard.putNumber("RPM 2", falconUnitsToRPM(outtakeMotors[1].getSelectedSensorVelocity()));
     SmartDashboard.putNumber("Voltage", outtakeMotors[0].getBusVoltage());
-    SmartDashboard.putNumber("Position", outtakeMotors[0].getSelectedSensorPosition());
 
-    rpmOutput = SmartDashboard.getNumber("RPM Output", 0);
-    kF = SmartDashboard.getNumber("Flywheel kF", 0);
-    kP = SmartDashboard.getNumber("Flywheel kP", 0);
-    kI = SmartDashboard.getNumber("Flywheel kI", 0);
-    kF = SmartDashboard.getNumber("Flywheel kD", 0);
-    kI_Zone = (int) SmartDashboard.getNumber("Flywheel kI_Zone", 0);
-    kAllowableError = SmartDashboard.getNumber("Flywheel kAllowableError", 0);
-    rpmTolerance = SmartDashboard.getNumber("Flywheel RPM Tolerance", 0);
+    updatePIDValues();
   }
+
+  public void updatePIDValues() {
+    rpmOutput = SmartDashboard.getNumber("RPM Output", 0);
+    rpmTolerance = SmartDashboard.getNumber("Flywheel RPM Tolerance", 0);
+
+    outtakeMotors[0].config_kF(0, SmartDashboard.getNumber("Flywheel kF", 0));
+    outtakeMotors[0].config_kP(0, SmartDashboard.getNumber("Flywheel kP", 0));
+    outtakeMotors[0].config_kI(0, SmartDashboard.getNumber("Flywheel kI", 0));
+    outtakeMotors[0].config_IntegralZone(0, (int) SmartDashboard.getNumber("Flywheel kI_Zone", 0));
+    outtakeMotors[0].config_kD(0, SmartDashboard.getNumber("Flywheel kD", 0));
+    outtakeMotors[0].configAllowableClosedloopError(0, (int) SmartDashboard.getNumber("Flywheel kAllowableError", 0));
+  }
+
 
   @Override
   public void periodic() {

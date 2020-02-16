@@ -38,7 +38,7 @@ public class Turret extends SubsystemBase {
   private double setpoint = 0; //angle
 
   private int encoderUnitsPerRotation = 4096;
-  private int controlMode = 0;
+  private int controlMode = 1;
 
   private final DriveTrain m_driveTrain;
 
@@ -141,10 +141,6 @@ public class Turret extends SubsystemBase {
 
   public boolean atTarget(){
     return Math.abs(turretMotor.getClosedLoopError()) < kErrorBand;
-  }
-
-  public double getSetpoint() {
-    return setpoint;
   }
 
   public void clearIAccum() {

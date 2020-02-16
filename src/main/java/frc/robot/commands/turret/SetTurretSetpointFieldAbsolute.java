@@ -9,6 +9,7 @@ package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
@@ -111,6 +112,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
         }
       }
 
+      SmartDashboard.putBoolean("Joystick Moved", joystickMoved);
+      SmartDashboard.putNumber("SetTurret setpoint", setpoint);
       m_turret.setSetpoint(setpoint);
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode

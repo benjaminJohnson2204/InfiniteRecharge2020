@@ -42,7 +42,7 @@ public class Vision extends SubsystemBase
     }
 
     private void updateValidTarget() {
-        if (hasTarget()) {
+        if (hasTarget() || true) {
             setLastValidTargetTime();
         }
         if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 5) {

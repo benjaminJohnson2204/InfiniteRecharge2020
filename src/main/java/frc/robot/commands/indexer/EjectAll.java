@@ -45,7 +45,7 @@ public class EjectAll extends CommandBase {
   @Override
   public void execute() {
     m_indexer.setIndexerOutput(-0.6);
-    m_indexer.setKickerOutput(-0.5);
+    m_indexer.setKickerOutput(-1);
     m_shooter.setIntakePercentOutput(-0.5);
   }
 

@@ -53,9 +53,9 @@ public class TestShooter extends CommandBase {
 
     if(m_shooter.getTestRPM() != 0)
       if (Math.abs(m_shooter.getRPM(0) - m_shooter.rpmOutput) < m_shooter.rpmTolerance) {
-        m_indexer.setIndexerOutput(1);
-        m_indexer.setKickerOutput(1);
-        m_intake.setIntakePercentOutput(1);
+        m_indexer.setIndexerOutput(0.95);
+        m_indexer.setKickerOutput(0.95);
+        m_intake.setIntakePercentOutput(0.95);
   //      if(!test) {
   //        test = true;
   //        time = Timer.getFPGATimestamp();
