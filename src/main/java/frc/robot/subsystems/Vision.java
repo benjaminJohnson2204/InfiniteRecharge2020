@@ -23,8 +23,10 @@ public class Vision extends SubsystemBase {
 
     // Variables for calculating distance
     private final double TARGET_HEIGHT = 98.25; // Outer port height above carpet in inches
-    private final double LIMELIGHT_MOUNT_ANGLE = 63.5; // Angle that the Limelight is mounted at
+    private final double LIMELIGHT_MOUNT_ANGLE = 32; // Angle that the Limelight is mounted at
     private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
+
+    private double[] counts;
 
     public Vision() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -92,55 +94,42 @@ public class Vision extends SubsystemBase {
 
     public double getTargetDistance() {
         double[] distances = new double[5];
-        for (int i = 0; i < distances.length; i++) {
-            double angleToTarget = getTargetY();
-            double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
-            distances[i] = inches / 12;
+
+        if ((int)getPipeline() > 1) {
+            for (int i = 0; i < distances.length; i++) {
+                // 13 degree compensation for panning on pipelines 2 and 3
+                double angleToTarget = getTargetY() - 13;
+                double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+                distances[i] = inches / 12;
+            }
+        } else {
+            for (int i = 0; i < distances.length; i++) {
+                double angleToTarget = getTargetY();
+                double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+                distances[i] = inches / 12;
+            }
         }
 
-        double distance = computeMode(distances);
-
-        // Adjust distance based on pipeline (zoom level)
-        int pipeline = (int)getPipeline();
-        switch (pipeline) {
-            case 1:
-                // TODO
-                break;
-
-            case 2:
-                // TODO
-                break;
-
-            case 3:
-                // TODO
-                break;
-        }
-
-        return distance;
+        return computeMode(distances);
     }
 
     private double computeMode(double[] data) {
         // Compute mode
-        double[] counts = new double[data.length]; // Does this need to be zero initialized?
-        for (int i = 0; i < data.length; i++)
-        {
-            for (int j = 0; j < data.length; i++)
-            {
-                if (data[i] == data[j])
-                {
-                    counts[i]++;
+        this.counts = new double[data.length];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data.length; j++) {
+                if (data[i] == data[j]) {
+                    this.counts[i]++;
                 }
             }
         }
 
         int highestIndex = 0;
         double previousHigh = 0;
-        for (int i = 0; i < counts.length; i++)
-        {
-            if (counts[i] > previousHigh)
-            {
+        for (int i = 0; i < this.counts.length; i++) {
+            if (this.counts[i] > previousHigh) {
                 highestIndex = i;
-                previousHigh = counts[i];
+                previousHigh = this.counts[i];
             }
         }
 
@@ -158,14 +147,6 @@ public class Vision extends SubsystemBase {
     public boolean hasPowerCell() {
         return openSight.getEntry("found").getBoolean(false);
     }
-
-    /*
-    public void openSightInit() {
-        // Seems to be necessary to get OpenSight cam to show up in Shuffleboard
-        // CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
-        CameraServer.getInstance().addServer("opensight.local");
-    }
-     */
 
     public void updateSmartDashboard() {
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
