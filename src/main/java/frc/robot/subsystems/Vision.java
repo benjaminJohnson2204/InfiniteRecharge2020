@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+<<<<<<< Updated upstream
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -17,6 +18,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
+=======
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.music.Orchestra;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants;
+>>>>>>> Stashed changes
 
 public class Vision extends SubsystemBase {
     private NetworkTable limelight;
@@ -34,12 +44,27 @@ public class Vision extends SubsystemBase {
     double[] counts = new double[5];
     int index = 0;
 
+    // Special things
+    private final String SONG_NAME = "surprise.chrp";
+
+    TalonFX[] talons = {
+        new TalonFX(Constants.leftRearDriveMotor),
+        new TalonFX(Constants.rightRearDriveMotor),
+        new TalonFX(Constants.rightFrontDriveMotor),
+        new TalonFX(Constants.leftFrontDriveMotor),
+        new TalonFX(Constants.flywheelMotorA),
+        new TalonFX(Constants.flywheelMotorB)
+    };
+
+    private Orchestra orchestra;
+
     public Vision() {
         PortForwarder.add(5800, "10.42.1.11", 5800);
         PortForwarder.add(5801, "10.42.1.11", 5801);
 
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
         openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
+<<<<<<< Updated upstream
         setPipeline(1);
     }
 
@@ -62,6 +87,13 @@ public class Vision extends SubsystemBase {
 
     public void setLastValidTargetTime() {
         lastValidTargetTime = Timer.getFPGATimestamp();
+=======
+
+        orchestra = new Orchestra();
+        for (int i = 0; i < talons.length; i++) {
+            orchestra.addInstruments(talons[i]);
+        }
+>>>>>>> Stashed changes
     }
 
     public double getTargetY() {
