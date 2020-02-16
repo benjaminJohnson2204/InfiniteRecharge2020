@@ -18,26 +18,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
 
-public class Vision extends SubsystemBase
-{
-    private NetworkTable limelight; //Field-of-View: 59.6 x 49.7 degrees. Tracking Resolution: 320 x 240 pixels.
-    private UsbCamera driverCam;
+public class Vision extends SubsystemBase {
+    private NetworkTable limelight;
+    private NetworkTable openSight;
 
     // Variables for calculating distance
     private final double TARGET_HEIGHT = 98.25; // Outer port height above carpet in inches
-    private final double LIMELIGHT_MOUNT_ANGLE = 26.5; // Angle that the Limelight is mounted at
+    private final double LIMELIGHT_MOUNT_ANGLE = 63.5; // Angle that the Limelight is mounted at
     private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
-
-    private double lastValidTargetTime;
-    private boolean validTarget;
 
     public Vision() {
         PortForwarder.add(5800, "10.42.1.11", 5800);
         PortForwarder.add(5801, "10.42.1.11", 5801);
+    public Vision() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
         setPipeline(0);
-
-        //initShuffleboard();
+        openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
     }
 
     private void updateValidTarget() {
@@ -62,6 +58,7 @@ public class Vision extends SubsystemBase
     }
 
     public double getTargetY() {
+    public double getTargetY() {
         return limelight.getEntry("ty").getDouble(0);
     }
 
@@ -74,6 +71,7 @@ public class Vision extends SubsystemBase
         return limelight.getEntry("tx").getDouble(0);
     }
 
+    public boolean hasTarget() {
     public boolean hasTarget() {
         return limelight.getEntry("tv").getDouble(0) == 1;
     }
@@ -123,50 +121,87 @@ public class Vision extends SubsystemBase
     }
 
     public double getTargetDistance() {
-        double angleToTarget = getTargetY();
-        switch((int) getPipeline()) {
-            case 2:
-                // TODO: Get values for 3x zoom
-                return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+        double[] distances = new double[5];
+        for (int i = 0; i < distances.length; i++) {
+            double angleToTarget = getTargetY();
+            double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+            distances[i] = inches / 12;
+        }
+
+        double distance = computeMode(distances);
+
+        // Adjust distance based on pipeline (zoom level)
+        int pipeline = (int)getPipeline();
+        switch (pipeline) {
             case 1:
-                // TODO: Get values for 2x zoom
-                return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
-            case 0:
-            default:
-                return (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
+                // TODO
+                break;
+
+            case 2:
+                // TODO
+                break;
+
+            case 3:
+                // TODO
+                break;
         }
+
+        return distance;
     }
 
-    public void initUSBCamera() {
-        try {
-            driverCam = CameraServer.getInstance().startAutomaticCapture();
-            driverCam.setResolution(160, 160);
-            driverCam.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-            driverCam.setFPS(15);
-            driverCam.setExposureManual(50);
+    private double computeMode(double[] data) {
+        // Compute mode
+        double[] counts = new double[data.length]; // Does this need to be zero initialized?
+        for (int i = 0; i < data.length; i++)
+        {
+            for (int j = 0; j < data.length; i++)
+            {
+                if (data[i] == data[j])
+                {
+                    counts[i]++;
+                }
+            }
         }
-        catch (Exception e) {
 
+        int highestIndex = 0;
+        double previousHigh = 0;
+        for (int i = 0; i < counts.length; i++)
+        {
+            if (counts[i] > previousHigh)
+            {
+                highestIndex = i;
+                previousHigh = counts[i];
+            }
         }
+
+        return data[highestIndex]; // Final distance in feet
     }
 
-    public void openSightInit()
-    {
+    public double getPowerCellX() {
+        double xOffset = openSight.getEntry("ball").getDoubleArray(new double[] {0, 0})[0];
+
+        // TODO: Use xOffset to return a positive value when target is the right and vice versa for right
+
+        return xOffset;
+    }
+
+    public boolean hasPowerCell() {
+        return openSight.getEntry("found").getBoolean(false);
+    }
+
+    /*
+    public void openSightInit() {
         // Seems to be necessary to get OpenSight cam to show up in Shuffleboard
         // CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
         CameraServer.getInstance().addServer("opensight.local");
         // TODO: Fix this?
         PortForwarder.add(6000, "opensight.local", 5800);
     }
+     */
 
-    private void initShuffleboard() {
-        Shuffleboard.getTab("Turret").addBoolean("Valid Limelight Target", this::hasTarget);
-        Shuffleboard.getTab("Turret").addNumber("Limelight Target x", this::getTargetX);
-    }
-
-    private void updateSmartDashboard() {
-        SmartDashboard.putBoolean("Can see target", hasTarget());
+    public void updateSmartDashboard() {
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
+        SmartDashboard.putNumber("Limelight Pipeline", getPipeline());
     }
 
     @Override
