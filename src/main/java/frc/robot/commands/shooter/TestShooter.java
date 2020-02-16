@@ -50,24 +50,26 @@ public class TestShooter extends CommandBase {
   public void execute() {
     m_shooter.setTestRPM();
 
-    if (Math.abs(m_shooter.getRPM(0) - m_shooter.rpmOutput) < m_shooter.rpmTolerance) {
-      m_indexer.setIndexerOutput(1);
-      m_indexer.setKickerOutput(1);
-      m_intake.setIntakePercentOutput(1);
-//      if(!test) {
-//        test = true;
-//        time = Timer.getFPGATimestamp();
-//      } else if(!stopTest){
-//        SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
-//        stopTest = true;
-//      }
-//    } else if (!m_indexer.getIndexerTopSensor()) {
-//      m_indexer.setIndexerOutput(1);
-//      m_indexer.setKickerOutput(-0.25);
-//    } else {
-//      m_indexer.setIndexerOutput(0);
-//      m_indexer.setKickerOutput(0);
-    }
+
+    if(m_shooter.getTestRPM() != 0)
+      if (Math.abs(m_shooter.getRPM(0) - m_shooter.rpmOutput) < m_shooter.rpmTolerance) {
+        m_indexer.setIndexerOutput(1);
+        m_indexer.setKickerOutput(1);
+        m_intake.setIntakePercentOutput(1);
+  //      if(!test) {
+  //        test = true;
+  //        time = Timer.getFPGATimestamp();
+  //      } else if(!stopTest){
+  //        SmartDashboard.putNumber("Recovery Time", Timer.getFPGATimestamp() - time);
+  //        stopTest = true;
+  //      }
+  //    } else if (!m_indexer.getIndexerTopSensor()) {
+  //      m_indexer.setIndexerOutput(1);
+  //      m_indexer.setKickerOutput(-0.25);
+  //    } else {
+  //      m_indexer.setIndexerOutput(0);
+  //      m_indexer.setKickerOutput(0);
+      }
   }
 
   // Called once the command ends or is interrupted.
