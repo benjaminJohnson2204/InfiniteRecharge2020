@@ -154,7 +154,7 @@ public class Turret extends SubsystemBase {
     Shuffleboard.getTab("Turret").addNumber("Turret Setpoint", this::getSetpoint);
     Shuffleboard.getTab("Turret").addNumber("Turret Error", turretMotor::getClosedLoopError);
     Shuffleboard.getTab("Turret").addNumber("Turret IAccum", turretMotor::getIntegralAccumulator);
-    Shuffleboard.getTab("Turret").addBoolean("Home", this::getTurretHome);
+    //Shuffleboard.getTab("Turret").addBoolean("Home", this::getTurretHome);
   }
 
   private void updateSmartdashboard() {
@@ -177,6 +177,6 @@ public class Turret extends SubsystemBase {
     } else if(turretHomeSensorLatch && !getTurretHome())
       turretHomeSensorLatch = false;
 
-    //updateSmartdashboard();
+    updateSmartdashboard();
   }
 }

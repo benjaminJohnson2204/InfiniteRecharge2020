@@ -155,7 +155,8 @@ public class Vision extends SubsystemBase
         // Seems to be necessary to get OpenSight cam to show up in Shuffleboard
         // CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
         CameraServer.getInstance().addServer("opensight.local");
-        PortForwarder.add(6000, "opensight.local", 80);
+        // TODO: Fix this?
+        PortForwarder.add(6000, "opensight.local", 5800);
     }
 
     private void initShuffleboard() {
@@ -171,7 +172,7 @@ public class Vision extends SubsystemBase
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        //updateSmartDashboard();
+        updateSmartDashboard();
         updateValidTarget();
     }
 }
