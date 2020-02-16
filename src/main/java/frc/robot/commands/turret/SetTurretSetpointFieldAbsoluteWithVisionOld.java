@@ -8,7 +8,6 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
@@ -19,7 +18,7 @@ import java.util.function.DoubleSupplier;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetTurretSetpointFieldAbsolute extends CommandBase {
+public class SetTurretSetpointFieldAbsoluteWithVisionOld extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
   private final DriveTrain m_driveTrain;
@@ -31,14 +30,15 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   private Timer timer = new Timer();
   boolean timeout = false;
   boolean limelightDisabled = false;
+  boolean limelightMovementDisabled = false;
   boolean movedJoystick = false;
-  boolean turning;
+
   /**
    * Creates a new ExampleCommand.
    *
    *
    */
-  public SetTurretSetpointFieldAbsolute(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
+  public SetTurretSetpointFieldAbsoluteWithVisionOld(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSybsystem, DoubleSupplier xInput, DoubleSupplier yInput) {
     m_turret = turretSubsystem;
     m_driveTrain = driveTrainSubsystem;
     m_vision = visionSybsystem;
@@ -49,7 +49,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //    addRequirements(driveTrainSubsystem);
     addRequirements(visionSybsystem);
   }
-  private boolean direction, directionTripped, joystickMoved;
+  private boolean direction, directionTripped;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -59,10 +59,13 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   @Override
   public void execute() {
     if(m_turret.getControlMode() == 1) {
-      if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
+      if(limelightDisabled)
+        m_vision.ledsOff(); //TODO: make this automatically go towards where it thinks the target is.
+      else
         m_vision.ledsOn();
-        m_vision.setLastValidTargetTime();
-        joystickMoved = true;
+
+      if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
+
         if(!directionTripped) {
           direction = m_yInput.getAsDouble() < 0;
           directionTripped = true;
@@ -89,31 +92,39 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             setpoint += 360;
           }
         }
-      } else {
-        directionTripped = false;
-        joystickMoved = false;
+        movedJoystick = true;
+      } else if (m_vision.hasTarget()){
+        setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
+
+        if(setpoint > m_turret.getMaxAngle())
+          setpoint -= 360;
+        else if(setpoint < m_turret.getMinAngle())
+          setpoint += 360;
+
+        if (timeout) {
+          timer.stop();
+          timer.reset();
+          timeout = false;
+        }
+      } else { //if you can't see the target for x seconds, then disable the limelight
+        timer.start();
+        timeout = true;
+        if (timer.get() > 1) { //change value if needed
+          timer.stop();
+          timer.reset();
+          timeout = false;
+          limelightDisabled = true;
+        }
       }
 
-      if(m_vision.getValidTarget() && !joystickMoved) {
-        if(!turning) {
-          setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
-
-          if (setpoint > m_turret.getMaxAngle()) {
-            setpoint -= 360;
-            turning = true;
-          } else if (setpoint < m_turret.getMinAngle()) {
-            setpoint += 360;
-            turning = true;
-          }
-        } else {
-          if(m_turret.atTarget())
-            turning = false;
-        }
+      if(movedJoystick){
+        movedJoystick = false;
+        limelightDisabled = false;
       }
 
       m_turret.setSetpoint(setpoint);
     } else {
-      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode
+      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode TODO: re-tune
     }
   }
 
