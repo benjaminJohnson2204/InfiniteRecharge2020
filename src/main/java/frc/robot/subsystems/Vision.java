@@ -127,7 +127,7 @@ public class Vision extends SubsystemBase {
     public double getTargetDistance() {
         double angleToTarget = getTargetY();
         double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(LIMELIGHT_MOUNT_ANGLE + angleToTarget);
-        distances[index++ % distances.length] = inches / 12;
+        distances[index++ % distances.length] = inches / 12.0;
 
         double distance = computeMode(distances);
 
