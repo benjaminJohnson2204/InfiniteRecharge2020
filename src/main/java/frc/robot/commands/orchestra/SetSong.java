@@ -34,6 +34,7 @@ public class SetSong extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    //will see if the input to the funtion is either bumble, saber, or death. and play the appropriate sound file
     if(m_song=="bumble") {
       m_orchestra.loadSong("src/main/deploy/bumble_bee.mid");
     }else if(m_song=="saber") {
@@ -41,6 +42,7 @@ public class SetSong extends CommandBase {
     }else if(m_song=="death") {
       //m_orchestra.loadSong("death sound.mid");
     }
+    //plays the loaded song
     m_orchestra.playSong();
 
   }
@@ -53,7 +55,8 @@ public class SetSong extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-  m_orchestra.stopSong();
+    //stops the song
+    m_orchestra.stopSong();
   }
 
   // Returns true when the command should end.

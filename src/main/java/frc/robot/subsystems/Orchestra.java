@@ -22,10 +22,15 @@ public class Orchestra extends SubsystemBase {
   }
 
   public void loadSong(String path){
+    //load the music
+    //the path parameter should be a string of the relative path of the song's file.
+    //the song's file should be stored in src/main/deploy and be a .mid file (it might be a .chirp file instead, im not sure - jet)
     loadMusic(path);
   }
 
   public void playSong() {
+    //start playing the loaded song
+    //you must load the song before you run this function
     play();
   }
 
