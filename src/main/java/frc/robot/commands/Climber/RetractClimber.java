@@ -33,6 +33,7 @@ public class RetractClimber extends CommandBase {
   public void initialize() {
   }
   @Override
+  //set the climber to 50% power
   public void execute() {
     m_climber.setClimber(0.5);
   }
