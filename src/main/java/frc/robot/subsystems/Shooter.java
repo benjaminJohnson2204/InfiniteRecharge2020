@@ -103,20 +103,19 @@ public class Shooter extends SubsystemBase {
     Shuffleboard.getTab("Shooter").addNumber("RPM Secondary", () -> this.getRPM(1));
     Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
 
-    SmartDashboard.putNumber("RPM Output", rpmOutput);
-    SmartDashboard.putNumber("Flywheel kF", kF);
-    SmartDashboard.putNumber("Flywheel kP", kP);
-    SmartDashboard.putNumber("Flywheel kI", kI);
-    SmartDashboard.putNumber("Flywheel kD", kD);
-    SmartDashboard.putNumber("Flywheel kI_Zone", kI_Zone);
-    SmartDashboard.putNumber("Flywheel kAllowableError", kAllowableError);
-    SmartDashboard.putNumber("Flywheel RPM Tolerance", rpmTolerance);
+//    SmartDashboard.putNumber("RPM Output", rpmOutput);
+//    SmartDashboard.putNumber("Flywheel kF", kF);
+//    SmartDashboard.putNumber("Flywheel kP", kP);
+//    SmartDashboard.putNumber("Flywheel kI", kI);
+//    SmartDashboard.putNumber("Flywheel kD", kD);
+//    SmartDashboard.putNumber("Flywheel kI_Zone", kI_Zone);
+//    SmartDashboard.putNumber("Flywheel kAllowableError", kAllowableError);
+//    SmartDashboard.putNumber("Flywheel RPM Tolerance", rpmTolerance);
   }
 
   private void updateShuffleboard(){
     SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
-    SmartDashboard.putNumber("RPM 2", falconUnitsToRPM(outtakeMotors[1].getSelectedSensorVelocity()));
-    SmartDashboard.putNumber("Voltage", outtakeMotors[0].getBusVoltage());
+//    SmartDashboard.putNumber("RPM 2", falconUnitsToRPM(outtakeMotors[1].getSelectedSensorVelocity()));
   }
 
   public void updatePIDValues() {
@@ -135,7 +134,7 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     updateShuffleboard();
-    updatePIDValues();
+//    updatePIDValues();
     // This method will be called once per scheduler run
 //    rpmOutput = SmartDashboard.getNumber("FW Output", 0);
   }

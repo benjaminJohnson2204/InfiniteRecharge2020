@@ -26,6 +26,7 @@ import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.intake.SetIntakePiston;
+import frc.robot.commands.shooter.RapidFire;
 import frc.robot.commands.shooter.TestShooter;
 import frc.robot.commands.shooter.TestShooterDelayed;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
@@ -35,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
-import frc.robot.commands.indexer.ControlledIntake;
 import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
@@ -145,25 +145,29 @@ public class RobotContainer {
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
-    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear
+    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
+    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
-    rightButtons[0].whenPressed(new AlignToBall(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
-    //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+    //rightButtons[0].whenPressed(new Command());                               // Top Button - Climber mode?
+    rightButtons[1].whenPressed(new AlignToBall(m_driveTrain, m_vision));       // Bottom Button - Align to Power Cell
+    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));    // Deploy Intake
+    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));  // Retract Intake
+    rightButtons[1].whileHeld(new SetIntakeManual(m_intake, m_indexer));        // Run Intake Motors
 
+
+    xBoxButtons[0].whenPressed(new ExtendClimber(m_climber));                             // A - toggle driver climb mode?
+    xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
+    //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
+    //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
+
+    // TODO: Cleanup/formalize operator controls
     //xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
     xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
     xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
-    xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
-    xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));
-    xBoxRightTrigger.whenPressed(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
-    xBoxButtons[0].whenPressed(new ExtendClimber(m_climber)); //A - toggle driver climb mode
+    xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));                          // Left Shoulder Button
+    xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
+    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
     xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
-    //xBoxButtons[1].whenPressed(new Command()); //B - manual eject
-    //xBoxButtons[2].whenPressed(new Command()); //X - manual move uptake
-    //xBoxButtons[3].whenPressed(new Command()); //Y -
-    //xBoxButtons[4].whileHeld(new Command()); //left bumper - winch up
-    //xBoxButtons[5].whileHeld(new Command()); //right bumper - winch down
     xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
     xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick

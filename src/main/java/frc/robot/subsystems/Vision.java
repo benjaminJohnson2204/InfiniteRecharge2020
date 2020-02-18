@@ -12,6 +12,7 @@ import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +34,8 @@ public class Vision extends SubsystemBase {
     double[] distances = new double[5];
     double[] counts = new double[5];
     int index = 0;
+
+    SlewRateLimiter targetXFilter = new SlewRateLimiter(20);
 
     public Vision() {
         PortForwarder.add(5800, "10.42.1.11", 5800);
@@ -70,6 +73,10 @@ public class Vision extends SubsystemBase {
 
     public double getTargetX() {
         return limelight.getEntry("tx").getDouble(0);
+    }
+
+    public double getFilteredTargetX() {
+        return  targetXFilter.calculate(getTargetX());
     }
 
     public double getInnerTargetX() {
@@ -171,7 +178,7 @@ public class Vision extends SubsystemBase {
 
     public void updateSmartDashboard() {
         SmartDashboard.putBoolean("Limelight Has Target", hasTarget());
-        SmartDashboard.putNumber("Limelight Target X", getTargetX());
+        //SmartDashboard.putNumber("Limelight Target X", getTargetX());
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
         SmartDashboard.putNumber("Limelight Pipeline", getPipeline());
     }
