@@ -39,7 +39,7 @@ DriveTrain extends SubsystemBase {
   private double kV = 1.04;
   private double kA = 0.182;
 
-  public double kP = 8.02;
+  public double kP = 800.02;
   public double kI = 0;
   public double kD = 0;
 

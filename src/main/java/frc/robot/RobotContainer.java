@@ -84,7 +84,8 @@ public class RobotContainer {
     TRENCH2_INITIATION,
     ENEMY_TRENCH,
     BACK_UP,
-    SHOOTING_POINT,
+    TURN_SHOOT,
+    DRIVE_SHOOT,
     ENEMY_PATH
   }
 
@@ -100,7 +101,8 @@ public class RobotContainer {
             entry(CommandSelector.TRENCH2_INITIATION, new ReadTrajectory(m_driveTrain, "trench2Initiation", true)),
             entry(CommandSelector.ENEMY_TRENCH, new ReadTrajectory(m_driveTrain, "enemyTrench", true)),
             entry(CommandSelector.BACK_UP, new ReadTrajectory(m_driveTrain, "backUp")),
-            entry(CommandSelector.SHOOTING_POINT, new ReadTrajectory(m_driveTrain, "shootingPoint")),
+            entry(CommandSelector.TURN_SHOOT, new ReadTrajectory(m_driveTrain, "turnShoot")),
+            entry(CommandSelector.DRIVE_SHOOT, new ReadTrajectory(m_driveTrain, "driveShoot")),
             entry(CommandSelector.ENEMY_PATH, new EnemyPath(m_driveTrain))
 
 

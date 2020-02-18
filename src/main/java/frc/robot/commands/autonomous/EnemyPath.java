@@ -9,7 +9,7 @@ public class EnemyPath extends SequentialCommandGroup {
         addCommands(
                     new ReadTrajectory(m_driveTrain, "enemyTrench", true),
                     new WaitCommand(2),
-                    new ReadTrajectory(m_driveTrain, "shootingPoint")
+                    new ReadTrajectory(m_driveTrain, "turnShoot")
         );
     }
 }

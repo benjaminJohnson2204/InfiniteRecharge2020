@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -94,8 +95,8 @@ public class ReadTrajectory extends CommandBase {
       if(point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0 && point.getRotation().getDegrees() ==0)
         continue;
 
-      trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + point.getTranslation().getX(),
-                                         startPosition.getTranslation().getY() + point.getTranslation().getY(),
+      trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + Units.feetToMeters(point.getTranslation().getX()),
+                                         startPosition.getTranslation().getY() + Units.feetToMeters(point.getTranslation().getY()),
                                             point.getRotation()));
     }
 
@@ -135,6 +136,10 @@ public class ReadTrajectory extends CommandBase {
     CommandScheduler.getInstance().schedule(followTrajectory);
     testTimer.start();
   }
+  @Override
+  public void execute(){
+    SmartDashboard.putNumber("time", testTimer.get());
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -144,10 +149,10 @@ public class ReadTrajectory extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double deltaX = Math.abs(m_driveTrain.getRobotPose().getTranslation().getX() - trajectoryWaypoints.get(trajectoryWaypoints.size()).getTranslation().getX());
-    double deltaY = Math.abs(m_driveTrain.getRobotPose().getTranslation().getY() - trajectoryWaypoints.get(trajectoryWaypoints.size()).getTranslation().getY());
-    double deltaRot = Math.abs(m_driveTrain.getRobotPose().getRotation().getDegrees() - trajectoryWaypoints.get(trajectoryWaypoints.size()).getRotation().getDegrees());
-    return ((deltaX < 0.25) && (deltaY < 0.25) && (deltaRot < 2)) || testTimer.get() > timeout;
+    double deltaX = Units.metersToFeet(Math.abs(m_driveTrain.getRobotPose().getTranslation().getX() - trajectoryWaypoints.get(trajectoryWaypoints.size()-1).getTranslation().getX()));
+    double deltaY = Units.metersToFeet(Math.abs(m_driveTrain.getRobotPose().getTranslation().getY() - trajectoryWaypoints.get(trajectoryWaypoints.size()-1).getTranslation().getY()));
+    double deltaRot = Math.abs(m_driveTrain.getRobotPose().getRotation().getDegrees() - trajectoryWaypoints.get(trajectoryWaypoints.size()-1).getRotation().getDegrees());
+    return ((deltaX < 0.25) && (deltaY < 0.25) && (deltaRot < 2)) || (testTimer.get() > timeout);
   }
 
 }
