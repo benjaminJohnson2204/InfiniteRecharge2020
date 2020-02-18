@@ -59,8 +59,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
-    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
+//    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
+//    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
         m_vision.ledsOn();
