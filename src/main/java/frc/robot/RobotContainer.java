@@ -24,6 +24,7 @@ import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.AlignToBall;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
+import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.TestShooter;
 import frc.robot.commands.shooter.TestShooterDelayed;
@@ -150,8 +151,8 @@ public class RobotContainer {
     rightButtons[0].whenPressed(new AlignToBall(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
     //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
-    //xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
+    //xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
     xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
     xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));

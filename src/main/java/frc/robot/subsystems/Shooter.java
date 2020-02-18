@@ -23,9 +23,9 @@ public class Shooter extends SubsystemBase {
    * Creates a new ExampleSubsystem.
  * @return 
    */
-  public double kF = 0.052;  //0.0558
-  public double kP = 0.00438; //0.00047
-  public double kI = 0.00003; //0.0000287
+  public double kF = 0.0475;  //0.0558
+  public double kP = 0.4; //0.00047
+  public double kI = 0.0; //0.0000287
   public double kD = 0.0;
 
   public int kI_Zone = 100;
@@ -46,8 +46,7 @@ public class Shooter extends SubsystemBase {
     for(TalonFX outtakeMotor : outtakeMotors){
       outtakeMotor.configFactoryDefault();
       outtakeMotor.setNeutralMode(NeutralMode.Coast);
-      outtakeMotor.configVoltageCompSaturation(11);
-      outtakeMotor.enableVoltageCompensation(true);
+      outtakeMotor.enableVoltageCompensation(false);
     }
     outtakeMotors[0].setInverted(true);
     outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
@@ -58,10 +57,11 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[0].config_IntegralZone(0,kI_Zone);
     outtakeMotors[0].config_kD(0, kD);
     outtakeMotors[0].configAllowableClosedloopError(0, kAllowableError);
+    outtakeMotors[0].configClosedloopRamp(0.1);
     outtakeMotors[1].configClosedloopRamp(0);
     outtakeMotors[1].configOpenloopRamp(0);
 
-    //initShuffleboard();
+    initShuffleboard();
   }
 
   public void setPower(double output) {

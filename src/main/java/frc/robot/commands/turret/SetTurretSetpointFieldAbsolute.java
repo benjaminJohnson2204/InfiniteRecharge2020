@@ -28,7 +28,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   private DoubleSupplier m_xInput;
   private DoubleSupplier m_yInput;
   double setpoint, radians;
-  private final double deadZone = 0.1;
+  private final double deadZone = 0.15;
   private Timer timer = new Timer();
   boolean timeout = false;
   boolean limelightDisabled = false;
@@ -59,6 +59,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
+    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
         m_vision.ledsOn();
