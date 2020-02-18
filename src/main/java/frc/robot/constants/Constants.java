@@ -22,6 +22,8 @@ public final class Constants {
     public static final int xBoxController = 2;
 
     // CAN ADDRESSES
+    public static final int pcmOne = 11;
+    
     public static final int leftFrontDriveMotor = 20;
     public static final int leftRearDriveMotor = 21;
     public static final int rightFrontDriveMotor = 22;
@@ -39,8 +41,7 @@ public final class Constants {
     public static final int turretEncoder = 61;
 
     // PWM
-    public static final int ledPortA = 0;
-    public static final int ledPortB = 1;
+    public static final int ledPort = 0;
 
     // DIO
     public static final int intakeSensor = 0;
@@ -48,8 +49,6 @@ public final class Constants {
     public static final int indexerBottomSensor = 2;
     public static final int turretHomeSensor = 3;
 
-    // PCM
-    public static final int pcmOne = 11;
 
     //Solenoid addresses
     public static final int driveTrainShiftersForward = 0;

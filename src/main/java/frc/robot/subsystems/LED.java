@@ -20,7 +20,7 @@ public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  private AddressableLED LEDStripA, LEDStripB;
+  private AddressableLED LEDStrip;
   private AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
@@ -29,15 +29,11 @@ public class LED extends SubsystemBase {
   double speed = 8;
 
   public LED() {
-    LEDStripA = new AddressableLED(Constants.ledPortA);
-//    LEDStripB = new AddressableLED(Constants.ledPortB);
+    LEDStrip = new AddressableLED(Constants.ledPort);
     LEDBuffer = new AddressableLEDBuffer(39);
-    LEDStripA.setLength(LEDBuffer.getLength());
-    LEDStripA.setData(LEDBuffer);
-    LEDStripA.start();
-//    LEDStripB.setLength(LEDBuffer.getLength());
-//    LEDStripB.setData(LEDBuffer);
-//    LEDStripB.start();
+    LEDStrip.setLength(LEDBuffer.getLength());
+    LEDStrip.setData(LEDBuffer);
+    LEDStrip.start();
 
     red = 0;
     green = 125;
@@ -125,11 +121,6 @@ public class LED extends SubsystemBase {
     Timer.delay(0.25);
   }
 
-  public void setBuffer() {
-    LEDStripA.setData(LEDBuffer);
-//    LEDStripB.setData(LEDBuffer);
-  }
-
   int state = -1;
   public void setLED(){
     switch(state){
@@ -152,7 +143,6 @@ public class LED extends SubsystemBase {
         setRGB(106, 90, 205);
         setBlinkingColor(true);
     }
-    LEDStripA.setData(LEDBuffer);
   }
 
   public void setState(int state){
@@ -167,5 +157,6 @@ public class LED extends SubsystemBase {
     speed = SmartDashboard.getNumber("Speed", 0);
     setBuffer();*/
     setLED();
+    LEDStrip.setData(LEDBuffer);
   }
 }

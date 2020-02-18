@@ -35,7 +35,6 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     LiveWindow.disableAllTelemetry();
     m_robotContainer = new RobotContainer();
-    CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
   }
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -69,7 +68,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

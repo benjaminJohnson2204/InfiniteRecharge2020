@@ -29,9 +29,14 @@ public class Turret extends SubsystemBase {
   double kP = 0.155;    //0.155
   double kI = 0.0001;    //0.00075
   double kD = 0.00766;  //0.00766
-  int kI_Zone = 900;    //900
-  int kMaxIAccum = 500000;    //900
-  int kErrorBand = 50;
+  
+  int kI_Zone = 300;    //900 // 254: 1/kP?
+  int kMaxIAccum = kI_Zone *3; //500000;    //900
+  int kErrorBand = (int) degreesToEncoderUnits(0.5);
+  
+  int kCruiseVelocity = (int) degreesToEncoderUnits(180) * 10;
+  int kMotionAcceleration = kCruiseVelocity * 10;
+  
   double maxAngle = 315;
   double minAngle = -135;
   double gearRatio = 18.0 / 120.0;
@@ -69,8 +74,8 @@ public class Turret extends SubsystemBase {
     turretMotor.config_IntegralZone(0, kI_Zone);
     turretMotor.configMaxIntegralAccumulator(0, kMaxIAccum);
     turretMotor.config_kD(0, kD);
-    turretMotor.configMotionCruiseVelocity(14000);
-    turretMotor.configMotionAcceleration(140000);
+    turretMotor.configMotionCruiseVelocity(kCruiseVelocity);
+    turretMotor.configMotionAcceleration(kMotionAcceleration);
     turretMotor.configAllowableClosedloopError(0, kErrorBand);
 
 
@@ -123,9 +128,21 @@ public class Turret extends SubsystemBase {
     turretMotor.set(ControlMode.PercentOutput, output);
   }
 
-  public void setSetpoint(double setpoint){
+  public void setRobotCentricSetpoint(double setpoint){
     this.setpoint = setpoint;
   }
+  
+  public void setFieldCentricSetpoint(double setpoint){
+	setpoint -= m_driveTrain.navX.getAngle();
+	
+	if (setpoint > getMaxAngle())
+        setpoint -= 360;
+    else if (setpoint < getMinAngle())
+        setpoint += 360;
+	
+    this.setpoint = setpoint;
+  }
+
 
   public void setClosedLoopPosition(){
     turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(setpoint));
@@ -170,11 +187,12 @@ public class Turret extends SubsystemBase {
       setClosedLoopPosition();
 
     // This method will be called once per scheduler run
-    if(!turretHomeSensorLatch && getTurretHome()) {
-      turretMotor.setSelectedSensorPosition(0);
-      turretHomeSensorLatch = true;
-    } else if(turretHomeSensorLatch && !getTurretHome())
-      turretHomeSensorLatch = false;
+    // TODO: FIX
+//    if(!turretHomeSensorLatch && getTurretHome()) {
+//      turretMotor.setSelectedSensorPosition(0);
+//      turretHomeSensorLatch = true;
+//    } else if(turretHomeSensorLatch && !getTurretHome())
+//      turretHomeSensorLatch = false;
 
     updateSmartdashboard();
   }

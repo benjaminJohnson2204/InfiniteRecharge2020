@@ -26,15 +26,6 @@ public class Skyhook extends SubsystemBase {
   public void setSkyhook(double value) {
     skyhookMotor.set(ControlMode.PercentOutput, value);
   }
-  /*public void moveRight() {
-    setSkyhook(1);
-  }
-  public void moveLeft() {
-    setSkyhook(-1);
-  }
-  public void stop() {
-    setSkyhook(0);
-  }*/
 
   @Override
   public void periodic() {

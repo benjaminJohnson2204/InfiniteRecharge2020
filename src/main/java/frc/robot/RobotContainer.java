@@ -69,8 +69,8 @@ public class RobotContainer {
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
   static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
-  public Button[] leftButtons = new Button[7];
-  public Button[] rightButtons = new Button[7];
+  public Button[] leftButtons = new Button[2];
+  public Button[] rightButtons = new Button[2];
   public Button[] xBoxButtons = new Button[10];
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
@@ -109,14 +109,11 @@ public class RobotContainer {
 //            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-//    m_intake.setDefaultCommand(new SetIntake(m_intake));
-    //m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
     m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
-    //m_led.setDefaultCommand(new LEDCommand(m_led));
 
     // TODO: Update these to use the correct axis
     m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
@@ -148,11 +145,11 @@ public class RobotContainer {
     leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
     leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
-    //rightButtons[0].whenPressed(new Command());                               // Top Button - Climber mode?
-    rightButtons[1].whenPressed(new AlignToBall(m_driveTrain, m_vision));       // Bottom Button - Align to Power Cell
-    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));    // Deploy Intake
-    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));  // Retract Intake
-    rightButtons[1].whileHeld(new SetIntakeManual(m_intake, m_indexer));        // Run Intake Motors
+    //rightButtons[0].whenPressed(new Command());                         // Top Button - Climber mode?
+    rightButtons[1].whenPressed(new AlignToBall(m_driveTrain, m_vision)); // Bottom Button - Align to Power Cell
+    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));     // Deploy Intake
+    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));   // Retract Intake
+    rightButtons[1].whileHeld(new SetIntakeManual(m_intake, m_indexer));  // Run Intake Motors
 
 
     xBoxButtons[0].whenPressed(new ExtendClimber(m_climber));                             // A - toggle driver climb mode?
@@ -186,8 +183,9 @@ public class RobotContainer {
     return CommandSelector.values()[m_autoChooser.getSelected()];
   }
   public Command getAutonomousCommand() {
-    // TODO: Uncomment this reference in Robot.java
-    return m_autoCommand;
+    // TODO: Undo this safety
+    //return m_autoCommand;
+    return new WaitCommand(0);
   }
 
   public void robotPeriodic() {

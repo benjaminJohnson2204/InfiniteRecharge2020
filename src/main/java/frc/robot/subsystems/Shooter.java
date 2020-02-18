@@ -24,8 +24,8 @@ public class Shooter extends SubsystemBase {
  * @return 
    */
   public double kF = 0.0475;  //0.0558
-  public double kP = 0.4; //0.00047
-  public double kI = 0.0; //0.0000287
+  public double kP = 0.4; 	  //0.00047
+  public double kI = 0.0; 	  //0.0000287
   public double kD = 0.0;
 
   public int kI_Zone = 100;
@@ -85,17 +85,17 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean encoderAtSetpoint(int motorIndex){
-    return (Math.abs(outtakeMotors[motorIndex].getClosedLoopError()) < 100);
+    return (Math.abs(outtakeMotors[motorIndex].getClosedLoopError()) < 100.0);
   }
   public double getRPM(int motorIndex) {
     return falconUnitsToRPM(outtakeMotors[motorIndex].getSelectedSensorVelocity());
   }
   public double falconUnitsToRPM(double sensorUnits) {
-    return (sensorUnits/2048.0)*600;
+    return (sensorUnits / 2048.0) * 600.0;
   }
 
   public double RPMtoFalconUnits(double RPM) {
-    return (RPM/600.0)*2048.0;
+    return (RPM / 600.0) * 2048.0;
   }
 
   private void initShuffleboard() {

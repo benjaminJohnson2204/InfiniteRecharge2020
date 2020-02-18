@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
   private double allowableError = 50;
   private double maxVel = 5880;
   private double maxAccel = 58800;
-  private double gearRatio = 1.0/3.0;
+  private double gearRatio = 1.0 / 3.0;
 
   private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
   private CANEncoder intakeEncoder = intakeMotor.getEncoder();

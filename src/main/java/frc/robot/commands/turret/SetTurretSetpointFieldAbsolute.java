@@ -72,15 +72,15 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
         }
 
         if(direction) {
-            if(m_xInput.getAsDouble() >= 0)
+        	if(m_xInput.getAsDouble() >= 0)
               setpoint = -Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
             else
               setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
-
-          if(setpoint > m_turret.getMaxAngle()) {
-            setpoint -= 360;
-            direction = false;
-          }
+        	
+			if(setpoint > m_turret.getMaxAngle()) {
+				setpoint -= 360;
+			    direction = false;
+			}
         } else {
           if(m_xInput.getAsDouble() < 0)
             setpoint = Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
@@ -118,7 +118,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
         setpoint = m_turret.getTurretAngle();
       }
 
-      m_turret.setSetpoint(setpoint);
+      m_turret.setFieldCentricSetpoint(setpoint);
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode
     }
