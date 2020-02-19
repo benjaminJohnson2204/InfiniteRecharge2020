@@ -156,7 +156,7 @@ public class RobotContainer {
 
     //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-    xBoxButtons[1].whenPressed(new RapidFire(m_shooter,m_indexer, m_intake, 3500)); //B - manual eject
+    xBoxButtons[1].whileHeld(new RapidFire(m_shooter,m_indexer, m_intake, 3500)); //B - manual eject
 
     //xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
     xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
