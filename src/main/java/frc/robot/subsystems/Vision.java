@@ -7,15 +7,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.music.Orchestra;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
-import frc.robot.constants.Constants;
 
 public class Vision extends SubsystemBase {
     private NetworkTable limelight;
@@ -33,27 +30,6 @@ public class Vision extends SubsystemBase {
     double[] counts = new double[5];
     int index = 0;
 
-    private final String[] SOUNDS = {
-            "target.chrp",
-            "tip.chrp",
-            "tip2.chrp",
-            "enable.chrp",
-            "wii.chrp",
-            "megolovania.chrp",
-            "imperial.chrp"
-    };
-
-    private final TalonFX[] TALONS = {
-        new TalonFX(Constants.leftRearDriveMotor),
-        new TalonFX(Constants.rightRearDriveMotor),
-        new TalonFX(Constants.rightFrontDriveMotor),
-        new TalonFX(Constants.leftFrontDriveMotor),
-        new TalonFX(Constants.flywheelMotorA),
-        new TalonFX(Constants.flywheelMotorB)
-    };
-
-    private Orchestra orchestra;
-
     public Vision() {
         PortForwarder.add(5800, "10.42.1.11", 5800);
         PortForwarder.add(5801, "10.42.1.11", 5801);
@@ -61,10 +37,6 @@ public class Vision extends SubsystemBase {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
         openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
         setPipeline(1);
-
-        for (TalonFX talon : TALONS) {
-            orchestra.addInstrument(talon);
-        }
     }
 
     private void updateValidTarget() {
@@ -205,36 +177,5 @@ public class Vision extends SubsystemBase {
         // This method will be called once per scheduler run
         updateSmartDashboard();
         updateValidTarget();
-        song("megolovania.chrp");
-        // targetSound();
-    }
-
-    private void targetSound() {
-        if (hasPowerCell() || hasTarget()) {
-            orchestra.stop();
-            orchestra.loadMusic(SOUNDS[0]);
-            orchestra.play();
-        }
-    }
-
-    /* TODO
-    public void randomSong() {
-        // Inspired by https://www.reddit.com/r/FRC/comments/f4tek6/our_intimidation_factor_is_ready/
-        orchestra.loadMusic(SOUNDS[((int)Math.random() % SOUNDS.length) + 1]);
-    }
-    */
-
-    public void song(int index) {
-        if (!orchestra.isPlaying()) {
-            orchestra.loadMusic(SOUNDS[index]);
-            orchestra.play();
-        }
-    }
-
-    public void song(String name) {
-        if (!orchestra.isPlaying()) {
-            orchestra.loadMusic(name);
-            orchestra.play();
-        }
     }
 }
