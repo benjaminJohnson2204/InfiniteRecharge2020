@@ -12,35 +12,36 @@ import com.ctre.phoenix.music.Orchestra;
 import frc.robot.constants.Constants;
 
 public class Orchestra extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   * https://www.ctr-electronics.com/downloads/api/java/html/classcom_1_1ctre_1_1phoenix_1_1music_1_1_orchestra.html
-   */
+
+  private final TalonFX[] talons = {
+          new TalonFX(Constants.leftRearDriveMotor),
+          new TalonFX(Constants.rightRearDriveMotor),
+          new TalonFX(Constants.rightFrontDriveMotor),
+          new TalonFX(Constants.leftFrontDriveMotor),
+          new TalonFX(Constants.flywheelMotorA),
+          new TalonFX(Constants.flywheelMotorB)
+  };
+
+  private Orchestra orchestra;
+
   public Orchestra() {
-    //using the leftRearDriveMotor as the speaker motor
-    addInstrument(Constants.leftRearDriveMotor);
+    for (TalonFX talon : talons) {
+      orchestra.addInstrument(talon);
+    }
   }
 
-  public void loadSong(String path){
-    //load the music
-    //the path parameter should be a string of the relative path of the song's file.
-    //the song's file should be stored in src/main/deploy and be a .mid file (it might be a .chirp file instead, im not sure - jet)
-    loadMusic(path);
+  public void song(String name) {
+    if (!orchestra.isPlaying()) {
+      orchestra.loadMusic(name);
+      orchestra.play();
+    }
   }
 
-  public void playSong() {
-    //start playing the loaded song
-    //you must load the song before you run this function
-    play();
-  }
-
-  public void stopSong() {
+  public void stopSong(){
     stop();
-    //note: dont import the badLog stuff, thats the wrong thing
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
   }
 }

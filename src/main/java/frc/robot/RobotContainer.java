@@ -135,22 +135,22 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    leftJoystick.invertRawAxis(1, false);
-    rightJoystick.invertRawAxis(0, true);
-    xBoxController.invertRawAxis(1, true);
-    xBoxController.invertRawAxis(5, true);
-    for (int i = 0; i < leftButtons.length; i++)
-      leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
-    for (int i = 0; i < rightButtons.length; i++)
-      rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
-    for (int i = 0; i < xBoxButtons.length; i++)
-      xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
-    for (int i = 0; i < xBoxPOVButtons.length; i++)
-      xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
-    xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
-    xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
-
-      leftButtons[0].whileHeld(new SetSong(m_orchestra, "bumble")); // runs the set orchestra command. it'll run flight of the bumblebee
+//    leftJoystick.invertRawAxis(1, false);
+//    rightJoystick.invertRawAxis(0, true);
+//    xBoxController.invertRawAxis(1, true);
+//    xBoxController.invertRawAxis(5, true);
+//    for (int i = 0; i < leftButtons.length; i++)
+//      leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
+//    for (int i = 0; i < rightButtons.length; i++)
+//      rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
+//    for (int i = 0; i < xBoxButtons.length; i++)
+//      xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
+//    for (int i = 0; i < xBoxPOVButtons.length; i++)
+//      xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
+//    xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
+//    xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
+//
+//      leftButtons[0].whileHeld(new SetSong(m_orchestra, "bumble")); // runs the set orchestra command. it'll run flight of the bumblebee
 
 //    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
 //    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear
@@ -185,22 +185,23 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
 
-  private CommandSelector selectCommand() {
-    return CommandSelector.values()[m_autoChooser.getSelected()];
-  }
-  public Command getAutonomousCommand() {
-    return m_autoCommand;
-  }
+//  private CommandSelector selectCommand() {
+//    return CommandSelector.values()[m_autoChooser.getSelected()];
+//  }
+//  public Command getAutonomousCommand() {
+//    return m_autoCommand;
+//  }
 
   public void robotPeriodic() {
 
   }
 
   public void teleOpInit() {
-    m_driveTrain.resetEncoderCounts();
-    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+//    m_driveTrain.resetEncoderCounts();
+//    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
   public void teleOpPeriodic() {
+    new SetSong(m_orchestra, "TetrisTheme.mid");
   }
   public void autonomousInit() {
   }
