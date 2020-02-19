@@ -7,26 +7,15 @@
 
 package frc.robot.subsystems;
 
-<<<<<<< Updated upstream
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSource;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpiutil.net.PortForwarder;
-=======
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.music.Orchestra;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.net.PortForwarder;
 import frc.robot.constants.Constants;
->>>>>>> Stashed changes
 
 public class Vision extends SubsystemBase {
     private NetworkTable limelight;
@@ -44,10 +33,17 @@ public class Vision extends SubsystemBase {
     double[] counts = new double[5];
     int index = 0;
 
-    // Special things
-    private final String SONG_NAME = "surprise.chrp";
+    private final String[] SOUNDS = {
+            "target.chrp",
+            "tip.chrp",
+            "tip2.chrp",
+            "enable.chrp",
+            "wii.chrp",
+            "megolovania.chrp",
+            "imperial.chrp"
+    };
 
-    TalonFX[] talons = {
+    private final TalonFX[] TALONS = {
         new TalonFX(Constants.leftRearDriveMotor),
         new TalonFX(Constants.rightRearDriveMotor),
         new TalonFX(Constants.rightFrontDriveMotor),
@@ -64,8 +60,11 @@ public class Vision extends SubsystemBase {
 
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
         openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
-<<<<<<< Updated upstream
         setPipeline(1);
+
+        for (TalonFX talon : TALONS) {
+            orchestra.addInstrument(talon);
+        }
     }
 
     private void updateValidTarget() {
@@ -87,13 +86,6 @@ public class Vision extends SubsystemBase {
 
     public void setLastValidTargetTime() {
         lastValidTargetTime = Timer.getFPGATimestamp();
-=======
-
-        orchestra = new Orchestra();
-        for (int i = 0; i < talons.length; i++) {
-            orchestra.addInstruments(talons[i]);
-        }
->>>>>>> Stashed changes
     }
 
     public double getTargetY() {
@@ -190,11 +182,10 @@ public class Vision extends SubsystemBase {
     }
 
     public double getPowerCellX() {
-        double xOffset = openSight.getEntry("ball").getDoubleArray(new double[] {0, 0})[0];
+        double pixels = openSight.getEntry("found-x").getDouble(0);
 
-        // TODO: Use xOffset to return a positive value when target is the right and vice versa for right
-
-        return xOffset;
+        // Convert to degrees (5.839 pixels per degree)
+        return pixels * 5.839;
     }
 
     public boolean hasPowerCell() {
@@ -206,6 +197,7 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("Limelight Target X", getTargetX());
         SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
         SmartDashboard.putNumber("Limelight Pipeline", getPipeline());
+        SmartDashboard.putNumber("Powercell X", getPowerCellX());
     }
 
     @Override
@@ -213,5 +205,36 @@ public class Vision extends SubsystemBase {
         // This method will be called once per scheduler run
         updateSmartDashboard();
         updateValidTarget();
+        song("megolovania.chrp");
+        // targetSound();
+    }
+
+    private void targetSound() {
+        if (hasPowerCell() || hasTarget()) {
+            orchestra.stop();
+            orchestra.loadMusic(SOUNDS[0]);
+            orchestra.play();
+        }
+    }
+
+    /* TODO
+    public void randomSong() {
+        // Inspired by https://www.reddit.com/r/FRC/comments/f4tek6/our_intimidation_factor_is_ready/
+        orchestra.loadMusic(SOUNDS[((int)Math.random() % SOUNDS.length) + 1]);
+    }
+    */
+
+    public void song(int index) {
+        if (!orchestra.isPlaying()) {
+            orchestra.loadMusic(SOUNDS[index]);
+            orchestra.play();
+        }
+    }
+
+    public void song(String name) {
+        if (!orchestra.isPlaying()) {
+            orchestra.loadMusic(name);
+            orchestra.play();
+        }
     }
 }

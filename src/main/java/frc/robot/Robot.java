@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +34,6 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     LiveWindow.disableAllTelemetry();
     m_robotContainer = new RobotContainer();
-    CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
   }
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like

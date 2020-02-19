@@ -22,6 +22,7 @@ import frc.robot.commands.climber.ExtendClimber;
 import frc.robot.commands.climber.RetractClimber;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.AlignToBall;
+import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntakePiston;
@@ -104,8 +105,8 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-//    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
-//            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
+    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
+            () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
@@ -147,8 +148,8 @@ public class RobotContainer {
     leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true)); //Top (left) Button - Switch to high gear
     leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false)); //Bottom (right) Button - Switch to low gear
 
-    rightButtons[0].whenPressed(new AlignToBall(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
-    //rightButtons[1].whenPressed(new Command()); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+    // rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision)); //Top (left) Button - Shoot power cells (kicker)
+    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
     xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
     //xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
@@ -194,6 +195,7 @@ public class RobotContainer {
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
   public void teleOpPeriodic() {
+
   }
   public void autonomousInit() {
   }
