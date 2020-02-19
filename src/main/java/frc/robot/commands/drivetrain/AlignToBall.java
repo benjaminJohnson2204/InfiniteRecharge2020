@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
+import java.util.function.DoubleSupplier;
 
 public class AlignToBall extends CommandBase {
 
@@ -20,10 +21,10 @@ public class AlignToBall extends CommandBase {
 
     private final DriveTrain driveTrain;
     private final Vision vision;
-    private final double throttle;
+    private final DoubleSupplier throttle;
     private PIDController pid = new PIDController(P_TERM, I_TERM, D_TERM);
 
-    public AlignToBall(DriveTrain driveTrain, Vision vision, double throttle) {
+    public AlignToBall(DriveTrain driveTrain, Vision vision, DoubleSupplier throttle) {
         // Use addRequirements() here to declare subsystem dependencies.
         this.driveTrain = driveTrain;
         this.vision = vision;
@@ -48,7 +49,7 @@ public class AlignToBall extends CommandBase {
 
         while (!pid.atSetpoint()) {
             double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
-            driveTrain.setMotorArcadeDrive(-this.throttle, output);
+            driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
         }
     }
 
