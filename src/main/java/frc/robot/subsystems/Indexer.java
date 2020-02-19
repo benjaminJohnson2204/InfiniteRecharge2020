@@ -74,7 +74,7 @@ public class Indexer extends SubsystemBase {
 //    SmartDashboard.putNumber("kP", kP);
 //    SmartDashboard.putNumber("kI", kI);
 //    SmartDashboard.putNumber("kD", kD);
-    initShuffleboard();
+    //initShuffleboard();
   }
 
   public void toggleControlMode() {

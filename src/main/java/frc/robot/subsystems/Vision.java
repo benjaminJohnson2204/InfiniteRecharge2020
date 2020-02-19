@@ -48,6 +48,8 @@ public class Vision extends SubsystemBase {
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
 		setPipeline(1);
+
+		//initShuffleboard();
 	}
 
 	private void updateValidTarget() {
@@ -207,6 +209,12 @@ public class Vision extends SubsystemBase {
 
 	public boolean hasPowerCell() {
 		return openSight.getEntry("found").getBoolean(false);
+	}
+
+	private void initShuffleboard() {
+		Shuffleboard.getTab("Turret").addBoolean("Vision Valid Output", this::getValidTarget);
+		Shuffleboard.getTab("Turret").addNumber("Vision Target X", this::getFilteredTargetX);
+
 	}
 
 	public void updateSmartDashboard() {

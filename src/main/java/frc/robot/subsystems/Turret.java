@@ -29,12 +29,12 @@ public class Turret extends SubsystemBase {
   double kP = 0.155;    //0.155
   double kI = 0.0001;    //0.00075
   double kD = 0.00766;  //0.00766
+
+  int kI_Zone = 900;    //900 // 254: 1/kP?
+  int kMaxIAccum = 500000;//kI_Zone *3; //500000;    //900
+  int kErrorBand = 50;//degreesToEncoderUnits(0.5);
   
-  int kI_Zone = 300;    //900 // 254: 1/kP?
-  int kMaxIAccum = kI_Zone *3; //500000;    //900
-  int kErrorBand = (int) degreesToEncoderUnits(0.5);
-  
-  int kCruiseVelocity = (int) degreesToEncoderUnits(180) * 10;
+  int kCruiseVelocity = degreesToEncoderUnits(180) * 10;
   int kMotionAcceleration = kCruiseVelocity * 10;
   
   double maxAngle = 315;
@@ -81,7 +81,7 @@ public class Turret extends SubsystemBase {
 
     //turretPID.enableContinuousInput(0, 360);
 
-    initShuffleboard();
+    //initShuffleboard();
   }
 
   public void resetEncoder(){
@@ -143,7 +143,6 @@ public class Turret extends SubsystemBase {
     this.setpoint = setpoint;
   }
 
-
   public void setClosedLoopPosition(){
     turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(setpoint));
   }
@@ -194,6 +193,6 @@ public class Turret extends SubsystemBase {
 //    } else if(turretHomeSensorLatch && !getTurretHome())
 //      turretHomeSensorLatch = false;
 
-    updateSmartdashboard();
+    //updateSmartdashboard();
   }
 }
