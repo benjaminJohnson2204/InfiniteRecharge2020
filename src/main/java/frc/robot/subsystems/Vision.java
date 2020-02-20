@@ -49,11 +49,11 @@ public class Vision extends SubsystemBase {
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
 		setPipeline(1);
 
-		//initShuffleboard();
+		initShuffleboard();
 	}
 
 	private void updateValidTarget() {
-		if (hasTarget() || true) {
+		if (hasTarget()) {
 			setLastValidTargetTime();
 		}
 		if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 5) {

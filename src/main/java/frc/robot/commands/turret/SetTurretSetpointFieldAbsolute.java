@@ -61,6 +61,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   public void execute() {
 //    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
 //    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
+//    SmartDashboard.putBoolean("Joystick Moved", joystickMoved);
+    
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
         m_vision.ledsOn();
@@ -72,15 +74,15 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
         }
 
         if(direction) {
-        	if(m_xInput.getAsDouble() >= 0)
-              setpoint = -Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
-            else
-              setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
-        	
-			if(setpoint > m_turret.getMaxAngle()) {
-				setpoint -= 360;
-			    direction = false;
-			}
+          if(m_xInput.getAsDouble() >= 0)
+            setpoint = -Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+          else
+            setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+
+          if(setpoint > m_turret.getMaxAngle()) {
+              setpoint -= 360;
+              direction = false;
+          }
         } else {
           if(m_xInput.getAsDouble() < 0)
             setpoint = Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
@@ -92,12 +94,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             setpoint += 360;
           }
         }
-      } else {
-        directionTripped = false;
-        joystickMoved = false;
-      }
-
-      if(m_vision.getValidTarget() && !joystickMoved) {
+      } else if(m_vision.getValidTarget() && !joystickMoved) {
         usingVisionSetpoint = true;
         if(!turning) {
           setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
@@ -116,6 +113,9 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
       } else if(!m_vision.getValidTarget() && !joystickMoved) {
         usingVisionSetpoint = false;
         setpoint = m_turret.getTurretAngle();
+      } else {
+        directionTripped = false;
+        joystickMoved = false;
       }
 
       m_turret.setRobotCentricSetpoint(setpoint);

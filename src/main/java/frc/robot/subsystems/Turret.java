@@ -81,7 +81,7 @@ public class Turret extends SubsystemBase {
 
     //turretPID.enableContinuousInput(0, 360);
 
-    //initShuffleboard();
+    initShuffleboard();
   }
 
   public void resetEncoder(){
