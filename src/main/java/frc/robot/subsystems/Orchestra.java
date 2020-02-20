@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.music.Orchestra;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import frc.robot.constants.Constants;
 
 public class Orchestra extends SubsystemBase {
