@@ -62,7 +62,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
 //    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
 //    SmartDashboard.putBoolean("Joystick Moved", joystickMoved);
-    
+
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
         m_vision.ledsOn();

@@ -24,6 +24,7 @@ import frc.robot.commands.climber.RetractClimber;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
+import frc.robot.commands.intake.ControlledIntake;
 import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.RapidFire;
@@ -106,7 +107,7 @@ public class RobotContainer {
   public void initializeSubsystems() {
     m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain,
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
-    CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
+    //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
     m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
 
@@ -126,7 +127,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    leftJoystick.invertRawAxis(1, false);
+    leftJoystick.invertRawAxis(1, true);
     rightJoystick.invertRawAxis(0, true);
     xBoxController.invertRawAxis(1, true);
     xBoxController.invertRawAxis(5, true);
@@ -152,6 +153,7 @@ public class RobotContainer {
     rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));     // Deploy Intake
     rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));   // Retract Intake
     rightButtons[1].whileHeld(new SetIntakeManual(m_intake, m_indexer));  // Run Intake Motors
+    //rightButtons[1].whileHeld(new ControlledIntake(m_intake, m_indexer));  // Run Intake Motors
 
     xBoxButtons[0].whenPressed(new ExtendClimber(m_climber));                             // A - toggle driver climb mode?
     xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
