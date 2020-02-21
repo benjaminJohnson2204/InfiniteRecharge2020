@@ -19,6 +19,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
@@ -157,11 +158,16 @@ public class Indexer extends SubsystemBase {
   }
 
   private void initShuffleboard() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Indexer").addBoolean("Intake Sensor", this::getIntakeSensor);
     Shuffleboard.getTab("Indexer").addBoolean("Indexer Bottom Sensor", this::getIndexerBottomSensor);
     Shuffleboard.getTab("Indexer").addBoolean("Indexer Top Sensor", this::getIndexerTopSensor);
   }
+
   private void updateSmartDashboard(){
+    SmartDashboardTab.putBoolean("Indexer","Intake Sensor", getIntakeSensor());
+    SmartDashboardTab.putBoolean("Indexer","Indexer Bottom Sensor", getIndexerBottomSensor());
+    SmartDashboardTab.putBoolean("Indexer","Indexer Top Sensor", getIndexerTopSensor());
 
   }
 

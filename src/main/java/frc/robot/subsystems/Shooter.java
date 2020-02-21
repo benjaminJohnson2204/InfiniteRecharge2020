@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
@@ -99,6 +100,7 @@ public class Shooter extends SubsystemBase {
   }
 
   private void initShuffleboard() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Shooter").addNumber("RPM Primary", () -> this.getRPM(0));
     Shuffleboard.getTab("Shooter").addNumber("RPM Secondary", () -> this.getRPM(1));
     Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
@@ -115,7 +117,10 @@ public class Shooter extends SubsystemBase {
 
   private void updateShuffleboard(){
     SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
-//    SmartDashboard.putNumber("RPM 2", falconUnitsToRPM(outtakeMotors[1].getSelectedSensorVelocity()));
+
+    SmartDashboardTab.putNumber("Shooter", "RPM Primary", getRPM(0));
+    SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
+    SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
   }
 
   public void updatePIDValues() {

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
@@ -81,7 +82,7 @@ public class Turret extends SubsystemBase {
 
     //turretPID.enableContinuousInput(0, 360);
 
-    initShuffleboard();
+    //initShuffleboard();
   }
 
   public void resetEncoder(){
@@ -164,6 +165,7 @@ public class Turret extends SubsystemBase {
   }
 
   private void initShuffleboard() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Turret").addNumber("Turret Motor Output", turretMotor::getMotorOutputPercent);
     Shuffleboard.getTab("Turret").addNumber("Turret Robot Relative Angle", this::getTurretAngle);
     Shuffleboard.getTab("Turret").addNumber("Turret Field Relative Angle", this::getFieldRelativeAngle);
@@ -174,10 +176,15 @@ public class Turret extends SubsystemBase {
   }
 
   private void updateSmartdashboard() {
-//    SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Turret Angle", getFieldRelativeAngle());
-//    SmartDashboard.putNumber("Turret Setpoint", setpoint);
-//    SmartDashboard.putNumber("Turret Error Degrees", encoderUnitsToDegrees(turretMotor.getClosedLoopError()));
+
+    SmartDashboardTab.putNumber("Turret", "Turret Motor Output", turretMotor.getMotorOutputPercent());
+    SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
+    SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
+    SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
+    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
+    SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
   }
 
   @Override
@@ -193,6 +200,6 @@ public class Turret extends SubsystemBase {
 //    } else if(turretHomeSensorLatch && !getTurretHome())
 //      turretHomeSensorLatch = false;
 
-    //updateSmartdashboard();
+    updateSmartdashboard();
   }
 }

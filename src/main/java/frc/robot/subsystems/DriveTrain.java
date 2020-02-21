@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
@@ -205,6 +206,7 @@ DriveTrain extends SubsystemBase {
   }
 
   private void initShuffleboardValues() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
     Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
     Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
@@ -221,11 +223,27 @@ DriveTrain extends SubsystemBase {
     Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX::getAngle);
   }
 
+  private void updateSmartDashboard() {
+    SmartDashboardTab.putNumber("DriveTrain","Left Encoder", getEncoderCount(0));
+    SmartDashboardTab.putNumber("DriveTrain","Right Encoder", getEncoderCount(2));
+    SmartDashboardTab.putNumber("DriveTrain","xCoordinate",
+            Units.metersToFeet(getRobotPose().getTranslation().getX()));
+    SmartDashboardTab.putNumber("DriveTrain","yCoordinate",
+            Units.metersToFeet(getRobotPose().getTranslation().getY()));
+    SmartDashboardTab.putNumber("DriveTrain","Angle", getRobotPose().getRotation().getDegrees());
+    SmartDashboardTab.putNumber("DriveTrain","leftSpeed",
+            Units.metersToFeet(getSpeeds().leftMetersPerSecond));
+    SmartDashboardTab.putNumber("DriveTrain","rightSpeed",
+            Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+
+    SmartDashboardTab.putNumber("Turret","Robot Angle", getAngle());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
-    //updateSmartDashboard();
+    updateSmartDashboard();
   }
 }

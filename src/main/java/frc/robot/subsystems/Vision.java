@@ -15,7 +15,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
 
@@ -49,7 +51,7 @@ public class Vision extends SubsystemBase {
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
 		setPipeline(1);
 
-		initShuffleboard();
+		//initShuffleboard();
 	}
 
 	private void updateValidTarget() {
@@ -212,6 +214,7 @@ public class Vision extends SubsystemBase {
 	}
 
 	private void initShuffleboard() {
+		// Unstable. Don''t use until WPILib fixes this
 		Shuffleboard.getTab("Turret").addBoolean("Vision Valid Output", this::getValidTarget);
 		Shuffleboard.getTab("Turret").addNumber("Vision Target X", this::getFilteredTargetX);
 
@@ -222,6 +225,9 @@ public class Vision extends SubsystemBase {
 		SmartDashboard.putNumber("Limelight Target X", getTargetX());
 		SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
 		SmartDashboard.putNumber("Limelight Pipeline", getPipeline());
+
+		SmartDashboardTab.putBoolean("Turret", "Vision Valid Output", getValidTarget());
+		SmartDashboardTab.putNumber("Turret", "Vision Target X", getFilteredTargetX());
 	}
 
 	@Override
