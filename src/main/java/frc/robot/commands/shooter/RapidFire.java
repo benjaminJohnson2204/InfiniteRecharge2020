@@ -21,7 +21,7 @@ public class RapidFire extends CommandBase {
   private final Shooter m_shooter;
   private final Indexer m_indexer;
   private final Intake m_intake;
-  private double timestamp;
+  private double startTime, timestamp;
   private boolean timerStart;
   private double m_rpm;
   /**
@@ -43,6 +43,7 @@ public class RapidFire extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    startTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -58,8 +59,8 @@ public class RapidFire extends CommandBase {
       timerStart = false;
     }
 
-    if (timestamp != 0)
-      if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1) {
+    if (timestamp != 0 || Timer.getFPGATimestamp() - startTime > 2)
+      if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1 || Timer.getFPGATimestamp() - startTime > 2) {
         m_indexer.setIndexerOutput(1);
         m_indexer.setKickerOutput(1);
         m_intake.setIntakePercentOutput(1);
