@@ -39,7 +39,7 @@ public class Orchestra extends SubsystemBase {
   }
 
   public void stopSong(){
-    stop();
+    orchestra.stop();
   }
 
   @Override
