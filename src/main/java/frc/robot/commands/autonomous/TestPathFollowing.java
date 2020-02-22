@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DriveTrain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An example command that uses an example subsystem.
@@ -49,26 +51,41 @@ public class TestPathFollowing extends CommandBase implements Runnable {
     m_driveTrain.setDriveTrainNeutral();
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
+    m_driveTrain.navX.reset();
 
     var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    var midPosition = new Pose2d(Units.feetToMeters(1), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    //var stopPosition = new Pose2d(Units.feetToMeters(-6), Units.feetToMeters(2), Rotation2d.fromDegrees(0));
+    var midPosition = new Pose2d(Units.feetToMeters(3), Units.feetToMeters(3), Rotation2d.fromDegrees(0));
+    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
 
     var trajectoryWaypoints = new ArrayList<Pose2d>();
     trajectoryWaypoints.add(startPosition);
     trajectoryWaypoints.add(midPosition);
-   // trajectoryWaypoints.add(stopPosition);
+    trajectoryWaypoints.add(stopPosition);
 
 
     var trajectoryConstraints = new DifferentialDriveKinematicsConstraint(m_driveTrain.getDriveTrainKinematics(),
                                                     1);
 
 
-    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(1), Units.feetToMeters(1));
+    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(2), Units.feetToMeters(4));
 
     trajectoryConfig.setReversed(false);
 
-    trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
+    //trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
+    trajectory = TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(
+                    new Translation2d(1, 1),
+                    new Translation2d(2, -1)
+            ),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(3, 0, new Rotation2d(0)),
+            // Pass config
+            trajectoryConfig
+    );
+
 
     m_notifier = new Notifier(this);
     m_notifier.startPeriodic(m_period);
