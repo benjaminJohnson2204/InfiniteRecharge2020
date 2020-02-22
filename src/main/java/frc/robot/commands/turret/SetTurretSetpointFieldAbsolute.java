@@ -82,6 +82,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
           if(setpoint > m_turret.getMaxAngle()) {
               setpoint -= 360;
               direction = false;
+              if(setpoint < m_turret.getMinAngle())
+                setpoint = m_turret.getMinAngle();
           }
         } else {
           if(m_xInput.getAsDouble() < 0)
@@ -92,6 +94,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
           if (setpoint < m_turret.getMinAngle()) {
             direction = true;
             setpoint += 360;
+            if(setpoint > m_turret.getMaxAngle())
+              setpoint = m_turret.getMaxAngle();
           }
         }
       } else if(m_vision.getValidTarget() && !joystickMoved) {
@@ -102,9 +106,13 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
           if (setpoint > m_turret.getMaxAngle()) {
             setpoint -= 360;
             turning = true;
+            if(setpoint < m_turret.getMinAngle())
+              setpoint = m_turret.getMinAngle();
           } else if (setpoint < m_turret.getMinAngle()) {
             setpoint += 360;
             turning = true;
+            if(setpoint > m_turret.getMaxAngle())
+              setpoint = m_turret.getMaxAngle();
           }
         } else {
           if(m_turret.atTarget())

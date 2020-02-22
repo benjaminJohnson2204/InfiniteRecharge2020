@@ -7,9 +7,11 @@
 
 package frc.robot.commands.climber;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
+import javax.swing.*;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -20,6 +22,8 @@ public class SetClimberOutput extends CommandBase {
   private final Climber m_climber;
   private DoubleSupplier m_input;
 
+  private boolean curretDirection, movable;
+  private double timestamp;
   /*
    * Creates a new ExampleCommand.
    *
@@ -36,10 +40,44 @@ public class SetClimberOutput extends CommandBase {
   @Override
   public void initialize() {
   }
+
   @Override
   public void execute() {
-    if(m_climber.getClimbState())
-      m_climber.setClimber(m_input.getAsDouble());
+    boolean direction = m_input.getAsDouble() > 0;
+    if(m_climber.getClimbState()) {
+
+      if(direction != curretDirection) {
+        timestamp = Timer.getFPGATimestamp();
+        curretDirection = direction;
+        movable = false;
+        if (direction)
+          climberReleaseSequence();
+        else
+          climberRetractSequence();
+      }
+
+      if(movable)
+        m_climber.setClimber(m_input.getAsDouble());
+    }
+  }
+
+  private void climberReleaseSequence() {
+    m_climber.setClimbPiston(false);
+
+    if(Timer.getFPGATimestamp() - timestamp < 0.2)
+      m_climber.setClimber(-0.25);
+    else if(Timer.getFPGATimestamp() - timestamp < 0.4)
+      m_climber.setClimber(0.25);
+    else
+      movable = true;
+  }
+
+  private void climberRetractSequence() {
+    m_climber.setClimbPiston(true);
+    if(Timer.getFPGATimestamp() - timestamp < 0.2)
+      m_climber.setClimber(-0.25);
+
+    movable = true;
   }
 
   // Called once the command ends or is interrupted.
