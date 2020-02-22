@@ -8,6 +8,7 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
@@ -31,7 +32,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   boolean timeout = false;
   boolean limelightDisabled = false;
   boolean movedJoystick = false;
-
+  boolean turning;
   /**
    * Creates a new ExampleCommand.
    *
@@ -48,7 +49,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //    addRequirements(driveTrainSubsystem);
     addRequirements(visionSybsystem);
   }
-  private boolean direction, directionTripped;
+  private boolean direction, directionTripped, joystickMoved;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -59,7 +60,9 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   public void execute() {
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
-
+        m_vision.ledsOn();
+        m_vision.setLastValidTargetTime();
+        joystickMoved = true;
         if(!directionTripped) {
           direction = m_yInput.getAsDouble() < 0;
           directionTripped = true;
@@ -86,40 +89,28 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             setpoint += 360;
           }
         }
-
-      } else
+      } else {
         directionTripped = false;
-//      } else if (movedJoystick){
-//        movedJoystick = false;
-//        limelightDisabled = false;
-//      }
-        movedJoystick = true;
-/*
-      if (!limelightDisabled) {
-        if (Constants.limelightTempDisabled) {
-          if (m_turret.atTarget() && m_vision.hasTarget()) {
-            Constants.limelightTempDisabled = false;
-          }
-          // TODO: Change this to a function call
-          // ^ Done?
-        } else if (m_vision.hasTarget()) { //if you can see the target, set setpoint to vision target's angle and reset timer if activated.
+        joystickMoved = false;
+      }
+
+      if(m_vision.getValidTarget() && !joystickMoved) {
+        if(!turning) {
           setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
-          if (timeout) {
-            timer.stop();
-            timer.reset();
-            timeout = false;
+
+          if (setpoint > m_turret.getMaxAngle()) {
+            setpoint -= 360;
+            turning = true;
+          } else if (setpoint < m_turret.getMinAngle()) {
+            setpoint += 360;
+            turning = true;
           }
-        } else { //if you can't see the target for x seconds, then disable the limelight
-          timer.start();
-          timeout = true;
-          if (timer.get() > 1) { //change value if needed
-            timer.stop();
-            timer.reset();
-            timeout = false;
-            limelightDisabled = true;
-          }
+        } else {
+          if(m_turret.atTarget())
+            turning = false;
         }
-      }*/
+      }
+
       m_turret.setSetpoint(setpoint);
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode
