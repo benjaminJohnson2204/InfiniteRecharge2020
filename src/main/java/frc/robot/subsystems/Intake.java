@@ -13,6 +13,7 @@ public class Intake extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
 
+  public boolean intaking = false;
   private CANSparkMax intakeMotor[] ={
         new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless),
   };

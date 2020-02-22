@@ -31,6 +31,7 @@ public class SetIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_intake.intaking = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,6 +44,7 @@ public class SetIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_intake.setIntake(0);
+    m_intake.intaking = false;
   }
 
   // Returns true when the command should end.

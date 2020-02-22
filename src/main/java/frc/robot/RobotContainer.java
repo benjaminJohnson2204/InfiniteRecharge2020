@@ -63,6 +63,8 @@ public class RobotContainer {
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
+  public boolean init = false;
+
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
   static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
@@ -108,7 +110,7 @@ public class RobotContainer {
 
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
-    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
+    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer, m_intake, m_vision));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),

@@ -20,7 +20,7 @@ public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  private AddressableLED LEDStripA, LEDStripB;
+  private AddressableLED LEDStrip;
   private AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
@@ -29,12 +29,12 @@ public class LED extends SubsystemBase {
   double speed = 8;
 
   public LED() {
-    LEDStripA = new AddressableLED(Constants.ledPortA);
+    LEDStrip = new AddressableLED(Constants.ledPortA);
 //    LEDStripB = new AddressableLED(Constants.ledPortB);
-    LEDBuffer = new AddressableLEDBuffer(39);
-    LEDStripA.setLength(LEDBuffer.getLength());
-    LEDStripA.setData(LEDBuffer);
-    LEDStripA.start();
+    LEDBuffer = new AddressableLEDBuffer(39 * 2);
+    LEDStrip.setLength(LEDBuffer.getLength());
+    LEDStrip.setData(LEDBuffer);
+    LEDStrip.start();
 //    LEDStripB.setLength(LEDBuffer.getLength());
 //    LEDStripB.setData(LEDBuffer);
 //    LEDStripB.start();
@@ -48,9 +48,9 @@ public class LED extends SubsystemBase {
   }
 
   public void setRGB(int red, int green, int blue){
-    this.red = red;
-    this.blue = blue;
-    this.green = green;
+    this.red = (int) (red * 0.5);
+    this.blue = (int) (blue * 0.5);
+    this.green = (int) (green * 0.5);
   }
 
   public void setSolidColor(){
@@ -126,7 +126,7 @@ public class LED extends SubsystemBase {
   }
 
   public void setBuffer() {
-    LEDStripA.setData(LEDBuffer);
+    LEDStrip.setData(LEDBuffer);
 //    LEDStripB.setData(LEDBuffer);
   }
 
@@ -148,11 +148,20 @@ public class LED extends SubsystemBase {
         setRGB(255, 255, 255);
         flash();
         break;
+      case 4:
+        setRGB(20, 255, 110);
+        coolDesign(8, 1);
+      case 5:
+        setRGB(0, 110, 255);
+        setBlinkingColor(true);
+      case 6:
+        setRGB(255, 110, 0);
+        coolDesign(8, 1);
       default:
         setRGB(106, 90, 205);
         setBlinkingColor(true);
     }
-    LEDStripA.setData(LEDBuffer);
+    LEDStrip.setData(LEDBuffer);
   }
 
   public void setState(int state){

@@ -10,7 +10,9 @@ package frc.robot.commands.LED;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.Vision;
 
 /**
  * An example command that uses an example subsystem.
@@ -19,15 +21,19 @@ public class GetSubsystemStates extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final LED m_led;
   private final Indexer m_indexer;
+  private final Intake m_intake;
+  private final Vision m_vision;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param The subsystem used by this command.
    */
-  public GetSubsystemStates(LED led, Indexer indexer) {
+  public GetSubsystemStates(LED led, Indexer indexer, Intake intake, Vision vision) {
     m_led = led;
     m_indexer = indexer;
+    m_intake = intake;
+    m_vision = vision;
     // Use addRequirements() here to declare subsystem dependencies.    
     addRequirements(led);
   }
@@ -53,8 +59,17 @@ public class GetSubsystemStates extends CommandBase {
     else if(m_indexer.topSensor()) {
       m_led.setState(2);
     }
-    else if(m_indexer.newBall) {
+    else if(m_indexer.newBall()) {
       m_led.setState(3);
+    }
+    else if(m_intake.intaking){
+      m_led.setState(4);
+    }
+    else if(m_vision.hasTarget()){
+      m_led.setState(5);
+    }
+    else if(!m_vision.hasTarget()){
+      m_led.setState(6);
     }
     else
       m_led.setState(-1);
