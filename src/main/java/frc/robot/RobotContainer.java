@@ -18,23 +18,23 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.LEDCommand;
+import frc.robot.commands.autonomous.TestPathFollowing;
+import frc.robot.commands.drivetrain.SetArcadeDrive;
 import frc.robot.commands.drivetrain.SetDriveShifters;
+import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
+import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.shooter.SetShooterManual;
-import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
-import frc.robot.commands.turret.ToggleTurretControlMode;
-import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.autonomous.TestPathFollowing;
-import frc.robot.commands.drivetrain.SetArcadeDrive;
-import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
-import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
+import frc.robot.commands.turret.SetTurretSetpointFieldAbsoluteWithVision;
+import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.commands.turret.ZeroTurretEncoder;
 import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
+import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
@@ -107,7 +107,7 @@ public class RobotContainer {
 //    m_intake.setDefaultCommand(new SetIntake(m_intake));
     m_indexer.setDefaultCommand(new IndexerCommand(m_indexer));
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
+    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsoluteWithVision(m_turret, m_driveTrain, m_vision,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_skyhook, () -> xBoxController.getRawAxis(0)));

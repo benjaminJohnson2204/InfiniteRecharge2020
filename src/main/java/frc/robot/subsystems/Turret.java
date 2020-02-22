@@ -43,7 +43,7 @@ public class Turret extends SubsystemBase {
 
   private CANCoder encoder = new CANCoder(Constants.turretEncoder);
 
-  private TalonSRX turretMotor = new TalonSRX(30);
+  private TalonSRX turretMotor = new TalonSRX(Constants.turretMotor);
 
   private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
   private boolean turretHomeSensorLatch = false;
@@ -145,7 +145,7 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
     SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
     SmartDashboard.putNumber("Turret Setpoint", setpoint);
-//    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
+    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
 
     SmartDashboard.getBoolean("Turret Home", getTurretHome());
   }

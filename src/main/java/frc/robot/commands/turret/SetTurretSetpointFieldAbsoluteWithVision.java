@@ -32,6 +32,7 @@ public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
   boolean limelightDisabled = false;
   boolean limelightMovementDisabled = false;
   boolean movedJoystick = false;
+  boolean targetOutOfRange;
 
   /**
    * Creates a new ExampleCommand.
@@ -93,13 +94,13 @@ public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
           }
         }
         movedJoystick = true;
-      } else if (m_vision.hasTarget()){
-        setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
-
-        if(setpoint > m_turret.getMaxAngle())
-          setpoint -= 360;
-        else if(setpoint < m_turret.getMinAngle())
-          setpoint += 360;
+      } else if (m_vision.hasTarget()) {
+        if (m_turret.getTurretAngle() + m_vision.getTargetX() <= m_turret.getMaxAngle() && m_turret.getTurretAngle() + m_vision.getTargetX() >= m_turret.getMinAngle()) {
+          setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
+          targetOutOfRange = false;
+      } else {
+          targetOutOfRange = true;
+      }
 
         if (timeout) {
           timer.stop();
@@ -124,7 +125,7 @@ public class SetTurretSetpointFieldAbsoluteWithVision extends CommandBase {
 
       m_turret.setSetpoint(setpoint);
     } else {
-      m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode TODO: re-tune
+      m_turret.setPercentOutput(m_xInput.getAsDouble()*0.2); //manual mode TODO: re-tune
     }
   }
 

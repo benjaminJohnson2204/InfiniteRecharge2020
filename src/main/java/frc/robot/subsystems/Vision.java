@@ -27,7 +27,7 @@ public class Vision extends SubsystemBase
 
     public Vision() {
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
-        setPipeline(1);
+        setPipeline(3); //1
     }
 
     public double getTargetY() {
