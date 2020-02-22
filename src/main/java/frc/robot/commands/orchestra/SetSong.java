@@ -8,15 +8,14 @@
 package frc.robot.commands.orchestra;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Orchestra;
+import frc.robot.subsystems.Orchestra1;
 
 public class SetSong extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Orchestra m_orchestra;
+  private final Orchestra1 m_orchestra;
   private String m_song;
 
-  public SetSong(Orchestra orchestra, String song) {
+  public SetSong(Orchestra1 orchestra, String song) {
     m_orchestra = orchestra;
     m_song = song;
     addRequirements(orchestra);

@@ -9,44 +9,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.climber.ExtendClimber;
-import frc.robot.commands.climber.RetractClimber;
-import frc.robot.commands.climber.SetClimberOutput;
-import frc.robot.commands.drivetrain.SetDriveShifters;
-import frc.robot.commands.indexer.ToggleIndexerControlMode;
-import frc.robot.commands.intake.SetIntake;
-import frc.robot.commands.intake.SetIntakeManual;
-import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.orchestra.SetSong;
-import frc.robot.commands.shooter.SetShooterManual;
-import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
-import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.LED.GetSubsystemStates;
-import frc.robot.commands.autonomous.TestPathFollowing;
-import frc.robot.commands.drivetrain.SetArcadeDrive;
-import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
-import frc.robot.commands.indexer.IndexerCommand;
-import frc.robot.commands.skyhook.SetSkyhookOutput;
-import frc.robot.commands.turret.ZeroTurretEncoder;
-import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.constants.Constants;
 import frc.vitruvianlib.utils.JoystickWrapper;
-import frc.vitruvianlib.utils.XBoxTrigger;
-
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -66,7 +33,7 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
-  private Orchestra m_orchestra = new Orchestra();
+  private Orchestra1 m_orchestra = new Orchestra1();
 
 
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
@@ -201,9 +168,9 @@ public class RobotContainer {
 //    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
   public void teleOpPeriodic() {
-    new SetSong(m_orchestra, "TetrisTheme.mid");
   }
   public void autonomousInit() {
+    new SetSong(m_orchestra, "TetrisTheme.mid");
   }
   public void autonomousPeriodic(){
   }

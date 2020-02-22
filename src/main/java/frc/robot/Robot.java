@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Orchestra;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -67,12 +66,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+//    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+//    // schedule the autonomous command (example)
+//    if (m_autonomousCommand != null) {
+//      m_autonomousCommand.schedule();
+//    }
   }
 
   /**
@@ -80,7 +79,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    m_robotContainer.autonomousPeriodic();
+//    m_robotContainer.autonomousPeriodic();
   }
 
   @Override
@@ -89,10 +88,10 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
-    m_robotContainer.teleOpInit();
+//    if (m_autonomousCommand != null) {
+//      m_autonomousCommand.cancel();
+//    }
+//    m_robotContainer.teleOpInit();
   }
 
   /**
@@ -100,13 +99,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.teleOpPeriodic();
+//    m_robotContainer.teleOpPeriodic();
   }
 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
+//    CommandScheduler.getInstance().cancelAll();
   }
 
   /**
