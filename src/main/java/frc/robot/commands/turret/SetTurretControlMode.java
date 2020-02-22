@@ -13,16 +13,18 @@ import frc.robot.subsystems.Turret;
 /**
  * An example command that uses an example subsystem.
  */
-public class ToggleTurretControlMode extends CommandBase {
+public class SetTurretControlMode extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Turret m_turret;
+  private int m_mode;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ToggleTurretControlMode(Turret subsystem) {
+  public SetTurretControlMode(Turret subsystem, int mode) {
     m_turret = subsystem;
+    m_mode = mode;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -30,7 +32,7 @@ public class ToggleTurretControlMode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.setControlMode(m_turret.getControlMode() != 1 ? 1 : 0);
+    m_turret.setControlMode(m_mode);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

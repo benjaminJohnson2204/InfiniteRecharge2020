@@ -5,32 +5,39 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.turret;
+package frc.robot.commands.climber;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.DriveTrain;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ToggleTurretControlMode extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Turret m_turret;
+public class SetClimbMode extends CommandBase {
+  //@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+  private final Climber m_climber;
+  private boolean m_mode;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ToggleTurretControlMode(Turret subsystem) {
-    m_turret = subsystem;
+  public SetClimbMode(Climber climber, boolean mode) {
+    m_climber = climber;
+    m_mode = mode;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(climber);
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.setControlMode(m_turret.getControlMode() != 1 ? 1 : 0);
+    m_climber.setClimbState(m_mode);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,7 +57,7 @@ public class ToggleTurretControlMode extends CommandBase {
   }
 
   @Override
-  public boolean runsWhenDisabled(){
+  public boolean runsWhenDisabled() {
     return true;
   }
 }

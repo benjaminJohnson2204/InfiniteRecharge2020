@@ -62,7 +62,7 @@ public class Vision extends SubsystemBase {
 			ledsOn();
 			validTarget = true;
 		} else {
-			ledsOff();
+			//ledsOff();
 			validTarget = false;
 		}
 	}

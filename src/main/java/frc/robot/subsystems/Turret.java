@@ -79,7 +79,6 @@ public class Turret extends SubsystemBase {
     turretMotor.configMotionAcceleration(kMotionAcceleration);
     turretMotor.configAllowableClosedloopError(0, kErrorBand);
 
-
     //turretPID.enableContinuousInput(0, 360);
 
     //initShuffleboard();
@@ -90,11 +89,8 @@ public class Turret extends SubsystemBase {
     encoder.setPosition(0);
   }
 
-  public void toggleControlMode() {
-    if(controlMode == 0)
-      controlMode = 1;
-    else
-      controlMode = 0;
+  public void setControlMode(int mode) {
+    controlMode = mode;
   }
 
   public int getControlMode() {
@@ -194,11 +190,11 @@ public class Turret extends SubsystemBase {
 
     // This method will be called once per scheduler run
     // TODO: FIX
-//    if(!turretHomeSensorLatch && getTurretHome()) {
-//      turretMotor.setSelectedSensorPosition(0);
-//      turretHomeSensorLatch = true;
-//    } else if(turretHomeSensorLatch && !getTurretHome())
-//      turretHomeSensorLatch = false;
+    if(!turretHomeSensorLatch && getTurretHome()) {
+      turretMotor.setSelectedSensorPosition(0);
+      turretHomeSensorLatch = true;
+    } else if(turretHomeSensorLatch && !getTurretHome())
+      turretHomeSensorLatch = false;
 
     updateSmartdashboard();
   }
