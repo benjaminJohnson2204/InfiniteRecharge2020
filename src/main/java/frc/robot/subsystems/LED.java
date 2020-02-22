@@ -31,7 +31,7 @@ public class LED extends SubsystemBase {
   public LED() {
     LEDStrip = new AddressableLED(Constants.ledPortA);
 //    LEDStripB = new AddressableLED(Constants.ledPortB);
-    LEDBuffer = new AddressableLEDBuffer(39 * 2);
+    LEDBuffer = new AddressableLEDBuffer(50 * 2);
     LEDStrip.setLength(LEDBuffer.getLength());
     LEDStrip.setData(LEDBuffer);
     LEDStrip.start();
@@ -95,25 +95,21 @@ public class LED extends SubsystemBase {
   double hueOffset = 0;
   public void setRainbow(double iterations, double speed){
     for(int i = 0; i < LEDBuffer.getLength(); i++){
-      LEDBuffer.setHSV(i, (int)(180 * iterations * i / LEDBuffer.getLength() + hueOffset) % 180, 255, 255);
+      LEDBuffer.setHSV(i, (int)(180 * iterations * i / 0.5 * LEDBuffer.getLength() + hueOffset) % 180, 255, 255);
     }
     hueOffset = (hueOffset + 3 * speed * iterations) % 180;
     Timer.delay(0.05);
   }
 
   int head = 0;
-  public void coolDesign(int interval, int trail){
+  public void trail(int interval){
     resetLED();
-    for(int i = head; i < LEDBuffer.getLength(); i += (interval + trail)){
-      LEDBuffer.setRGB(i, red, green, blue);
-      /*for(int ii = trail; ii > 0; ii--){
-        double mag = ii / (trail + 1);
-        LEDBuffer.setRGB(i - (trail - ii + 1), (int)(mag * red), (int)(mag * green), (int)(mag * blue));
-      }*/
+    for(int i = head; i < LEDBuffer.getLength(); i += interval){
+      LEDBuffer.setRGB(i % 100, red, green, blue);
+      LEDBuffer.setRGB((i + 50) % 100, red, green, blue);
     }
-    
-    head = (head + 1) % (interval + trail);
     Timer.delay(0.03);
+    head++;
   }
 
   public void flash(){
@@ -133,9 +129,9 @@ public class LED extends SubsystemBase {
   int state = -1;
   public void setLED(){
     switch(state){
-      /*case 0:
+      case 0:
         setRainbow(3, 8);
-        break;*/
+        break;
       case 1:
         setRGB(255, 200, 0);
         setBlinkingColor(true);
@@ -150,13 +146,13 @@ public class LED extends SubsystemBase {
         break;
       case 4:
         setRGB(20, 255, 110);
-        coolDesign(8, 1);
+        trail(8, 1);
       case 5:
         setRGB(0, 110, 255);
         setBlinkingColor(true);
       case 6:
         setRGB(255, 110, 0);
-        coolDesign(8, 1);
+        trail(8, 1);
       default:
         setRGB(106, 90, 205);
         setBlinkingColor(true);
