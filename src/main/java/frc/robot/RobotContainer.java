@@ -64,7 +64,7 @@ public class RobotContainer {
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
-  public boolean init = false;
+  private static boolean init = false;
 
   private final Controls m_controls = new Controls(m_driveTrain, m_shooter);
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
@@ -111,7 +111,7 @@ public class RobotContainer {
             () -> rightJoystick.getRawAxis(0)));
     //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer, m_intake, m_vision));
+    m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
             () -> xBoxController.getRawAxis(0),
@@ -168,8 +168,8 @@ public class RobotContainer {
 
     // TODO: Cleanup/formalize operator controls
     //xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
-    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
-    xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
+//    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
+//    xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
     xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));                          // Left Shoulder Button
     xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
     xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
@@ -211,5 +211,13 @@ public class RobotContainer {
   public void autonomousInit() {
   }
   public void autonomousPeriodic(){
+  }
+
+  public static void setInitializationState(boolean state) {
+    init = state;
+  }
+
+  public static boolean getInitializationState() {
+    return init;
   }
 }
