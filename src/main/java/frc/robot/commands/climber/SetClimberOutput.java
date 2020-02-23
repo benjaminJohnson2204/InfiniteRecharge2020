@@ -8,6 +8,7 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
@@ -21,8 +22,9 @@ public class SetClimberOutput extends CommandBase {
   private final Climber m_climber;
   private DoubleSupplier m_input;
 
-  private boolean curretDirection, movable;
+  private boolean currentDirection, movable, switchDirection;
   private double timestamp;
+  private int direction;
   /*
    * Creates a new ExampleCommand.
    *
@@ -43,25 +45,37 @@ public class SetClimberOutput extends CommandBase {
   @Override
   public void execute() {
     double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
-    boolean direction = input > 0;
-//    if(m_climber.getClimbState()) {
+    direction = input > 0 ? 1 : input < 0 ? -1 : 0;
+    if(m_climber.getClimbState()) {
+//      SmartDashboardTab.putNumber("Climber", "Direction", direction);
+//      SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
 
-//      if(direction != curretDirection) {
-//        timestamp = Timer.getFPGATimestamp();
-//        movable = false;
-//        if (direction)
-//          climberReleaseSequence();
-//        else
-//          climberRetractSequence();
-//      }
+      if (direction != 0) {
+        timestamp = Timer.getFPGATimestamp();
+        if (direction == 1 && !currentDirection) {
+          movable = false;
+          switchDirection = true;
+        } else if(direction == -1 && currentDirection){
+          movable = false;
+          switchDirection = false;
+        }
+      }
 
-//      if(movable)
+      if(movable) {
+//        SmartDashboardTab.putString("Climber", "SetClimberOutput", "Manual Control");
         m_climber.setClimberOutput(input);
-//    }
+      } else {
+        if(switchDirection)
+          climberReleaseSequence();
+        else
+          climberRetractSequence();
+      }
+    }
   }
 
   private void climberReleaseSequence() {
-    m_climber.setClimbPiston(false);
+//    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Releasing");
+    m_climber.setClimbPiston(true);
 
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
       m_climber.setClimberOutput(-0.25);
@@ -70,18 +84,19 @@ public class SetClimberOutput extends CommandBase {
     else {
       m_climber.setClimberOutput(0);
       movable = true;
-      curretDirection = true;
+      currentDirection = true;
     }
   }
 
   private void climberRetractSequence() {
-    m_climber.setClimbPiston(true);
+    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Retracting");
+    m_climber.setClimbPiston(false);
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
       m_climber.setClimberOutput(-0.25);
     else {
       m_climber.setClimberOutput(0);
       movable = true;
-      curretDirection = false;
+      currentDirection = false;
     }
   }
 

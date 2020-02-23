@@ -56,7 +56,9 @@ public class Climber extends SubsystemBase {
   }
 
   public void setClimberOutput(double value) {
-    climbMotor.set(ControlMode.PercentOutput, value);
+    // Prevent backdrive
+    if(!(climbMotor.getSelectedSensorPosition() < - 1024))
+      climbMotor.set(ControlMode.PercentOutput, value);
   }
 
   public void setClimberPosition(double position) {
@@ -78,8 +80,11 @@ public class Climber extends SubsystemBase {
     SmartDashboardTab.putNumber("Climber", "Position", encoderUnitsToInches(climbMotor.getSelectedSensorPosition()));
     SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
     SmartDashboardTab.putBoolean("Climber", "Climb Pistons", getClimbPistonExtendStatus());
+    try {
+      SmartDashboardTab.putString("Climber", "Current Command", this.getCurrentCommand().getName());
+    }  catch(Exception e) {
 
-    SmartDashboardTab.putString("Climber", "Current Command", this.getCurrentCommand().getName());
+    }
   }
   @Override
   public void periodic() {

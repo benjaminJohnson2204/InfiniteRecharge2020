@@ -120,7 +120,8 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
 
     // TODO: Update these to use the correct axis
-    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
+    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
+    //m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(4)));
   }
 
