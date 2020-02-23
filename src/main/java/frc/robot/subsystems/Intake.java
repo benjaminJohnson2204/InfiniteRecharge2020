@@ -26,6 +26,7 @@ public class Intake extends SubsystemBase {
   private double maxVel = 5880;
   private double maxAccel = 58800;
   private double gearRatio = 1.0 / 3.0;
+  public boolean intaking = false;
 
   private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
   private CANEncoder intakeEncoder = intakeMotor.getEncoder();
@@ -48,6 +49,13 @@ public class Intake extends SubsystemBase {
     canPidController.setSmartMotionAllowedClosedLoopError(allowableError, 0);
   }
 
+  public boolean getIntakingState() {
+    return intaking;
+  }
+
+  public void setIntakingState(boolean state) {
+    intaking = state;
+  }
   public boolean getintakePistonExtendStatus(){
     return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
   }

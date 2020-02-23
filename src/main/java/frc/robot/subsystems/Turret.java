@@ -163,6 +163,13 @@ public class Turret extends SubsystemBase {
     turretMotor.setIntegralAccumulator(0);
   }
 
+  private void setTurretLatch(boolean state) {
+    turretHomeSensorLatch = state;
+  }
+
+  private boolean getTurretLatch() {
+    return turretHomeSensorLatch;
+  }
   private void initShuffleboard() {
     // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Turret").addNumber("Turret Motor Output", turretMotor::getMotorOutputPercent);
@@ -197,11 +204,11 @@ public class Turret extends SubsystemBase {
 
     // This method will be called once per scheduler run
     // TODO: FIX
-    if(!turretHomeSensorLatch && getTurretHome()) {
+    if(!getTurretLatch() && getTurretHome()) {
       turretMotor.setSelectedSensorPosition(0);
-      turretHomeSensorLatch = true;
-    } else if(turretHomeSensorLatch && !getTurretHome())
-      turretHomeSensorLatch = false;
+      setTurretLatch(true);
+    } else if(getTurretLatch() && !getTurretHome())
+      setTurretLatch(false);
 
     updateSmartdashboard();
   }

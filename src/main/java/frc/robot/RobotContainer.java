@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.climber.ExtendClimber;
 import frc.robot.commands.climber.RetractClimber;
 import frc.robot.commands.climber.SetClimberOutput;
@@ -65,8 +66,9 @@ public class RobotContainer {
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
-  private final Controls m_controls = new Controls(m_driveTrain, m_shooter);
+  public boolean init = false;
 
+  private final Controls m_controls = new Controls(m_driveTrain, m_shooter);
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
   static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
@@ -110,15 +112,15 @@ public class RobotContainer {
             () -> leftJoystick.getRawAxis(1), () -> rightJoystick.getRawAxis(0)));
     //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer));
+    m_led.setDefaultCommand(new GetSubsystemStates(m_led, m_indexer, m_intake, m_vision));
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision,
+    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
 
     // TODO: Update these to use the correct axis
-    //m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
-    //m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(0)));
+    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
+    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(4)));
   }
 
   /**
@@ -151,7 +153,7 @@ public class RobotContainer {
     rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));
     rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));
 
-    xBoxButtons[0].whenPressed(new ExtendClimber(m_climber));                             // A - toggle driver climb mode?
+    xBoxButtons[0].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
     xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
     //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
     //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?

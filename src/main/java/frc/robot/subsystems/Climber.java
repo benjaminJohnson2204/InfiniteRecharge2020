@@ -28,12 +28,13 @@ public class Climber extends SubsystemBase {
 
   private TalonFX climbMotor = new TalonFX(Constants.climbMotorA);
 
-  DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne,  Constants.climbPistonForward, Constants.climbPistonReverse);
+  DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne, Constants.climbPistonForward, Constants.climbPistonReverse);
 
   private boolean climbState;
 
   public Climber() {
     climbMotor.configFactoryDefault();
+    climbMotor.setSelectedSensorPosition(0);
     climbMotor.setNeutralMode(NeutralMode.Brake);
     climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
   }
@@ -75,7 +76,8 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putBoolean("Climb Mode", climbState);
 
     SmartDashboardTab.putNumber("Climber", "Position", encoderUnitsToInches(climbMotor.getSelectedSensorPosition()));
-    SmartDashboardTab.putBoolean("Climber", "Climb Mde", climbState);
+    SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
+    SmartDashboardTab.putBoolean("Climber", "Climb Pistons", getClimbPistonExtendStatus());
   }
   @Override
   public void periodic() {

@@ -42,41 +42,47 @@ public class SetClimberOutput extends CommandBase {
 
   @Override
   public void execute() {
-    boolean direction = m_input.getAsDouble() > 0;
-    if(m_climber.getClimbState()) {
+    double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
+    boolean direction = input > 0;
+//    if(m_climber.getClimbState()) {
 
-      if(direction != curretDirection) {
-        timestamp = Timer.getFPGATimestamp();
-        curretDirection = direction;
-        movable = false;
-        if (direction)
-          climberReleaseSequence();
-        else
-          climberRetractSequence();
-      }
+//      if(direction != curretDirection) {
+//        timestamp = Timer.getFPGATimestamp();
+//        movable = false;
+//        if (direction)
+//          climberReleaseSequence();
+//        else
+//          climberRetractSequence();
+//      }
 
-      if(movable)
-        m_climber.setClimberOutput(m_input.getAsDouble());
-    }
+//      if(movable)
+        m_climber.setClimberOutput(input);
+//    }
   }
 
   private void climberReleaseSequence() {
     m_climber.setClimbPiston(false);
 
-    if(Timer.getFPGATimestamp() - timestamp < 0.2)
+    if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
       m_climber.setClimberOutput(-0.25);
-    else if(Timer.getFPGATimestamp() - timestamp < 0.4)
+    else if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.4)
       m_climber.setClimberOutput(0.25);
-    else
+    else {
+      m_climber.setClimberOutput(0);
       movable = true;
+      curretDirection = true;
+    }
   }
 
   private void climberRetractSequence() {
     m_climber.setClimbPiston(true);
-    if(Timer.getFPGATimestamp() - timestamp < 0.2)
+    if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
       m_climber.setClimberOutput(-0.25);
-
-    movable = true;
+    else {
+      m_climber.setClimberOutput(0);
+      movable = true;
+      curretDirection = false;
+    }
   }
 
   // Called once the command ends or is interrupted.
