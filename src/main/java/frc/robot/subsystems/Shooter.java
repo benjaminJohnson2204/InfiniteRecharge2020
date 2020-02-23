@@ -32,7 +32,6 @@ public class Shooter extends SubsystemBase {
   public int kI_Zone = 100;
   public int kAllowableError = 50;
 
-
   private TalonFX[] outtakeMotors = {
         new TalonFX(Constants.flywheelMotorA),
         new TalonFX(Constants.flywheelMotorB),
@@ -42,7 +41,6 @@ public class Shooter extends SubsystemBase {
   public double rpmTolerance = 25.0;
 
   public Shooter() {
-    //super();
 
     for(TalonFX outtakeMotor : outtakeMotors){
       outtakeMotor.configFactoryDefault();
@@ -143,8 +141,5 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     updateShuffleboard();
-//    updatePIDValues();
-    // This method will be called once per scheduler run
-//    rpmOutput = SmartDashboard.getNumber("FW Output", 0);
   }
 }

@@ -27,8 +27,8 @@ public class ControlledIntake extends CommandBase {
   private final Indexer m_indexer;
   private final Intake m_intake;
 
-  private double intakeRPM = 500;
-  private double indexRPM = 200;
+  private double intakeRPM = 5000;
+  private double indexRPM = 300;
   private double timestamp, intakeTimestamp, indexerTimestamp, fourBallTimestamp;
   private boolean intaking, haveFour, haveFourTripped;
 
@@ -65,19 +65,19 @@ public class ControlledIntake extends CommandBase {
   public void execute() {
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:
-        m_intake.setRPM(0);
+        m_intake.setDirectRPM(0);
         m_indexer.setKickerOutput(0);
         m_indexer.setIndexerOutput(0);
         break;
       case INTAKE_FOUR_BALLS:
-        m_intake.setRPM(intakeRPM);
+        m_intake.setDirectRPM(intakeRPM);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor())
           intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         break;
       case INTAKE_ONE_BALL:
       default:
-        m_intake.setRPM(intakeRPM);
+        m_intake.setDirectRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.4);
         if (m_indexer.getIndexerBottomSensor() && !intaking) {
           indexerTimestamp = Timer.getFPGATimestamp();

@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
   private double maxVel = 5880;
   private double maxAccel = 58800;
   private double gearRatio = 1.0 / 3.0;
-  public boolean intaking = false;
+  private boolean intaking = false;
 
   private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
   private CANEncoder intakeEncoder = intakeMotor.getEncoder();
@@ -70,6 +70,10 @@ public class Intake extends SubsystemBase {
 
   public double getRPM(){
     return intakeEncoder.getVelocity() * gearRatio;
+  }
+
+  public void setDirectRPM(double rpm){
+    canPidController.setReference(rpm, ControlType.kSmartVelocity);
   }
 
   public void setRPM(double rpm){
