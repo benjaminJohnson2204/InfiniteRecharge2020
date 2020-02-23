@@ -11,22 +11,24 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
+import java.util.function.DoubleSupplier;
 
 public class AlignToBall extends CommandBase {
 
-    private final double P_TERM = 1;
+    private final double P_TERM = 0.03;
     private final double I_TERM = 0;
     private final double D_TERM = 0;
-    private final double PID_SETPOINT = 10; // 10 pixels of room for error?
 
     private final DriveTrain driveTrain;
     private final Vision vision;
+    private final DoubleSupplier throttle;
     private PIDController pid = new PIDController(P_TERM, I_TERM, D_TERM);
 
-    public AlignToBall(DriveTrain driveTrain, Vision vision) {
+    public AlignToBall(DriveTrain driveTrain, Vision vision, DoubleSupplier throttle) {
         // Use addRequirements() here to declare subsystem dependencies.
         this.driveTrain = driveTrain;
         this.vision = vision;
+        this.throttle = throttle;
         addRequirements(this.driveTrain);
         addRequirements(this.vision);
     }
@@ -43,16 +45,11 @@ public class AlignToBall extends CommandBase {
             return;
         }
 
-        pid.setSetpoint(PID_SETPOINT);
+        pid.setSetpoint(vision.getPowerCellX());
 
         while (!pid.atSetpoint()) {
-            double output = pid.calculate(vision.getPowerCellX());
-
-            if (output < PID_SETPOINT) { // Target is to the left
-                driveTrain.setMotorTankDrive(0, output);
-            } else if (output > PID_SETPOINT) {
-                driveTrain.setMotorTankDrive(output, 0);
-            }
+            double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
+            driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
         }
     }
 

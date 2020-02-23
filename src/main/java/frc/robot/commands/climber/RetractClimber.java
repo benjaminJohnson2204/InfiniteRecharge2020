@@ -36,13 +36,13 @@ public class RetractClimber extends CommandBase {
   public void execute() {
     m_climber.setClimbPiston(false);
     if(!m_climber.getClimbPistonExtendStatus())
-      m_climber.setClimber(0.5);
+      m_climber.setClimberOutput(0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climber.setClimber(0.0);
+    m_climber.setClimberOutput(0.0);
   }
 
   // Returns true when the command should end.

@@ -26,7 +26,7 @@ public class Turret extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  double kF = 0.05;     //0.05
+  double kF = 0.07;     //0.05
   double kP = 0.155;    //0.155
   double kI = 0.0001;    //0.00075
   double kD = 0.00766;  //0.00766
@@ -34,11 +34,11 @@ public class Turret extends SubsystemBase {
   int kI_Zone = 900;    //900 // 254: 1/kP?
   int kMaxIAccum = 500000;//kI_Zone *3; //500000;    //900
   int kErrorBand = 50;//degreesToEncoderUnits(0.5);
-  
-  int kCruiseVelocity = degreesToEncoderUnits(180) * 10;
+
+  int kCruiseVelocity = 14000; //degreesToEncoderUnits(180) * 10;
   int kMotionAcceleration = kCruiseVelocity * 10;
   
-  double maxAngle = 225;
+  double maxAngle = 195;
   double minAngle = -135;
   double gearRatio = 18.0 / 120.0;
   private double setpoint = 0; //angle
@@ -66,7 +66,6 @@ public class Turret extends SubsystemBase {
     turretMotor.configFactoryDefault();
     turretMotor.setNeutralMode(NeutralMode.Brake);
     turretMotor.setInverted(true);
-    turretMotor.setSelectedSensorPosition(0);
     turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
     turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
     turretMotor.config_kF(0, kF);
@@ -129,18 +128,22 @@ public class Turret extends SubsystemBase {
     this.setpoint = setpoint;
   }
   
-  public void setFieldCentricSetpoint(double setpoint){
-	setpoint -= m_driveTrain.navX.getAngle();
-	
-	if (setpoint > getMaxAngle())
-        setpoint -= 360;
-    else if (setpoint < getMinAngle())
-        setpoint += 360;
-	
-    this.setpoint = setpoint;
-  }
+//  public void setFieldCentricSetpoint(double setpoint){
+//	setpoint -= m_driveTrain.navX.getAngle();
+//
+//	if (setpoint > getMaxAngle())
+//        setpoint -= 360;
+//    else if (setpoint < getMinAngle())
+//        setpoint += 360;
+//
+//    this.setpoint = setpoint;
+//  }
 
   public void setClosedLoopPosition(){
+    turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(getSetpoint()));
+  }
+
+  public void setSetpoint(double setpoint) {
     turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(setpoint));
   }
 
@@ -179,8 +182,12 @@ public class Turret extends SubsystemBase {
     SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
     SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
     SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
+    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
     SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
     SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
+
+    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
   }
 
   @Override

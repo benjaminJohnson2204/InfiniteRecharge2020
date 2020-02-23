@@ -7,15 +7,12 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -170,8 +167,7 @@ public class Vision extends SubsystemBase {
 	public double getTargetDistance() {
 		double angleToTarget = getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
 
-		double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT)
-				/ Math.tan(Math.toRadians(LIMELIGHT_MOUNT_ANGLE + angleToTarget));
+		double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(LIMELIGHT_MOUNT_ANGLE + angleToTarget));
 		distances[index++ % distances.length] = inches / 12.0;
 
 		return computeMode(distances);
@@ -200,14 +196,12 @@ public class Vision extends SubsystemBase {
 		return data[highestIndex]; // Final distance in feet
 	}
 
-	public double getPowerCellX() {
-		double xOffset = openSight.getEntry("ball").getDoubleArray(new double[] { 0, 0 })[0];
+    public double getPowerCellX() {
+        double pixels = openSight.getEntry("found-x").getDouble(0);
 
-		// TODO: Use xOffset to return a positive value when target is the right and
-		// vice versa for right
-
-		return xOffset;
-	}
+        // Convert to degrees (5.839 pixels per degree)
+        return pixels * 5.839;
+    }
 
 	public boolean hasPowerCell() {
 		return openSight.getEntry("found").getBoolean(false);

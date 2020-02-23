@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
-import javax.swing.*;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -57,7 +56,7 @@ public class SetClimberOutput extends CommandBase {
       }
 
       if(movable)
-        m_climber.setClimber(m_input.getAsDouble());
+        m_climber.setClimberOutput(m_input.getAsDouble());
     }
   }
 
@@ -65,9 +64,9 @@ public class SetClimberOutput extends CommandBase {
     m_climber.setClimbPiston(false);
 
     if(Timer.getFPGATimestamp() - timestamp < 0.2)
-      m_climber.setClimber(-0.25);
+      m_climber.setClimberOutput(-0.25);
     else if(Timer.getFPGATimestamp() - timestamp < 0.4)
-      m_climber.setClimber(0.25);
+      m_climber.setClimberOutput(0.25);
     else
       movable = true;
   }
@@ -75,7 +74,7 @@ public class SetClimberOutput extends CommandBase {
   private void climberRetractSequence() {
     m_climber.setClimbPiston(true);
     if(Timer.getFPGATimestamp() - timestamp < 0.2)
-      m_climber.setClimber(-0.25);
+      m_climber.setClimberOutput(-0.25);
 
     movable = true;
   }
@@ -83,7 +82,7 @@ public class SetClimberOutput extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climber.setClimber(0.0);
+    m_climber.setClimberOutput(0.0);
   }
 
   // Returns true when the command should end.

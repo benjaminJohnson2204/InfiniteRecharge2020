@@ -113,6 +113,10 @@ DriveTrain extends SubsystemBase {
     return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }
 
+  public double getMotorInputCurrent(int motorIndex) {
+    return driveMotors[motorIndex].getSupplyCurrent();
+  }
+
   public void resetEncoderCounts() {
     driveMotors[0].setSelectedSensorPosition(0);
     driveMotors[2].setSelectedSensorPosition(0);

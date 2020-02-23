@@ -41,7 +41,7 @@ public class ExtendClimber extends CommandBase {
 
     if(timer.get() < 0.1) {
       //rotate the motor counter clockwise to nick the ratchet
-      m_climber.setClimber(-0.25);
+      m_climber.setClimberOutput(-0.25);
     }
   }
 
@@ -54,7 +54,7 @@ public class ExtendClimber extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     //stop the motor
-    m_climber.setClimber(0.0);
+    m_climber.setClimberOutput(0.0);
   }
 
   // Returns true when the command should end.

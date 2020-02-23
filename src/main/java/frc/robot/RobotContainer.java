@@ -55,8 +55,7 @@ import static java.util.Map.entry;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Climber m_climber = new Climber();
-  private final Controls m_controls = new Controls();
+  private final Climber m_climber = new Climber();;
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Intake m_intake = new Intake();
   private final Shooter m_shooter = new Shooter();
@@ -65,6 +64,8 @@ public class RobotContainer {
   private final Vision m_vision = new Vision();
   public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
+
+  private final Controls m_controls = new Controls(m_driveTrain, m_shooter);
 
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
@@ -127,7 +128,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    leftJoystick.invertRawAxis(1, true);
+    leftJoystick.invertRawAxis(1, false);
     rightJoystick.invertRawAxis(0, true);
     xBoxController.invertRawAxis(1, true);
     xBoxController.invertRawAxis(5, true);
@@ -145,15 +146,10 @@ public class RobotContainer {
     leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
     leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
-    //rightButtons[0].whenPressed(new Command());                         // Top Button - Climber mode?
-    //rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision)); // Bottom Button - Align to Power Cell
-    rightButtons[1].whileHeld(new InvertDrive(m_driveTrain,
-            () -> leftJoystick.getRawAxis(1),
-            () -> rightJoystick.getRawAxis(0))); // Bottom Button - Align to Power Cell
-    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));     // Deploy Intake
-    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));   // Retract Intake
-    rightButtons[1].whileHeld(new SetIntakeManual(m_intake, m_indexer));  // Run Intake Motors
-    //rightButtons[1].whileHeld(new ControlledIntake(m_intake, m_indexer));  // Run Intake Motors
+    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+    rightButtons[1].whileHeld(new ControlledIntake(m_intake, m_indexer));
+    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));
+    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));
 
     xBoxButtons[0].whenPressed(new ExtendClimber(m_climber));                             // A - toggle driver climb mode?
     xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
@@ -168,12 +164,12 @@ public class RobotContainer {
     xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
     xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
     xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
-    xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
+    //xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
     xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
 
-    xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+    //xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
   }
 
   /**
@@ -200,6 +196,7 @@ public class RobotContainer {
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
   public void teleOpPeriodic() {
+
   }
   public void autonomousInit() {
   }

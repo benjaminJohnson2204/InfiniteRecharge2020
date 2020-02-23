@@ -65,6 +65,10 @@ public class Shooter extends SubsystemBase {
     //initShuffleboard();
   }
 
+  public double getMotorInputCurrent(int motorIndex) {
+    return outtakeMotors[motorIndex].getSupplyCurrent();
+  }
+
   public void setPower(double output) {
     outtakeMotors[0].set(ControlMode.PercentOutput, output);
   }

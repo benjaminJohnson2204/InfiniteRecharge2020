@@ -22,6 +22,7 @@ public class Skyhook extends SubsystemBase {
   public Skyhook() {
     skyhookMotor.configFactoryDefault();
     skyhookMotor.setNeutralMode(NeutralMode.Brake);
+    skyhookMotor.setInverted(true);
   }
   public void setSkyhook(double value) {
     skyhookMotor.set(ControlMode.PercentOutput, value);

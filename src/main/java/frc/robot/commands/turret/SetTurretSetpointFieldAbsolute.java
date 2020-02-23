@@ -28,7 +28,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   private DoubleSupplier m_xInput;
   private DoubleSupplier m_yInput;
   double setpoint, radians;
-  private final double deadZone = 0.15;
+  private final double deadZone = 0.2;
   private Timer timer = new Timer();
   boolean timeout = false;
   boolean limelightDisabled = false;
@@ -48,7 +48,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(turretSubsystem);
 //    addRequirements(driveTrainSubsystem);
-    addRequirements(visionSybsystem);
+    //addRequirements(visionSybsystem);
   }
   private boolean direction, directionTripped, joystickMoved;
   // Called when the command is initially scheduled.
@@ -59,9 +59,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-//    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
-//    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
-//    SmartDashboard.putBoolean("Joystick Moved", joystickMoved);
+    SmartDashboard.putNumber("Turret X", m_xInput.getAsDouble());
+    SmartDashboard.putNumber("Turret Y", m_yInput.getAsDouble());
+    SmartDashboard.putBoolean("Joystick Moved", joystickMoved);
+    SmartDashboard.putBoolean("Vision Setpoint", usingVisionSetpoint);
 
     if(m_turret.getControlMode() == 1) {
       if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
@@ -80,10 +81,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
           if(setpoint > m_turret.getMaxAngle()) {
-              setpoint -= 360;
-              direction = false;
-              if(setpoint < m_turret.getMinAngle())
-                setpoint = m_turret.getMinAngle();
+            setpoint -= 360;
+            if(setpoint < m_turret.getMinAngle())
+              setpoint = m_turret.getMinAngle();
+            direction = false;
           }
         } else {
           if(m_xInput.getAsDouble() < 0)
@@ -101,18 +102,18 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
       } else if(m_vision.getValidTarget() && !joystickMoved) {
         usingVisionSetpoint = true;
         if(!turning) {
-          setpoint = m_turret.getTurretAngle() + m_vision.getFilteredTargetX();
+          setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
           if (setpoint > m_turret.getMaxAngle()) {
             setpoint -= 360;
-            turning = true;
             if(setpoint < m_turret.getMinAngle())
               setpoint = m_turret.getMinAngle();
+            turning = true;
           } else if (setpoint < m_turret.getMinAngle()) {
             setpoint += 360;
-            turning = true;
             if(setpoint > m_turret.getMaxAngle())
               setpoint = m_turret.getMaxAngle();
+            turning = true;
           }
         } else {
           if(m_turret.atTarget())
