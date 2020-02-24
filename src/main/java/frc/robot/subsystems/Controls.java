@@ -28,43 +28,38 @@ public class Controls extends SubsystemBase {
    * Creates a new ExampleSubsystem.
    */
   I2CLCD LCDDisplay = new I2CLCD(I2C.Port.kOnboard, 0x27);
-//  analogSensor[1] PressureSensor = new analogSensor(poa)
+
   AnalogInput PressureSensor = new AnalogInput(0);
+
   public Controls(DriveTrain driveTrain, Shooter shooter, Turret turret) {
     m_driveTrain = driveTrain;
     m_shooter = shooter;
     m_turret = turret;
 
-  }
-
-  public void initLCDDisplay() {
     LCDDisplay.init();
-//    LCDDisplay.clear();
-//    LCDDisplay.backlight(false);
-
-
   }
 
-  private void initLogging() {
-//    BadLog.createTopic("DriveTrain/Left Front Input Current", "A",
-//            () -> m_driveTrain.getMotorInputCurrent(0),
-//            "hide", "join:DriveTrain/Input Currents");
-//    BadLog.createTopic("DriveTrain/Left Rear Input Current", "A",
-//            () -> m_driveTrain.getMotorInputCurrent(1),
-//            "hide", "join:DriveTrain/Input Currents");
-//    BadLog.createTopic("DriveTrain/Right Front Input Current", "A",
-//            () -> m_driveTrain.getMotorInputCurrent(2),
-//            "hide", "join:DriveTrain/Input Currents");
-//    BadLog.createTopic("DriveTrain/Right Front Input Current", "A",
-//            () -> m_driveTrain.getMotorInputCurrent(3),
-//            "hide", "join:DriveTrain/Input Currents");
-//    BadLog.createTopic("Shooter/Left Input Current", "A",1
-//            () -> m_shooter.getMotorInputCurrent(0),
-//            "hide", "join:Shooter/Input Currents");
-//    BadLog.createTopic("Shooter/Right Input Current", "A",
-//            () -> m_shooter.getMotorInputCurrent(1),
-//            "hide", "join:Shooter/Input Currents");
+  public void initLogging() {
+    BadLog.createTopic("DriveTrain/Left Front Input Current", "A",
+            () -> m_driveTrain.getMotorInputCurrent(0),
+            "hide", "join:DriveTrain/Input Currents");
+    BadLog.createTopic("DriveTrain/Left Rear Input Current", "A",
+            () -> m_driveTrain.getMotorInputCurrent(1),
+            "hide", "join:DriveTrain/Input Currents");
+    BadLog.createTopic("DriveTrain/Right Front Input Current", "A",
+            () -> m_driveTrain.getMotorInputCurrent(2),
+            "hide", "join:DriveTrain/Input Currents");
+    BadLog.createTopic("DriveTrain/Right Rear Input Current", "A",
+            () -> m_driveTrain.getMotorInputCurrent(3),
+            "hide", "join:DriveTrain/Input Currents");
+    BadLog.createTopic("Shooter/Left Input Current", "A",
+            () -> m_shooter.getMotorInputCurrent(0),
+            "hide", "join:Shooter/Input Currents");
+    BadLog.createTopic("Shooter/Right Input Current", "A",
+            () -> m_shooter.getMotorInputCurrent(1),
+            "hide", "join:Shooter/Input Currents");
   }
+
   public double getPressure (){
     return PressureSensor.getAverageVoltage() * (200.0/5.0);
   }
@@ -94,10 +89,7 @@ public class Controls extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(!init && (m_shooter != null) && (m_driveTrain != null)) {
-      initLogging();
-      init = true;
-    }
+
     LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
     //angle of the robot's turret in degrees. returned as exp. "angle:169.8"
     // the angle value should be maximum 6 characters including the decimal point and maybe a negitive sign

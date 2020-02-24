@@ -3,6 +3,7 @@ package frc.vitruvianlib.BadLog;
 import badlog.lib.BadLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.RobotContainer;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -19,20 +20,15 @@ public class BadLogger {
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
+    private RobotContainer m_robotContainer;
 	/* This is a wrapper class for team 1014's BadLog logging framework. This is so that we can use their
 	 * logging library, while maintaining the coding structure of our previous logging framework.
 	 */
-	private BadLogger() {
-
-    }
-
-    public static BadLog getInstance() {
-        if (logger == null)
-        	startLogger();
-        return logger;
+	public BadLogger(RobotContainer robotContainer) {
+        m_robotContainer = robotContainer;
     }
     
-    public static void startLogger() {
+    public void startLogger() {
         // Check if base path is a valid directory
         try {
             File baseDir = new File(usbPath);
@@ -106,16 +102,21 @@ public class BadLogger {
         }
         
         logger = BadLog.init(logPath + logName);
-
+        initTopics();
+        logger.finishInitialization();
         isRunning = true;
     }
-    
-    public static void stopLogger() {
+
+    private void initTopics() {
+	    m_robotContainer.initalizeLogTopics();
+    }
+
+    public void stopLogger() {
         isRunning = false;
         isMatch = false;
     }
     
-    public static void updateLogs() {
+    public void updateLogs() {
     	if(isRunning) {
 	    	logger.updateTopics();
 	    	logger.log();

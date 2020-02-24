@@ -104,7 +104,6 @@ public class RobotContainer {
     initializeSubsystems();
     // Configure the button bindings
     configureButtonBindings();
-    m_controls.initLCDDisplay();
   }
 
   public void initializeSubsystems() {
@@ -222,5 +221,9 @@ public class RobotContainer {
 
   public static boolean getInitializationState() {
     return init;
+  }
+
+  public void initalizeLogTopics() {
+    m_controls.initLogging();
   }
 }
