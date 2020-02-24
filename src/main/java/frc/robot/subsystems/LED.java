@@ -77,30 +77,21 @@ public class LED extends SubsystemBase {
       }
       else
         resetLED();
-    }
-    else {
-      if(time / 2 == Math.floor(time / 2)){
-        resetLED();
-        for(int i = 0; i <stripLength; i += 2){
-          LEDBuffer.setRGB(i, red, green, blue);
-          LEDBuffer.setRGB(stripLength + i, red, green, blue);
-        }
+    } else {
+      resetLED();
+      for(int i = head; i < LEDBuffer.getLength(); i += 2){
+        LEDBuffer.setRGB(i % LEDBuffer.getLength(), red, green, blue);
       }
-      else {
-        resetLED();
-        for(int i = 1; i < stripLength; i += 2){
-          LEDBuffer.setRGB(i, red, green, blue);
-          LEDBuffer.setRGB(stripLength + i, red, green, blue);
-        }
-      }
+      Timer.delay(0.2);
+      head = ++head % 2;
     }
   }
 
   double hueOffset = 0;
   public void setRainbow(double iterations, double speed){
     for(int i = 0; i < stripLength; i++){
-      LEDBuffer.setHSV(i, (int)(180 * iterations * i / 0.5 * LEDBuffer.getLength() + hueOffset) % 180, 255, 255);
-      LEDBuffer.setHSV(stripLength + i, (int)(180 * iterations * i / 0.5 * LEDBuffer.getLength() + hueOffset) % 180, 255, 255);
+      LEDBuffer.setHSV(i, (int)(180 * iterations * i / stripLength + hueOffset) % 180, 255, 255);
+      LEDBuffer.setHSV(stripLength + i, (int)(180 * iterations * i / stripLength + hueOffset) % 180, 255, 255);
     }
     hueOffset = (hueOffset + 3 * speed * iterations) % 180;
     Timer.delay(0.05);
@@ -109,12 +100,11 @@ public class LED extends SubsystemBase {
   int head = 0;
   public void trail(int interval){
     resetLED();
-    for(int i = head; i < stripLength; i += interval){
-      LEDBuffer.setRGB(i % stripLength, red, green, blue);
-      LEDBuffer.setRGB((stripLength + i) % stripLength, red, green, blue);
+    for(int i = head; i < LEDBuffer.getLength(); i += interval){
+      LEDBuffer.setRGB(i % LEDBuffer.getLength(), red, green, blue);
     }
     Timer.delay(0.03);
-    head++;
+    head = ++head % interval;
   }
 
   public void flash(){
@@ -138,21 +128,24 @@ public class LED extends SubsystemBase {
         break;
       case 2:
         setRGB(255, 0, 0);
-        setBlinkingColor(true);
+        setSolidColor();
         break;
       case 3:
         setRGB(255, 255, 255);
         flash();
         break;
       case 4:
-        setRGB(20, 255, 110);
-        trail(8);
+        setRGB(66, 194, 23);
+        trail(5);
+        break;
       case 5:
         setRGB(0, 110, 255);
         setBlinkingColor(true);
+        break;
       case 6:
         setRGB(255, 110, 0);
         trail(8);
+        break;
       default:
         setRGB(106, 90, 205);
         setBlinkingColor(true);

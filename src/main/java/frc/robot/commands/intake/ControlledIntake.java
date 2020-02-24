@@ -70,14 +70,14 @@ public class ControlledIntake extends CommandBase {
         m_indexer.setIndexerOutput(0);
         break;
       case INTAKE_FOUR_BALLS:
-        m_intake.setDirectRPM(intakeRPM);
+        m_intake.setIntakePercentOutput(0.9);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor())
           intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         break;
       case INTAKE_ONE_BALL:
       default:
-        m_intake.setDirectRPM(intakeRPM);
+        m_intake.setIntakePercentOutput(0.9);
         m_indexer.setKickerOutput(-0.4);
         if (m_indexer.getIndexerBottomSensor() && !intaking) {
           indexerTimestamp = Timer.getFPGATimestamp();

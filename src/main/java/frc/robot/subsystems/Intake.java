@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.constants.Constants;
@@ -56,7 +57,7 @@ public class Intake extends SubsystemBase {
   public void setIntakingState(boolean state) {
     intaking = state;
   }
-  public boolean getintakePistonExtendStatus(){
+  public boolean getIntakePistonExtendStatus(){
     return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
   }
 
@@ -82,10 +83,11 @@ public class Intake extends SubsystemBase {
   }
 
   private void updateSmartDashboard() {
+    SmartDashboardTab.putBoolean("Intake", "Pistons", getIntakePistonExtendStatus());
     SmartDashboard.putNumber("Intake RPM", getRPM());
   }
   @Override
   public void periodic() {
-    //updateSmartDashboard();
+    updateSmartDashboard();
   }
 }

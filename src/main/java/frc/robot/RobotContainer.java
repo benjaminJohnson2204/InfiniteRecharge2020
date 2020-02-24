@@ -25,6 +25,7 @@ import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.ControlledIntake;
 import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.intake.SetIntakePiston;
+import frc.robot.commands.intake.ToggleIntakePistons;
 import frc.robot.commands.shooter.DefaultFlywheelRPM;
 import frc.robot.commands.shooter.RapidFire;
 import frc.robot.commands.shooter.TestShooter;
@@ -111,13 +112,13 @@ public class RobotContainer {
             () -> rightJoystick.getRawAxis(0)));
     //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-    m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision));
+    m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_climber));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
             () -> xBoxController.getRawAxis(0),
             () -> xBoxController.getRawAxis(1)));
 
-    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
+//    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
 
     // TODO: Update these to use the correct axis
     m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
@@ -132,7 +133,7 @@ public class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    leftJoystick.invertRawAxis(1, false);
+    leftJoystick.invertRawAxis(1, true);
     rightJoystick.invertRawAxis(0, true);
     xBoxController.invertRawAxis(1, true);
     xBoxController.invertRawAxis(5, true);
@@ -151,31 +152,31 @@ public class RobotContainer {
     leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
     //rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
-    rightButtons[1].whileHeld(new InvertDrive(m_driveTrain,
-            () -> leftJoystick.getRawAxis(1),
-            () -> rightJoystick.getRawAxis(0)));
-    rightButtons[1].whileHeld(new ControlledIntake(m_intake, m_indexer));
-    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));
-    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));
+//    rightButtons[1].whileHeld(new InvertDrive(m_driveTrain,
+//            () -> leftJoystick.getRawAxis(1),
+//            () -> rightJoystick.getRawAxis(0)));
+//    rightButtons[1].whileHeld(new ControlledIntake(m_intake, m_indexer));
+//    rightButtons[1].whenPressed(new SetIntakePiston(m_intake, true));
+//    rightButtons[1].whenReleased(new SetIntakePiston(m_intake, false));
 
-    xBoxPOVButtons[4].whenPressed(new SetIntakePiston(m_intake, true));
-    xBoxPOVButtons[4].whenReleased(new SetIntakePiston(m_intake, false));
-    xBoxPOVButtons[4].whenPressed(new ControlledIntake(m_intake, m_indexer));
-
-    xBoxButtons[0].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
+//    xBoxButtons[0].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
     xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
+    xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
+    xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
+
     //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
     //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
 
     // TODO: Cleanup/formalize operator controls
-    //xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+    xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 //    xBoxLeftTrigger.whileHeld(new SetIntakeManual(m_intake, m_indexer)); // Deploy intake
 //    xBoxLeftTrigger.whenPressed(new SetIntakePiston(m_intake, true)); // Run Intake Motors
-    xBoxButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));                          // Left Shoulder Button
+//    xBoxButtons[4].toggleWhenPressed(new SetIntakePiston(m_intake, true));                          // Left Shoulder Button
     xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
-    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
-    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
-    //xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
+//    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
+//    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
+    xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
     xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick

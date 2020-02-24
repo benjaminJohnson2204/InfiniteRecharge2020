@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
@@ -69,12 +70,13 @@ DriveTrain extends SubsystemBase {
   public DriveTrain() {
     for (TalonFX motor : driveMotors) {
       motor.configFactoryDefault();
-      motor.configVoltageCompSaturation(12);
-      motor.enableVoltageCompensation(true);
+//      motor.configVoltageCompSaturation(12);
+//      motor.enableVoltageCompensation(true);
       // motor.configGetSupplyCurrentLimit(30);
       // motor.configPeakCurrentLimit(40);
       // motor.configPeakCurrentDuration(1000);
       // motor.enableCurrentLimit(true);
+      motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
       motor.configOpenloopRamp(0.1);
       motor.configClosedloopRamp(0.1);
       motor.setNeutralMode(NeutralMode.Coast);
@@ -94,6 +96,8 @@ DriveTrain extends SubsystemBase {
 
     driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
     driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
+    driveMotors[1].setNeutralMode(NeutralMode.Brake);
+    driveMotors[3].setNeutralMode(NeutralMode.Brake);
 
     driveMotors[1].configOpenloopRamp(0);
     driveMotors[3].configOpenloopRamp(0);

@@ -10,10 +10,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -24,7 +26,7 @@ public class Shooter extends SubsystemBase {
    * Creates a new ExampleSubsystem.
  * @return 
    */
-  public double kF = 0.0475;  //0.0558
+  public double kF = 0.054;   //Gree: 0.0475;
   public double kP = 0.4; 	  //0.00047
   public double kI = 0.0; 	  //0.0000287
   public double kD = 0.0;
@@ -45,7 +47,7 @@ public class Shooter extends SubsystemBase {
     for(TalonFX outtakeMotor : outtakeMotors){
       outtakeMotor.configFactoryDefault();
       outtakeMotor.setNeutralMode(NeutralMode.Coast);
-      outtakeMotor.enableVoltageCompensation(false);
+      outtakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true,30,0,0));
     }
     outtakeMotors[0].setInverted(true);
     outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
@@ -103,18 +105,18 @@ public class Shooter extends SubsystemBase {
 
   private void initShuffleboard() {
     // Unstable. Don''t use until WPILib fixes this
-    Shuffleboard.getTab("Shooter").addNumber("RPM Primary", () -> this.getRPM(0));
-    Shuffleboard.getTab("Shooter").addNumber("RPM Secondary", () -> this.getRPM(1));
-    Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
+//    Shuffleboard.getTab("Shooter").addNumber("RPM Primary", () -> this.getRPM(0));
+//    Shuffleboard.getTab("Shooter").addNumber("RPM Secondary", () -> this.getRPM(1));
+//    Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
 
-//    SmartDashboard.putNumber("RPM Output", rpmOutput);
-//    SmartDashboard.putNumber("Flywheel kF", kF);
-//    SmartDashboard.putNumber("Flywheel kP", kP);
-//    SmartDashboard.putNumber("Flywheel kI", kI);
-//    SmartDashboard.putNumber("Flywheel kD", kD);
-//    SmartDashboard.putNumber("Flywheel kI_Zone", kI_Zone);
-//    SmartDashboard.putNumber("Flywheel kAllowableError", kAllowableError);
-//    SmartDashboard.putNumber("Flywheel RPM Tolerance", rpmTolerance);
+    SmartDashboardTab.putNumber("Shooter","RPM Output", rpmOutput);
+    SmartDashboardTab.putNumber("Shooter","Flywheel kF", kF);
+    SmartDashboardTab.putNumber("Shooter","Flywheel kP", kP);
+    SmartDashboardTab.putNumber("Shooter","Flywheel kI", kI);
+    SmartDashboardTab.putNumber("Shooter","Flywheel kD", kD);
+    SmartDashboardTab.putNumber("Shooter","Flywheel kI_Zone", kI_Zone);
+    SmartDashboardTab.putNumber("Shooter","Flywheel kAllowableError", kAllowableError);
+    SmartDashboardTab.putNumber("Shooter","Flywheel RPM Tolerance", rpmTolerance);
   }
 
   private void updateShuffleboard(){
@@ -123,23 +125,26 @@ public class Shooter extends SubsystemBase {
     SmartDashboardTab.putNumber("Shooter", "RPM Primary", getRPM(0));
     SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
     SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
+
+
   }
 
   public void updatePIDValues() {
-    rpmOutput = SmartDashboard.getNumber("RPM Output", 0);
-    rpmTolerance = SmartDashboard.getNumber("Flywheel RPM Tolerance", 0);
+    rpmOutput = SmartDashboardTab.getNumber("Shooter","RPM Output", 0);
+    rpmTolerance = SmartDashboardTab.getNumber("Shooter","Flywheel RPM Tolerance", 0);
 
-    outtakeMotors[0].config_kF(0, SmartDashboard.getNumber("Flywheel kF", 0));
-    outtakeMotors[0].config_kP(0, SmartDashboard.getNumber("Flywheel kP", 0));
-    outtakeMotors[0].config_kI(0, SmartDashboard.getNumber("Flywheel kI", 0));
-    outtakeMotors[0].config_IntegralZone(0, (int) SmartDashboard.getNumber("Flywheel kI_Zone", 0));
-    outtakeMotors[0].config_kD(0, SmartDashboard.getNumber("Flywheel kD", 0));
-    outtakeMotors[0].configAllowableClosedloopError(0, (int) SmartDashboard.getNumber("Flywheel kAllowableError", 0));
+    outtakeMotors[0].config_kF(0, SmartDashboardTab.getNumber("Shooter","Flywheel kF", 0));
+    outtakeMotors[0].config_kP(0, SmartDashboardTab.getNumber("Shooter","Flywheel kP", 0));
+    outtakeMotors[0].config_kI(0, SmartDashboardTab.getNumber("Shooter","Flywheel kI", 0));
+    outtakeMotors[0].config_IntegralZone(0, (int) SmartDashboardTab.getNumber("Shooter","Flywheel kI_Zone", 0));
+    outtakeMotors[0].config_kD(0, SmartDashboardTab.getNumber("Shooter","Flywheel kD", 0));
+    outtakeMotors[0].configAllowableClosedloopError(0, (int) SmartDashboardTab.getNumber("Shooter","Flywheel kAllowableError", 0));
   }
 
 
   @Override
   public void periodic() {
     updateShuffleboard();
+    //updatePIDValues();
   }
 }

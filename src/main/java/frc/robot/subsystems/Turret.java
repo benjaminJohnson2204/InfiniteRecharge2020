@@ -206,6 +206,7 @@ public class Turret extends SubsystemBase {
     // TODO: FIX
     if(!getTurretLatch() && getTurretHome()) {
       turretMotor.setSelectedSensorPosition(0);
+      encoder.setPosition(0);
       setTurretLatch(true);
     } else if(getTurretLatch() && !getTurretHome())
       setTurretLatch(false);

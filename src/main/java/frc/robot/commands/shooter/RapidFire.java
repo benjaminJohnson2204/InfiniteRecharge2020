@@ -59,7 +59,7 @@ public class RapidFire extends CommandBase {
       timerStart = false;
     }
 
-    if (timestamp != 0 || Timer.getFPGATimestamp() - startTime > 2)
+    if (timestamp != 0 || Timer.getFPGATimestamp() - startTime > 3)
       if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1 || Timer.getFPGATimestamp() - startTime > 2) {
         m_indexer.setIndexerOutput(1);
         m_indexer.setKickerOutput(1);

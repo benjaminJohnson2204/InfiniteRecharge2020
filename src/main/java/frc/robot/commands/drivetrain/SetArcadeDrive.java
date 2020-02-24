@@ -55,8 +55,8 @@ public class SetArcadeDrive extends CommandBase {
     throttle = throttle < 0 ? Math.max(-0.7, throttle) : throttle;
     double turn = (m_driveTrain.getDriveShifterStatus() ? 0.5 : 0.35) * joystickX;
 
-    if(m_intake.getIntakingState())
-      throttle = - throttle;
+//    if(m_intake.getIntakingState())
+//      throttle = - throttle;
 
     m_driveTrain.setMotorArcadeDrive(throttle, turn);
 //    if (Robot.climber.climbMode == 1) {
