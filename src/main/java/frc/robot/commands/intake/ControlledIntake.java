@@ -9,6 +9,7 @@ package frc.robot.commands.intake;
 
 import com.team254.lib.util.MinTimeBoolean;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import frc.robot.constants.Enums.IntakeStates;
 
 import frc.robot.subsystems.Indexer;
@@ -63,6 +64,8 @@ public class ControlledIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboardTab.putString("Intake", "Intake State", intakeState.toString());
+
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:
         m_intake.setIntakePercentOutput(0);
