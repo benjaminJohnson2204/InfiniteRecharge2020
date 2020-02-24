@@ -86,7 +86,11 @@ public class BadLogger {
                 logPath += "UnknownMatch/" + matchNo + "/";
                 logName = "UN" + matchNo + ".bag";
             }
-            
+            File dirPath = new File(logPath);
+
+            if(!dirPath.exists() && !dirPath.isDirectory())
+                dirPath.mkdirs();
+
             // Contingency if multiple matches exist (i.e. a match replay)
             File filePath = new File(logPath + logName);
             int counter = 1;
