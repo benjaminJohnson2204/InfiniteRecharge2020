@@ -79,7 +79,7 @@ public class Climber extends SubsystemBase {
     SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
     SmartDashboardTab.putBoolean("Climber", "Climb Pistons", getClimbPistonExtendStatus());
 
-    SmartDashboardTab.putString("Climber", "Current Command", this.getCurrentCommand().getName());
+    //SmartDashboardTab.putString("Climber", "Current Command", this.getCurrentCommand().getName());
   }
   @Override
   public void periodic() {

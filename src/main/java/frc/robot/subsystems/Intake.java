@@ -28,9 +28,9 @@ public class Intake extends SubsystemBase {
   private double gearRatio = 1.0 / 3.0;
   private boolean intaking = false;
 
-  private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
-  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
-  private CANPIDController canPidController = intakeMotor.getPIDController();
+  private CANSparkMax intakeMotor;// =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
+  private CANEncoder intakeEncoder;// = intakeMotor.getEncoder();
+  private CANPIDController canPidController;// = intakeMotor.getPIDController();
 
   DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
 
