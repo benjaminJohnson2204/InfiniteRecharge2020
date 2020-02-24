@@ -57,12 +57,12 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Climber m_climber = new Climber();;
   private final DriveTrain m_driveTrain = new DriveTrain();
-  //private final Intake m_intake = new Intake();
+  private final Intake m_intake = new Intake();
   private final Shooter m_shooter = new Shooter();
   private final Skyhook m_skyhook = new Skyhook();
   private final Turret m_turret = new Turret(m_driveTrain);
   private final Vision m_vision = new Vision();
-  //public final Indexer m_indexer = new Indexer();
+  public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
   private static boolean init = false;

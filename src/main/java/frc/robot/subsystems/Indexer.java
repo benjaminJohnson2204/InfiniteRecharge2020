@@ -29,8 +29,10 @@ public class Indexer extends SubsystemBase {
    */
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
-  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
   CANPIDController pidController = master.getPIDController();
+
+  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
+
   DigitalInput intakeSensor = new DigitalInput(Constants.intakeSensor);
   DigitalInput indexerTopSensor = new DigitalInput(Constants.indexerTopSensor);
   DigitalInput indexerBottomSensor = new DigitalInput(Constants.indexerBottomSensor);
@@ -101,6 +103,14 @@ public class Indexer extends SubsystemBase {
     return !indexerTopSensor.get();
   }
 
+  public void setKickerOutput(double output) {
+    kicker.set(ControlMode.PercentOutput, output);
+  }
+
+  public void setIndexerOutput(double output) {
+    master.set(output);
+  }
+
   boolean pTripped = false;
   public boolean newBall(){
     boolean returnVal;
@@ -117,45 +127,35 @@ public class Indexer extends SubsystemBase {
   }
 
 
-  public void incrementIndexer(double setpoint){
-    targetSetpoint = setpoint;
-    SmartDashboard.putNumber("Target Setpoint", targetSetpoint);
-    pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
-  }
-
+//  public void incrementIndexer(double setpoint){
+//    targetSetpoint = setpoint;
+//    SmartDashboard.putNumber("Target Setpoint", targetSetpoint);
+//    pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
+//  }
+//
   public void setRPM(double rpm) {
     double setpoint = rpm / gearRatio;
     SmartDashboard.putNumber("Indexer Setpoint", setpoint);
     pidController.setReference(setpoint, ControlType.kSmartVelocity);
   }
+//
+//  public void resetEncoderPosition(){
+//    encoder.setPosition(0);
+//  }
+//
+//  public double getPosition(){
+//    return encoder.getPosition();
+//  }
+//
+//  public boolean onTarget() {
+//    return Math.abs(encoder.getPosition() - targetSetpoint) < 1;
+//  }
+//
+//  public double getRPM() {
+//    return encoder.getVelocity() * gearRatio;
+//  }
 
-  public void resetEncoderPosition(){
-    encoder.setPosition(0);
-  }
 
-  public double getPosition(){
-    return encoder.getPosition();
-  }
-
-  public boolean onTarget() {
-    return Math.abs(encoder.getPosition() - targetSetpoint) < 1; 
-  }
-
-  public boolean indexerFull(){
-    return !indexerTopSensor.get();
-  }
-
-  public void setKickerOutput(double output) {
-    kicker.set(ControlMode.PercentOutput, output);
-  }
-
-  public void setIndexerOutput(double output) {
-    master.set(output);
-  }
-
-  public double getRPM() {
-    return encoder.getVelocity() * gearRatio;
-  }
 
   private void initShuffleboard() {
     // Unstable. Don''t use until WPILib fixes this

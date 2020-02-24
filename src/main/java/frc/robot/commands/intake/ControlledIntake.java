@@ -65,7 +65,7 @@ public class ControlledIntake extends CommandBase {
   public void execute() {
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:
-        m_intake.setDirectRPM(0);
+        m_intake.setIntakePercentOutput(0);
         m_indexer.setKickerOutput(0);
         m_indexer.setIndexerOutput(0);
         break;
@@ -84,16 +84,16 @@ public class ControlledIntake extends CommandBase {
           intaking = true;
         }
 
-        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && !haveFourTripped) {
-          fourBallTimestamp = Timer.getFPGATimestamp();
-          haveFourTripped = true;
-        } else if(!m_indexer.getIndexerBottomSensor() || !m_indexer.getIndexerTopSensor()){
-          fourBallTimestamp = 0;
-          haveFourTripped = false;
-          haveFour = false;
-        }
+//        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && !haveFourTripped) {
+//          fourBallTimestamp = Timer.getFPGATimestamp();
+//          haveFourTripped = true;
+//        } else if(!m_indexer.getIndexerBottomSensor() || !m_indexer.getIndexerTopSensor()){
+//          fourBallTimestamp = 0;
+//          haveFourTripped = false;
+//          haveFour = false;
+//        }
 
-        if(haveFour) {
+        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() ) {
           m_indexer.setRPM(0);
           intakeState = IntakeStates.INTAKE_FOUR_BALLS;
         }

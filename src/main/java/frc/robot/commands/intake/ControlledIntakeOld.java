@@ -66,14 +66,14 @@ public class ControlledIntakeOld extends CommandBase {
 
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:
-        m_intake.setRPM(0);
+//        m_intake.setRPM(0);
         m_indexer.setKickerOutput(0);
         m_indexer.setIndexerOutput(0);
         break;
       case INTAKE_FOUR_BALLS:
         // TODO: Verify this logic
         intaking = false;
-        m_intake.setRPM(intakeRPM);
+//        m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor() && !intaking) {
           intakeTimestamp = Timer.getFPGATimestamp();
@@ -86,7 +86,7 @@ public class ControlledIntakeOld extends CommandBase {
         }
         break;
       case INTAKE_ONE_BALL:
-        m_intake.setRPM(intakeRPM);
+//        m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
         if (m_indexer.getIntakeSensor() && !delaying) {
           intakeTimestamp = Timer.getFPGATimestamp();
@@ -113,7 +113,7 @@ public class ControlledIntakeOld extends CommandBase {
 //          intaking = true;
 //        } else if(intaking && m_indexer.getRPM() == 0)
 //          intakeState = IntakeStates.INTAKE_ONE_BALL;
-        m_intake.setRPM(intakeRPM);
+//        m_intake.setRPM(intakeRPM);
         m_indexer.setKickerOutput(-0.25);
         if (m_indexer.getIntakeSensor()) {
           m_indexer.setRPM(225);
