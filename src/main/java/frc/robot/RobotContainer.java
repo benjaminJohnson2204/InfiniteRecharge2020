@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.autonomous.AutoShoot;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.climber.ExtendClimber;
 import frc.robot.commands.climber.RetractClimber;
@@ -31,11 +32,10 @@ import frc.robot.commands.shooter.DefaultFlywheelRPM;
 import frc.robot.commands.shooter.RapidFire;
 import frc.robot.commands.shooter.TestShooter;
 import frc.robot.commands.shooter.TestShooterDelayed;
-import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.LED.LEDCommand;
+
 import frc.robot.commands.autonomous.EnemyPath;
 import frc.robot.commands.autonomous.ReadTrajectory;
 import frc.robot.commands.LED.GetSubsystemStates;
@@ -46,9 +46,6 @@ import frc.robot.commands.drivetrain.ZeroDriveTrainEncoders;
 import frc.robot.commands.indexer.IncrementIndexer;
 import frc.robot.commands.indexer.IndexerCommand;
 import frc.robot.commands.intake.SetIntake;
-import frc.robot.commands.skyhook.SetSkyhook;
-import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
-import frc.robot.commands.vision.AlignToOuterPort;
 import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
@@ -100,7 +97,8 @@ public class RobotContainer {
     BACK_UP,
     TURN_SHOOT,
     DRIVE_SHOOT,
-    ENEMY_PATH
+    ENEMY_PATH,
+    AUTO_SHOOT
   }
 
   SendableChooser<Integer> m_autoChooser = new SendableChooser();
@@ -117,7 +115,8 @@ public class RobotContainer {
             entry(CommandSelector.BACK_UP, new ReadTrajectory(m_driveTrain, "backUp")),
             entry(CommandSelector.TURN_SHOOT, new ReadTrajectory(m_driveTrain, "turnShoot")),
             entry(CommandSelector.DRIVE_SHOOT, new ReadTrajectory(m_driveTrain, "driveShoot")),
-            entry(CommandSelector.ENEMY_PATH, new EnemyPath(m_driveTrain))
+            entry(CommandSelector.ENEMY_PATH, new EnemyPath(m_driveTrain)),
+            entry(CommandSelector.AUTO_SHOOT, new AutoShoot(m_shooter, m_indexer, m_intake, 2))
 
 
     ),
@@ -150,11 +149,11 @@ public class RobotContainer {
 
     m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_climber));
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
-            m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
-    m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
-    m_intake.setDefaultCommand(new SetIntake(m_intake));
-    m_led.setDefaultCommand(new LEDCommand(m_led));
+    //m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain,
+            //m_vision, () -> xBoxController.getRawAxis(0), () -> xBoxController.getRawAxis(1)));
+   // m_skyhook.setDefaultCommand(new SetSkyhook(m_skyhook));
+    m_intake.setDefaultCommand(new SetIntake(m_intake, 1.0));
+   // m_led.setDefaultCommand(new LEDCommand(m_led));
   }
 
   /**
@@ -179,7 +178,7 @@ public class RobotContainer {
     xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
     xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
     xBoxButtons[4].whenPressed(new IncrementIndexer(m_indexer));
-    rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
+    //rightButtons[0].whenPressed(new AlignToOuterPort(m_driveTrain, m_vision));
   }
   public static double getLeftJoystickX(){
     return leftJoystick.getX();
@@ -216,14 +215,14 @@ public class RobotContainer {
   }
 
   public static void setInitializationState(boolean state) {
-    init = state;
+    //init = state;
   }
 
   public static boolean getInitializationState() {
-    return init;
+    return true;
   }
 
   public void initalizeLogTopics() {
-    m_controls.initLogging();
+    //m_controls.initLogging();
   }
 }
