@@ -16,40 +16,45 @@ package frc.robot.constants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-
-    public static boolean canSeeVisionTarget = false;
-    public static boolean limelightTempDisabled = false;
-
     // USB PORTS
-
     public static final int leftJoystick = 0;
     public static final int rightJoystick = 1;
     public static final int xBoxController = 2;
 
     // CAN ADDRESSES
+    public static final int pcmOne = 11;
+    
     public static final int leftFrontDriveMotor = 20;
     public static final int leftRearDriveMotor = 21;
     public static final int rightFrontDriveMotor = 22;
     public static final int rightRearDriveMotor = 23;
     public static final int intakeMotor = 30;
-    public static final int indexerMotor = 40;
-    public static final int flywheelMotorA = 35; // 40
+    public static final int indexerMotor = 35;
+    public static final int kickerMotor = 36;
+    public static final int flywheelMotorA = 40;
     public static final int flywheelMotorB = 41;
-    public static final int leftClimberMotor = 50;
-    public static final int rightClimberMotor = 51;
+    public static final int colorWheelMotor = 45;
+    public static final int climbMotorA = 50;
+    public static final int climbMotorB = 51;
     public static final int skyhookMotor = 55;
     public static final int turretMotor = 60;
     public static final int turretEncoder = 61;
 
-    // DIO
-    public static final int indexSensor = 0;
+    // PWM
+    public static final int ledPort = 0;
 
-    // PCM
-    public static final int pcmOne = 11;
+    // DIO
+    public static final int intakeSensor = 0;
+    public static final int indexerTopSensor = 1;
+    public static final int indexerBottomSensor = 2;
+    public static final int turretHomeSensor = 3;
+
 
     //Solenoid addresses
     public static final int driveTrainShiftersForward = 0;
     public static final int driveTrainShiftersReverse = 1;
-    public static final int intakePistonForward = 2;
-    public static final int intakePistonReverse = 3;
+    public static final int intakePistonForward = 2; // 2
+    public static final int intakePistonReverse = 3; // 3
+    public static final int climbPistonForward = 4;
+    public static final int climbPistonReverse = 5;
 }

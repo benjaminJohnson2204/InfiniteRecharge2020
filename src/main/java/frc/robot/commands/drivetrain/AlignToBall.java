@@ -5,67 +5,57 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.vision;
+package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
+import java.util.function.DoubleSupplier;
 
-public class AlignToOuterPort extends CommandBase
-{
+public class AlignToBall extends CommandBase {
+
+    private final double P_TERM = 0.03;
+    private final double I_TERM = 0;
+    private final double D_TERM = 0;
+
     private final DriveTrain driveTrain;
     private final Vision vision;
+    private final DoubleSupplier throttle;
+    private PIDController pid = new PIDController(P_TERM, I_TERM, D_TERM);
 
-    /**
-     * Creates a new AlignToOuterPort.
-     */
-    public AlignToOuterPort(DriveTrain subsystem, Vision visionSubsystem)
-    {
+    public AlignToBall(DriveTrain driveTrain, Vision vision, DoubleSupplier throttle) {
         // Use addRequirements() here to declare subsystem dependencies.
-        driveTrain = subsystem;
-        vision = visionSubsystem;
-        addRequirements(visionSubsystem);
-        addRequirements(subsystem);
+        this.driveTrain = driveTrain;
+        this.vision = vision;
+        this.throttle = throttle;
+        addRequirements(this.driveTrain);
+        addRequirements(this.vision);
     }
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize()
-    {
+    public void initialize() {
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute()
-    {
-        // Make sure we have a target
-        if (!vision.hasTarget())
-        {
+    public void execute() {
+        if (!vision.hasPowerCell()) {
             return;
         }
 
-        double xOffset = vision.getTargetX();
+        pid.setSetpoint(vision.getPowerCellX());
 
-        while (xOffset > 3 || xOffset < -3)
-        {
-            if (xOffset < -3) // Target is to the left?
-            {
-                driveTrain.setMotorTankDrive(0, 0.5);
-            }
-            else if (xOffset > 3) // Target is to the right?
-            {
-                driveTrain.setMotorTankDrive(0.5, 0);
-            }
-
-            xOffset = vision.getTargetX();
+        while (!pid.atSetpoint()) {
+            double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
+            driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted)
-    {
-
+    public void end(boolean interrupted) {
     }
 
     // Returns true when the command should end.

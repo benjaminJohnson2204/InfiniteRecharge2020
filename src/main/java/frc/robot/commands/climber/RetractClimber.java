@@ -5,50 +5,44 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.LED;
+package frc.robot.commands.climber;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.LED;
+import frc.robot.subsystems.Climber;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class WhiteFlash extends CommandBase {
+public class RetractClimber extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final LED m_subsystem;
+  private final Climber m_climber;
 
-  /**
+  /*
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public WhiteFlash(LED subsystem) {
-    m_subsystem = subsystem;
+  public RetractClimber(Climber climber) {
+    m_climber = climber;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setSolidColor(255, 255, 255);
-    Timer.delay(0.1);
-    m_subsystem.resetLED();
-    Timer.delay(0.1);
-    m_subsystem.setSolidColor(255, 255, 255);
-    Timer.delay(0.25);
-    end(false);
   }
-
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    m_climber.setClimbPiston(false);
+    if(!m_climber.getClimbPistonExtendStatus())
+      m_climber.setClimberOutput(0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_climber.setClimberOutput(0.0);
   }
 
   // Returns true when the command should end.

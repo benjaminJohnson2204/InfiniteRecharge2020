@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
@@ -33,7 +35,7 @@ DriveTrain extends SubsystemBase {
   private double gearRatioLow = 1 / 7.49;
   private double gearRatioHigh = 1 / 14.14;
   private double wheelDiameter = 0.5;
-  private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 4096;
+  private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 2048;
 
   private double kS = 1.35;
   private double kV = 1.04;
@@ -70,12 +72,13 @@ DriveTrain extends SubsystemBase {
   public DriveTrain() {
     for (TalonSRX motor : driveMotors) {
       motor.configFactoryDefault();
-      motor.configVoltageCompSaturation(12);
-      motor.enableVoltageCompensation(true);
+//      motor.configVoltageCompSaturation(12);
+//      motor.enableVoltageCompensation(true);
       // motor.configGetSupplyCurrentLimit(30);
       // motor.configPeakCurrentLimit(40);
       // motor.configPeakCurrentDuration(1000);
       // motor.enableCurrentLimit(true);
+      motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
       motor.configOpenloopRamp(0.1);
       motor.configClosedloopRamp(0.1);
       motor.setNeutralMode(NeutralMode.Coast);
@@ -88,13 +91,15 @@ DriveTrain extends SubsystemBase {
     driveMotors[2].setInverted(false);
     driveMotors[3].setInverted(false);
 
-    driveMotors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    driveMotors[2].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    driveMotors[0].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    driveMotors[2].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     driveMotors[0].setSensorPhase(false);
     driveMotors[2].setSensorPhase(false);
 
     driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
     driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
+    driveMotors[1].setNeutralMode(NeutralMode.Brake);
+    driveMotors[3].setNeutralMode(NeutralMode.Brake);
 
     driveMotors[1].configOpenloopRamp(0);
     driveMotors[3].configOpenloopRamp(0);
@@ -117,7 +122,6 @@ DriveTrain extends SubsystemBase {
     return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
   }
 
-
   public void resetEncoderCounts() {
     driveMotors[0].setSelectedSensorPosition(0);
     driveMotors[2].setSelectedSensorPosition(0);
@@ -133,18 +137,25 @@ DriveTrain extends SubsystemBase {
     double leftPWM = throttle + turn;
     double rightPWM = throttle - turn;
 
-    if(rightPWM > 1.0) {
-      leftPWM -= rightPWM - 1.0;
-      rightPWM = 1.0;
-    } else if(rightPWM < -1.0) {
-      leftPWM -= rightPWM + 1.0;
-      rightPWM = -1.0;
-    } else if(leftPWM > 1.0) {
-      rightPWM -= leftPWM - 1.0;
-      leftPWM = 1.0;
-    } else if(leftPWM < -1.0) {
-      rightPWM -= leftPWM + 1.0;
-      leftPWM = -1.0;
+//    if(rightPWM > 1.0) {
+//      leftPWM -= rightPWM - 1.0;
+//      rightPWM = 1.0;
+//    } else if(rightPWM < -1.0) {
+//      leftPWM -= rightPWM + 1.0;
+//      rightPWM = -1.0;
+//    } else if(leftPWM > 1.0) {
+//      rightPWM -= leftPWM - 1.0;
+//      leftPWM = 1.0;
+//    } else if(leftPWM < -1.0) {
+//      rightPWM -= leftPWM + 1.0;
+//      leftPWM = -1.0;
+//    }
+
+    // Normalization
+    double magnitude = Math.max(Math.abs(leftPWM), Math.abs(rightPWM));
+    if(magnitude > 1.0) {
+      leftPWM *=  1.0 / magnitude;
+      rightPWM *= 1.0 / magnitude;
     }
 
     setMotorPercentOutput(leftPWM, rightPWM);
@@ -175,10 +186,10 @@ DriveTrain extends SubsystemBase {
     double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
 
     double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-    double righttMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+    double rightMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
 
     // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
-    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, righttMetersPerSecond);
+    return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
   }
 
   public SimpleMotorFeedforward getFeedforward() {
@@ -209,7 +220,8 @@ DriveTrain extends SubsystemBase {
     odometry.resetPosition(pose, rotation);
   }
 
-  public void initShuffleboardValues() {
+  private void initShuffleboardValues() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
     Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
     Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
@@ -222,6 +234,24 @@ DriveTrain extends SubsystemBase {
             Units.metersToFeet(getSpeeds().leftMetersPerSecond));
     Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
             Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+
+    Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX::getAngle);
+  }
+
+  private void updateSmartDashboard() {
+    SmartDashboardTab.putNumber("DriveTrain","Left Encoder", getEncoderCount(0));
+    SmartDashboardTab.putNumber("DriveTrain","Right Encoder", getEncoderCount(2));
+    SmartDashboardTab.putNumber("DriveTrain","xCoordinate",
+            Units.metersToFeet(getRobotPose().getTranslation().getX()));
+    SmartDashboardTab.putNumber("DriveTrain","yCoordinate",
+            Units.metersToFeet(getRobotPose().getTranslation().getY()));
+    SmartDashboardTab.putNumber("DriveTrain","Angle", getRobotPose().getRotation().getDegrees());
+    SmartDashboardTab.putNumber("DriveTrain","leftSpeed",
+            Units.metersToFeet(getSpeeds().leftMetersPerSecond));
+    SmartDashboardTab.putNumber("DriveTrain","rightSpeed",
+            Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+
+    SmartDashboardTab.putNumber("Turret","Robot Angle", getAngle());
   }
 
   @Override
@@ -229,5 +259,6 @@ DriveTrain extends SubsystemBase {
     // This method will be called once per scheduler run
     pose = odometry.update(getHeading(), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
+    updateSmartDashboard();
   }
 }

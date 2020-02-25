@@ -20,18 +20,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The {@link ShuffleboardAlternative} class is the bridge between robot programs and the SmartDashboard on
+ * The {@link SmartDashboardTab} class is the bridge between robot programs and the SmartDashboard on
  * the laptop.
  *
  * <p>When a value is put into the SmartDashboard here, it pops up on the SmartDashboard on the
  * laptop. Users can put values into and get values from the SmartDashboard.
  */
 @SuppressWarnings({"PMD.GodClass", "PMD.TooManyMethods"})
-public final class ShuffleboardAlternative {
+public final class SmartDashboardTab {
     /**
      * The {@link NetworkTable} used by {@link SmartDashboard}.
      */
-    private static final NetworkTable table = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+    private static final NetworkTable table = NetworkTableInstance.getDefault().getTable("");
 
     /**
      * A table linking tables in the SmartDashboard to the {@link Sendable} objects they
@@ -49,7 +49,7 @@ public final class ShuffleboardAlternative {
         HAL.report(tResourceType.kResourceType_SmartDashboard, 0);
     }
 
-    private ShuffleboardAlternative() {
+    private SmartDashboardTab() {
         throw new UnsupportedOperationException("This is a utility class!");
     }
 
