@@ -83,6 +83,7 @@ public class Intake extends SubsystemBase {
 //  }
 
   private void updateSmartDashboard() {
+    SmartDashboardTab.putBoolean("Intake", "Intake State", getIntakingState());
     SmartDashboardTab.putBoolean("Intake", "Pistons", getIntakePistonExtendStatus());
   }
   @Override
