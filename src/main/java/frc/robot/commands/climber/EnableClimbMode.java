@@ -8,8 +8,8 @@ import frc.robot.subsystems.Turret;
 
 public class EnableClimbMode extends SequentialCommandGroup {
     public EnableClimbMode(Climber climber, Turret turret) {
-        addCommands(new SetTurretRobotRelativeAngle(turret,180),
-                    new SetTurretControlMode(turret, 0),
+        addCommands(//new SetTurretRobotRelativeAngle(turret,180),
+                    //new SetTurretControlMode(turret, 0),
                     new SetClimbMode(climber, true),
                     new ExtendClimber(climber));
     }

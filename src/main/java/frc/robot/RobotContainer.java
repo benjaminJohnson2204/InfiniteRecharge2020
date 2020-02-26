@@ -57,12 +57,12 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Climber m_climber = new Climber();;
   private final DriveTrain m_driveTrain = new DriveTrain();
-  private final Intake m_intake = new Intake();
+//  private final Intake m_intake = new Intake();
   private final Shooter m_shooter = new Shooter();
   private final Skyhook m_skyhook = new Skyhook();
   private final Turret m_turret = new Turret(m_driveTrain);
   private final Vision m_vision = new Vision();
-  public final Indexer m_indexer = new Indexer();
+//  public final Indexer m_indexer = new Indexer();
   private final LED m_led = new LED();
 
   private static boolean init = false;
@@ -107,12 +107,12 @@ public class RobotContainer {
   }
 
   public void initializeSubsystems() {
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
-            () -> leftJoystick.getRawAxis(1),
-            () -> rightJoystick.getRawAxis(0)));
+//    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
+//            () -> leftJoystick.getRawAxis(1),
+//            () -> rightJoystick.getRawAxis(0)));
     //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-    m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_climber));
+//    m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_climber));
 
     m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
             () -> xBoxController.getRawAxis(0),
@@ -122,7 +122,7 @@ public class RobotContainer {
 
     // TODO: Update these to use the correct axis
 //    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
-    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
+    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
     m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(4)));
   }
 
@@ -155,22 +155,22 @@ public class RobotContainer {
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
     // TODO: Cleanup/formalize operator controls
-//    xBoxButtons[0].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
-    xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
-    xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
+    xBoxButtons[0].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
+//    xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
+//    xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
     //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
     //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
 
-    xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
-    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+//    xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+//    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
-    xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
-    xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
+//    xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
+//    xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
 
 //    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
 //    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
     xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
-    xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
+//    xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
 

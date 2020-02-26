@@ -8,6 +8,7 @@
 package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
@@ -46,6 +47,7 @@ public class SetClimberOutput extends CommandBase {
   public void execute() {
     double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
     direction = input > 0 ? 1 : input < 0 ? -1 : 0;
+    SmartDashboardTab.putBoolean("Climber", "Movable", movable);
     if(m_climber.getClimbState()) {
 //      SmartDashboardTab.putNumber("Climber", "Direction", direction);
 //      SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
@@ -62,7 +64,8 @@ public class SetClimberOutput extends CommandBase {
       }
 
       if(movable) {
-//        SmartDashboardTab.putString("Climber", "SetClimberOutput", "Manual Control");
+        SmartDashboardTab.putString("Climber", "SetClimberOutput", "Manual Control");
+        SmartDashboardTab.putNumber("Climber", "Input", input);
         m_climber.setClimberOutput(input);
       } else {
         if(switchDirection)
@@ -74,7 +77,7 @@ public class SetClimberOutput extends CommandBase {
   }
 
   private void climberReleaseSequence() {
-//    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Releasing");
+    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Releasing");
     m_climber.setClimbPiston(true);
 
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
