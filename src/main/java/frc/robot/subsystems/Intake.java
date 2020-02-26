@@ -88,6 +88,6 @@ public class Intake extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    updateSmartDashboard();
+//    updateSmartDashboard();
   }
 }

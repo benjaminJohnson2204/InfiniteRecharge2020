@@ -144,7 +144,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateShuffleboard();
+//    updateShuffleboard();
     //updatePIDValues();
   }
 }

@@ -56,6 +56,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setClimberOutput(double value) {
+    SmartDashboardTab.putNumber("Climber", "Motor Output", value);
     // Prevent backdrive
     if(!(climbMotor.getSelectedSensorPosition() < - 1024))
       climbMotor.set(ControlMode.PercentOutput, value);

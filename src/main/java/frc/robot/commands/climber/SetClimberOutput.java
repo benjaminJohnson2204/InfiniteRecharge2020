@@ -23,7 +23,7 @@ public class SetClimberOutput extends CommandBase {
   private final Climber m_climber;
   private DoubleSupplier m_input;
 
-  private boolean currentDirection, movable, switchDirection;
+  private boolean currentDirection, movable, switchDirection, firstEnable;
   private double timestamp;
   private int direction;
   /*
@@ -34,6 +34,7 @@ public class SetClimberOutput extends CommandBase {
   public SetClimberOutput(Climber climber, DoubleSupplier input) {
     m_climber = climber;
     m_input = input;
+    currentDirection = true;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climber);
   }
@@ -48,6 +49,9 @@ public class SetClimberOutput extends CommandBase {
     double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
     direction = input > 0 ? 1 : input < 0 ? -1 : 0;
     SmartDashboardTab.putBoolean("Climber", "Movable", movable);
+    SmartDashboardTab.putNumber("Climber", "Direction", direction);
+    SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
+
     if(m_climber.getClimbState()) {
 //      SmartDashboardTab.putNumber("Climber", "Direction", direction);
 //      SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);

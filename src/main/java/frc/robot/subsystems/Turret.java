@@ -188,10 +188,10 @@ public class Turret extends SubsystemBase {
     SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
     SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
     SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
-    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
-    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
-    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
-    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
+//    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+//    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
+//    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
+//    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
     SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
 
     SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
@@ -211,6 +211,6 @@ public class Turret extends SubsystemBase {
     } else if(getTurretLatch() && !getTurretHome())
       setTurretLatch(false);
 
-    updateSmartdashboard();
+//    updateSmartdashboard();
   }
 }
