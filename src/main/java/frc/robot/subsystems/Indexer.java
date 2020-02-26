@@ -17,7 +17,9 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
@@ -27,8 +29,10 @@ public class Indexer extends SubsystemBase {
    */
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
-  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
   CANPIDController pidController = master.getPIDController();
+
+  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
+
   DigitalInput intakeSensor = new DigitalInput(Constants.intakeSensor);
   DigitalInput indexerTopSensor = new DigitalInput(Constants.indexerTopSensor);
   DigitalInput indexerBottomSensor = new DigitalInput(Constants.indexerBottomSensor);
@@ -43,26 +47,37 @@ public class Indexer extends SubsystemBase {
   private double kI = 80;
   private double kD = 0.0001;
 
+  private double kI_Zone = 1;
+  private double maxVel = 1.1e4;
+  private double maxAccel = 1e6;
+
+  private double gearRatio = 1.0 / 27.0;
+
   private int controlMode = 1;
 
   public Indexer() {
     master.restoreFactoryDefaults();
+    master.setInverted(false);
+
+    master.setIdleMode(IdleMode.kBrake);
+
     pidController.setFF(kF);
     pidController.setP(kP);
     pidController.setI(kI);
     pidController.setD(kD);
-    pidController.setSmartMotionMaxVelocity(1.1e4, 0); // Formerly 1.1e4
-    pidController.setSmartMotionMaxAccel(1e6, 0); // Formerly 1e6
+    pidController.setSmartMotionMaxVelocity(maxVel, 0); // Formerly 1.1e4
+    pidController.setSmartMotionMaxAccel(maxAccel, 0); // Formerly 1e6
     pidController.setSmartMotionAllowedClosedLoopError(1, 0);
-    pidController.setIZone(1);
-    master.setInverted(true);
+    pidController.setIZone(kI_Zone);
+
+    kicker.configFactoryDefault();
     kicker.setInverted(true);
-    master.setIdleMode(IdleMode.kBrake);
 
 //    SmartDashboard.putNumber("kF", kF);
 //    SmartDashboard.putNumber("kP", kP);
 //    SmartDashboard.putNumber("kI", kI);
 //    SmartDashboard.putNumber("kD", kD);
+    //initShuffleboard();
   }
 
   public void toggleControlMode() {
@@ -76,48 +91,15 @@ public class Indexer extends SubsystemBase {
     return controlMode;
   }
 
-  public boolean sensorTripped(){
+  public boolean getIntakeSensor(){
     return (!intakeSensor.get());
   }
 
-  boolean pTripped = false;
-  public boolean newBall(){
-    boolean returnVal;
-    if(pTripped == false && sensorTripped()){
-      returnVal = true;
-    }
-    else 
-      returnVal = false;
-    if(sensorTripped())
-      pTripped = true;
-    else
-      pTripped = false;
-    return returnVal;
+  public boolean getIndexerBottomSensor(){
+    return !indexerBottomSensor.get();
   }
 
-  public boolean topSensor(){
-    return !indexerTopSensor.get();
-  }
-
-  public void incrementIndexer(double setpoint){
-    targetSetpoint = setpoint;
-    SmartDashboard.putNumber("Target Setpoint", targetSetpoint);
-    pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
-  }
-
-  public void resetEncoderPosition(){
-    encoder.setPosition(0);
-  }
-
-  public double getPosition(){
-    return encoder.getPosition();
-  }
-
-  public boolean onTarget() {
-    return Math.abs(encoder.getPosition() - targetSetpoint) < 1; 
-  }
-
-  public boolean indexerFull(){
+  public boolean getIndexerTopSensor(){
     return !indexerTopSensor.get();
   }
 
@@ -129,11 +111,64 @@ public class Indexer extends SubsystemBase {
     master.set(output);
   }
 
+  boolean pTripped = false;
+  public boolean newBall(){
+    boolean returnVal;
+    if(pTripped == false && getIntakeSensor()){
+      returnVal = true;
+    }
+    else 
+      returnVal = false;
+    if(getIntakeSensor())
+      pTripped = true;
+    else
+      pTripped = false;
+    return returnVal;
+  }
+
+
+//  public void incrementIndexer(double setpoint){
+//    targetSetpoint = setpoint;
+//    SmartDashboard.putNumber("Target Setpoint", targetSetpoint);
+//    pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
+//  }
+//
+  public void setRPM(double rpm) {
+    double setpoint = rpm / gearRatio;
+    SmartDashboard.putNumber("Indexer Setpoint", setpoint);
+    pidController.setReference(setpoint, ControlType.kSmartVelocity);
+  }
+//
+//  public void resetEncoderPosition(){
+//    encoder.setPosition(0);
+//  }
+//
+//  public double getPosition(){
+//    return encoder.getPosition();
+//  }
+//
+//  public boolean onTarget() {
+//    return Math.abs(encoder.getPosition() - targetSetpoint) < 1;
+//  }
+//
+//  public double getRPM() {
+//    return encoder.getVelocity() * gearRatio;
+//  }
+
+
+
+  private void initShuffleboard() {
+    // Unstable. Don''t use until WPILib fixes this
+    Shuffleboard.getTab("Indexer").addBoolean("Intake Sensor", this::getIntakeSensor);
+    Shuffleboard.getTab("Indexer").addBoolean("Indexer Bottom Sensor", this::getIndexerBottomSensor);
+    Shuffleboard.getTab("Indexer").addBoolean("Indexer Top Sensor", this::getIndexerTopSensor);
+  }
+
   private void updateSmartDashboard(){
-    SmartDashboard.putNumber("Motor Output", master.getAppliedOutput());
-    SmartDashboard.putBoolean("Indexing Sensor Tripped", sensorTripped());
-    SmartDashboard.putNumber("Motor Position", getPosition());
-    
+    SmartDashboardTab.putBoolean("Indexer","Intake Sensor", getIntakeSensor());
+    SmartDashboardTab.putBoolean("Indexer","Indexer Bottom Sensor", getIndexerBottomSensor());
+    SmartDashboardTab.putBoolean("Indexer","Indexer Top Sensor", getIndexerTopSensor());
+
   }
 
   private void updatePIDValues() {
@@ -146,10 +181,11 @@ public class Indexer extends SubsystemBase {
     pidController.setI(kI);
     pidController.setD(kD);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //updateSmartDashboard();
+    updateSmartDashboard();
     //updatePIDValues();
   }
 }

@@ -23,8 +23,7 @@ import frc.vitruvianlib.utils.JoystickWrapper;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Climber m_climber = new Climber();
-  private final Controls m_controls = new Controls();
+  private final Climber m_climber = new Climber();;
   private final DriveTrain m_driveTrain = new DriveTrain();
   private final Intake m_intake = new Intake();
   private final Shooter m_shooter = new Shooter();
@@ -39,8 +38,8 @@ public class RobotContainer {
   static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
   static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
   static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
-  public Button[] leftButtons = new Button[7];
-  public Button[] rightButtons = new Button[7];
+  public Button[] leftButtons = new Button[2];
+  public Button[] rightButtons = new Button[2];
   public Button[] xBoxButtons = new Button[10];
   public Button[] xBoxPOVButtons = new Button[8];
   public Button xBoxLeftTrigger, xBoxRightTrigger;
@@ -168,10 +167,23 @@ public class RobotContainer {
 //    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
   public void teleOpPeriodic() {
+
   }
   public void autonomousInit() {
     new SetSong(m_orchestra, "TetrisTheme.mid");
   }
   public void autonomousPeriodic(){
+  }
+
+  public static void setInitializationState(boolean state) {
+    init = state;
+  }
+
+  public static boolean getInitializationState() {
+    return init;
+  }
+
+  public void initalizeLogTopics() {
+    m_controls.initLogging();
   }
 }

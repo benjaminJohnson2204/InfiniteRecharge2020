@@ -23,7 +23,7 @@ public class IndexerCommand extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  int tripped = -1;
+  int tripped = 0;
   double setpoint, startTime;
   public IndexerCommand(Indexer indexer) {
     m_indexer = indexer;
@@ -35,22 +35,23 @@ public class IndexerCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
+//    setpoint = m_indexer.getPosition() * 7 / (1.25 * Math.PI) * 20;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_indexer.sensorTripped() && tripped == -1){
+    if(m_indexer.getIntakeSensor() && tripped == 0){
       tripped = 1;
       startTime = Timer.getFPGATimestamp();
     }
-    else if(!m_indexer.sensorTripped())
-      tripped = -1;
-    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
+    if(tripped == 1)
       CommandScheduler.getInstance().schedule(new IncrementIndexer(m_indexer));
+
+    if(Timer.getFPGATimestamp() - startTime > 0.1 && tripped == 1) {
       tripped = 0;
     }
+
   }
 
   // Called once the command ends or is interrupted.

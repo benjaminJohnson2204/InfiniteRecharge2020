@@ -35,14 +35,14 @@ public class IncrementIndexer extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
+//    m_setpoint = m_indexer.getPosition() + 7 / (1.25 * Math.PI) * 20;
     startTime = Timer.getFPGATimestamp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_indexer.incrementIndexer(m_setpoint);
+//    m_indexer.incrementIndexer(m_setpoint);
     m_indexer.setKickerOutput(-0.2);
   }
 
@@ -56,6 +56,7 @@ public class IncrementIndexer extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_indexer.onTarget();
+//    return m_indexer.onTarget();
+    return false;
   }
 }

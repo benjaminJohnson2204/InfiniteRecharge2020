@@ -11,6 +11,7 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -23,7 +24,8 @@ public class ColorSensor extends SubsystemBase {
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   
   public ColorSensor() {
-    initShuffleboardValues();
+
+    //initShuffleboardValues();
   }
 
   public Color getColor() {
@@ -75,7 +77,8 @@ public class ColorSensor extends SubsystemBase {
     return false;
   }
 
-  private void initShuffleboardValues() { //s
+  private void initShuffleboardValues() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Color Sensor").addNumber("Red", ()-> getColor().red);
     Shuffleboard.getTab("Color Sensor").addNumber("Green", ()-> getColor().green);
     Shuffleboard.getTab("Color Sensor").addNumber("Blue", ()-> getColor().blue);
@@ -87,9 +90,20 @@ public class ColorSensor extends SubsystemBase {
     //SmartDashboard.putString("Color", getColorString());
   }
 
+  private void updateSmartDashboard() {
+    SmartDashboardTab.putNumber("ColorSensor","Red", getColor().red);
+    SmartDashboardTab.putNumber("ColorSensor","Green", getColor().green);
+    SmartDashboardTab.putNumber("ColorSensor","Blue", getColor().blue);
+    SmartDashboardTab.putNumber("ColorSensor","IR", getIR());
+    SmartDashboardTab.putNumber("ColorSensor","Poximity", getProximity());
+    SmartDashboardTab.putNumber("ColorSensor","Panel Color", panelColor());
+    SmartDashboardTab.putBoolean("ColorSensor","Rotation Control Complete", rotationControlComplete());
+    SmartDashboardTab.putNumber("ColorSensor","Semi Rotations", semiRotations);
+
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //updateSmartDashboard();
+    updateSmartDashboard();
   }
 }

@@ -5,44 +5,55 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.climber;
+package frc.robot.commands.indexer;
 
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class RetractClimber extends CommandBase {
+public class EjectAll extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Climber m_climber;
-
-  /*
+  private final Indexer m_indexer;
+  private final Intake m_shooter;
+  /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RetractClimber(Climber climber) {
-    m_climber = climber;
+
+  public EjectAll(Indexer indexer, Intake intake) {
+    m_indexer = indexer;
+    m_shooter = intake;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(climber);
+    addRequirements(indexer);
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
   }
+
+  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_climber.setClimbPiston(false);
-    if(!m_climber.getClimbPistonExtendStatus())
-      m_climber.setClimberOutput(0.5);
+    m_indexer.setIndexerOutput(-0.6);
+    m_indexer.setKickerOutput(-0.5);
+    m_shooter.setIntakePercentOutput(-0.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_climber.setClimberOutput(0.0);
+  public void end(final boolean interrupted) {  
+    m_indexer.setKickerOutput(0);
+    m_indexer.setIndexerOutput(0);
+    m_shooter.setIntakePercentOutput(0);
   }
 
   // Returns true when the command should end.
