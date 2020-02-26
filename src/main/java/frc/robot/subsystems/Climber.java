@@ -58,8 +58,11 @@ public class Climber extends SubsystemBase {
   public void setClimberOutput(double value) {
     SmartDashboardTab.putNumber("Climber", "Motor Output", value);
     // Prevent backdrive. TODO: Does this logic need to be here?
-    double output = (climbMotor.getSelectedSensorPosition() < - 1024) && (value < 0) ? 0 : value;
     climbMotor.set(ControlMode.PercentOutput, value);
+  }
+  
+  public int getClimberPosition() {
+	  return climbMotor.getSelectedSensorPosition();
   }
 
   public void setClimberPosition(double position) {
