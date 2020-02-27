@@ -45,6 +45,7 @@ public class Turret extends SubsystemBase {
 
   private int encoderUnitsPerRotation = 4096;
   private int controlMode = 1;
+  private boolean initialHome;
 
   private final DriveTrain m_driveTrain;
 
@@ -114,6 +115,11 @@ public class Turret extends SubsystemBase {
 
   public boolean getTurretHome() {
     return !turretHomeSensor.get();
+  }
+
+
+  public boolean getInitialHome() {
+    return initialHome;
   }
 
   public double getSetpoint() {
@@ -210,6 +216,10 @@ public class Turret extends SubsystemBase {
       setTurretLatch(true);
     } else if(getTurretLatch() && !getTurretHome())
       setTurretLatch(false);
+
+    if(!initialHome)
+      if(getTurretHome())
+        initialHome = true;
 
     updateSmartdashboard();
   }
