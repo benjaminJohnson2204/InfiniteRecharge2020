@@ -57,8 +57,11 @@ public class Climber extends SubsystemBase {
 
   public void setClimberOutput(double value) {
     // Prevent backdrive
-    if(!(climbMotor.getSelectedSensorPosition() < - 1024))
-      climbMotor.set(ControlMode.PercentOutput, value);
+    climbMotor.set(ControlMode.PercentOutput, value);
+  }
+  
+  public int getClimberPosition() {
+	  return climbMotor.getSelectedSensorPosition();
   }
 
   public void setClimberPosition(double position) {
