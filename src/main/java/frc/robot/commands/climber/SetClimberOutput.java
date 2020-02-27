@@ -22,7 +22,8 @@ public class SetClimberOutput extends CommandBase {
   private final Climber m_climber;
   private DoubleSupplier m_input;
 
-  private boolean currentDirection, movable, switchDirection;
+  private boolean currentDirection = true;
+  private boolean movable, switchDirection;
   private double timestamp;
   private int direction;
   /*
