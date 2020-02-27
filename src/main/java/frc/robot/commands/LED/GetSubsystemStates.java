@@ -23,6 +23,7 @@ public class GetSubsystemStates extends CommandBase {
   private final Vision m_vision;
   private final Turret m_turret;
   private final Climber m_climber;
+  private final Controls m_controls;
   private final RobotContainer m_robotContainer;
 
   /**
@@ -30,7 +31,7 @@ public class GetSubsystemStates extends CommandBase {
    *
    * @param The subsystem used by this command.
    */
-  public GetSubsystemStates(RobotContainer robotContainer, LED led, Indexer indexer, Intake intake, Vision vision, Turret turret, Climber climber) {
+  public GetSubsystemStates(RobotContainer robotContainer, LED led, Indexer indexer, Intake intake, Vision vision, Turret turret, Climber climber, Controls controls) {
     m_robotContainer = robotContainer;
     m_led = led;
     m_indexer = indexer;
@@ -87,7 +88,7 @@ public class GetSubsystemStates extends CommandBase {
   }
 
   private boolean isRobotReady() {
-    if(m_turret.getInitialHome()) // && PSI is high,
+    if(m_turret.getInitialHome()) // && PSI is high (?). Save for comp
       return true;
     else
       return false;

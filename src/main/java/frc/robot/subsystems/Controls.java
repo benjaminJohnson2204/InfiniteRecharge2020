@@ -63,6 +63,7 @@ public class Controls extends SubsystemBase {
   public double getPressure (){
     return PressureSensor.getAverageVoltage() * (200.0/5.0);
   }
+
   public String isPressureGood (){
     if(getPressure()>40){
       return "Closed";
@@ -70,6 +71,7 @@ public class Controls extends SubsystemBase {
       return "Open";
     }
   }
+
   public String isPoseGood (){
     if(Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 &&
             Math.abs(m_driveTrain.getHeading().getDegrees()) < 1){
