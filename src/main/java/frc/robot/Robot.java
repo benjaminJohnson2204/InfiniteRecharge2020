@@ -23,7 +23,7 @@ import frc.vitruvianlib.BadLog.BadLogger;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-//  private BadLogger badLog;
+  private BadLogger badLog;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     LiveWindow.disableAllTelemetry();
     m_robotContainer = new RobotContainer();
-//    badLog = new BadLogger(m_robotContainer);
+    badLog = new BadLogger(m_robotContainer);
   }
   /**
    * This function is called every robot packet, no matter the mode. Use this for items like
@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-//    badLog.updateLogs();
+    badLog.updateLogs();
   }
 
   /**
@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-//    badLog.startLogger();
+    badLog.startLogger();
     RobotContainer.setInitializationState(true);
   }
 
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-//    badLog.startLogger();
+    badLog.startLogger();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-//    badLog.startLogger();
+    badLog.startLogger();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
