@@ -54,102 +54,106 @@ import static java.util.Map.entry;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final Climber m_climber = new Climber();;
-  private final DriveTrain m_driveTrain = new DriveTrain();
-  private final Intake m_intake = new Intake();
-  private final Shooter m_shooter = new Shooter();
-  private final Skyhook m_skyhook = new Skyhook();
-  private final Turret m_turret = new Turret(m_driveTrain);
-  private final Vision m_vision = new Vision();
-  public final Indexer m_indexer = new Indexer();
-  private final LED m_led = new LED();
+    // The robot's subsystems and commands are defined here...
+    private final Climber m_climber = new Climber();
+    ;
+    private final DriveTrain m_driveTrain = new DriveTrain();
+    private final Intake m_intake = new Intake();
+    private final Shooter m_shooter = new Shooter();
+    private final Skyhook m_skyhook = new Skyhook();
+    private final Turret m_turret = new Turret(m_driveTrain);
+    private final Vision m_vision = new Vision();
+    public final Indexer m_indexer = new Indexer();
+    private final LED m_led = new LED();
 
-  private static boolean init = false;
+    private static boolean init = false;
 
-  private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret);
-  static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
-  static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
-  static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
-  public Button[] leftButtons = new Button[2];
-  public Button[] rightButtons = new Button[2];
-  public Button[] xBoxButtons = new Button[10];
-  public Button[] xBoxPOVButtons = new Button[8];
-  public Button xBoxLeftTrigger, xBoxRightTrigger;
+    private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret);
+    static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
+    static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
+    static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
+    public Button[] leftButtons = new Button[2];
+    public Button[] rightButtons = new Button[2];
+    public Button[] xBoxButtons = new Button[10];
+    public Button[] xBoxPOVButtons = new Button[8];
+    public Button xBoxLeftTrigger, xBoxRightTrigger;
 
-  private enum CommandSelector {
-    DRIVE_STRAIGHT
-  }
+    private enum CommandSelector {
+        DRIVE_STRAIGHT
+    }
 
-  SendableChooser<Integer> m_autoChooser = new SendableChooser();
-  private SelectCommand m_autoCommand = new SelectCommand(
-    Map.ofEntries(
-      entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain))
-    ),
-    this::selectCommand
-  );
+    SendableChooser<Integer> m_autoChooser = new SendableChooser();
 
-  /**
-   * The container for the robot.  Contains subsystems, OI devices, and commands.
-   * 
-   */
-  public RobotContainer() {
-    m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-    for(Enum commandEnum : CommandSelector.values())
-      if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
-        m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
+    private SelectCommand m_autoCommand = new SelectCommand(
+            Map.ofEntries(
+                    entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain))
+            ),
+            this::selectCommand
+    );
 
-    SmartDashboard.putData(m_autoChooser);
+    /**
+     * The container for the robot.  Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
+        for (Enum commandEnum : CommandSelector.values())
+            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
 
-    initializeSubsystems();
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+        SmartDashboard.putData(m_autoChooser);
 
-  public void initializeSubsystems() {
-    m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
-            () -> leftJoystick.getRawAxis(1),
-            () -> rightJoystick.getRawAxis(0)));
-    //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
+        initializeSubsystems();
+        // Configure the button bindings
+        configureButtonBindings();
+    }
 
-    m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_controls));
+    public void initializeSubsystems() {
+        m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
+                () -> leftJoystick.getRawAxis(1),
+                () -> rightJoystick.getRawAxis(0)));
+        //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
-    m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
-            () -> xBoxController.getRawAxis(0),
-            () -> xBoxController.getRawAxis(1)));
+        m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_controls));
+
+//        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
+//                  () -> xBoxController.getRawAxis(0),
+//                  () -> xBoxController.getRawAxis(1)));
+
+        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber, xBoxController));
 
 //    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
 
-    // TODO: Update these to use the correct axis
+        // TODO: Update these to use the correct axis
 //    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
-    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
-    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(0)));
-  }
+//        m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
+        m_climber.setDefaultCommand(new SetClimberOutput(m_climber, xBoxController));
+        m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(0)));
+    }
 
-  /**
-   * Use this method to define your button->command mappings.  Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
-   * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    leftJoystick.invertRawAxis(1, true);
-    rightJoystick.invertRawAxis(0, true);
-    xBoxController.invertRawAxis(1, true);
-    xBoxController.invertRawAxis(5, true);
-    for (int i = 0; i < leftButtons.length; i++)
-      leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
-    for (int i = 0; i < rightButtons.length; i++)
-      rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
-    for (int i = 0; i < xBoxButtons.length; i++)
-      xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
-    for (int i = 0; i < xBoxPOVButtons.length; i++)
-      xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
-    xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
-    xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
+    /**
+     * Use this method to define your button->command mappings.  Buttons can be created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a
+     * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        leftJoystick.invertRawAxis(1, true);
+        rightJoystick.invertRawAxis(0, true);
+        xBoxController.invertRawAxis(1, true);
+        xBoxController.invertRawAxis(5, true);
+        for (int i = 0; i < leftButtons.length; i++)
+            leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
+        for (int i = 0; i < rightButtons.length; i++)
+            rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
+        for (int i = 0; i < xBoxButtons.length; i++)
+            xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
+        for (int i = 0; i < xBoxPOVButtons.length; i++)
+            xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
+        xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
+        xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-    leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
-    leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
+        leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
+        leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
 //    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
@@ -161,8 +165,8 @@ public class RobotContainer {
     //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
     //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
 
-    xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
-    xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+        xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
     xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
     xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake,3700));            // Right Shoulder Button
@@ -179,46 +183,50 @@ public class RobotContainer {
     //xBoxPOVButtons[0].whenPressed(new ZeroDriveTrainEncoders(m_driveTrain));
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
 
-  private CommandSelector selectCommand() {
-    return CommandSelector.values()[m_autoChooser.getSelected()];
-  }
-  public Command getAutonomousCommand() {
-    // TODO: Undo this safety
-    //return m_autoCommand;
-    return new WaitCommand(0);
-  }
+    private CommandSelector selectCommand() {
+        return CommandSelector.values()[m_autoChooser.getSelected()];
+    }
 
-  public void robotPeriodic() {
+    public Command getAutonomousCommand() {
+        // TODO: Undo this safety
+        //return m_autoCommand;
+        return new WaitCommand(0);
+    }
 
-  }
+    public void robotPeriodic() {
 
-  public void teleOpInit() {
-    m_driveTrain.resetEncoderCounts();
-    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
-  }
-  public void teleOpPeriodic() {
+    }
 
-  }
-  public void autonomousInit() {
-  }
-  public void autonomousPeriodic(){
-  }
+    public void teleOpInit() {
+        m_driveTrain.resetEncoderCounts();
+        m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+    }
 
-  public static void setInitializationState(boolean state) {
-    init = state;
-  }
+    public void teleOpPeriodic() {
 
-  public static boolean getInitializationState() {
-    return init;
-  }
+    }
 
-  public void initalizeLogTopics() {
-    m_controls.initLogging();
-  }
+    public void autonomousInit() {
+    }
+
+    public void autonomousPeriodic() {
+    }
+
+    public static void setInitializationState(boolean state) {
+        init = state;
+    }
+
+    public static boolean getInitializationState() {
+        return init;
+    }
+
+    public void initalizeLogTopics() {
+        m_controls.initLogging();
+    }
 }

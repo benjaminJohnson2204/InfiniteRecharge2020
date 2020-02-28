@@ -7,10 +7,7 @@
 
 package frc.robot.commands.climber;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
@@ -19,10 +16,10 @@ import java.util.function.DoubleSupplier;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetClimberOutput extends CommandBase {
+public class SetClimberOutputOld extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Climber m_climber;
-  private Joystick m_controller;
+  private DoubleSupplier m_input;
 
   private boolean currentDirection = true;
   private boolean movable, switchDirection;
@@ -33,9 +30,9 @@ public class SetClimberOutput extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetClimberOutput(Climber climber, Joystick controller) {
+  public SetClimberOutputOld(Climber climber, DoubleSupplier input) {
     m_climber = climber;
-    m_controller = controller;
+    m_input = input;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climber);
   }
@@ -47,7 +44,7 @@ public class SetClimberOutput extends CommandBase {
 
   @Override
   public void execute() {
-    double input = Math.abs(m_controller.getRawAxis(5)) > 0.2 ? m_controller.getRawAxis(5) : 0;
+    double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
     direction = input > 0 ? 1 : input < 0 ? -1 : 0;
     if(m_climber.getClimbState()) {
 //      SmartDashboardTab.putNumber("Climber", "Direction", direction);
@@ -82,8 +79,7 @@ public class SetClimberOutput extends CommandBase {
   private void climberReleaseSequence() {
 //    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Releasing");
     m_climber.setClimbPiston(true);
-    m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
-    m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
+
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
       m_climber.setClimberOutput(-0.25);
     else if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.4)
@@ -92,24 +88,18 @@ public class SetClimberOutput extends CommandBase {
       m_climber.setClimberOutput(0);
       movable = true;
       currentDirection = true;
-      m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-      m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
     }
   }
 
   private void climberRetractSequence() {
 //    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Retracting");
     m_climber.setClimbPiston(false);
-    m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
-    m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
       m_climber.setClimberOutput(-0.25);
     else {
       m_climber.setClimberOutput(0);
       movable = true;
       currentDirection = false;
-      m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-      m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
     }
   }
 

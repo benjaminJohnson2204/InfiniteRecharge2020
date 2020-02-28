@@ -55,11 +55,11 @@ public class Vision extends SubsystemBase {
 		if (hasTarget()) {
 			setLastValidTargetTime();
 		}
-		if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 5) {
+		if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 3) {
 			ledsOn();
 			validTarget = true;
 		} else {
-			//ledsOff();
+			ledsOff();
 			validTarget = false;
 		}
 	}
