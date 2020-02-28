@@ -146,6 +146,14 @@ public class LED extends SubsystemBase {
         setRGB(255, 110, 0);
         trail(8);
         break;
+      case 7:
+        setRGB(255, 0, 0);
+        setBlinkingColor(true);
+        break;
+      case 8:
+        setRGB(0, 255, 0);
+        setBlinkingColor(true);
+        break;
       default:
         setRGB(106, 90, 205);
         setBlinkingColor(true);
