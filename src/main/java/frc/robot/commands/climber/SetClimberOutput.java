@@ -56,7 +56,7 @@ public class SetClimberOutput extends CommandBase {
         if (direction == 1 && !currentDirection) {
           movable = false;
           switchDirection = true;
-        } else if(direction == -1 && currentDirection){
+        } else if(direction <= 0 && currentDirection){
           movable = false;
           switchDirection = false;
         }

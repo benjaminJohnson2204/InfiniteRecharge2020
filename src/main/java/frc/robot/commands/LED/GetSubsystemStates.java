@@ -39,6 +39,7 @@ public class GetSubsystemStates extends CommandBase {
     m_vision = vision;
     m_turret = turret;
     m_climber = climber;
+    m_controls = controls;
     // Use addRequirements() here to declare subsystem dependencies.    
     addRequirements(led);
   }

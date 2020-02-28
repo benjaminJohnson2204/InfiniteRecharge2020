@@ -123,7 +123,7 @@ public class RobotContainer {
     // TODO: Update these to use the correct axis
 //    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
     m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
-    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(4)));
+    m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(0)));
   }
 
   /**
@@ -155,7 +155,7 @@ public class RobotContainer {
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
     // TODO: Cleanup/formalize operator controls
-//    xBoxButtons[0].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
+    xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
     xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
     xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
     //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
@@ -165,7 +165,7 @@ public class RobotContainer {
     xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
     xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
-    xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
+    xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake,3700));            // Right Shoulder Button
 
 //    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
 //    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
@@ -173,6 +173,7 @@ public class RobotContainer {
     xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
+    xBoxButtons[2].whileHeld(new TestShooter(m_shooter,m_indexer,m_intake));
 
     //xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
   }

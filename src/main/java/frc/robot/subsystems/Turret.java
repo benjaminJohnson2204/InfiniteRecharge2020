@@ -38,8 +38,8 @@ public class Turret extends SubsystemBase {
   int kCruiseVelocity = 14000; //degreesToEncoderUnits(180) * 10;
   int kMotionAcceleration = kCruiseVelocity * 10;
   
-  double maxAngle = 195;
-  double minAngle = -135;
+  double maxAngle = 45; //195
+  double minAngle = -45; //-135
   double gearRatio = 18.0 / 120.0;
   private double setpoint = 0; //angle
 

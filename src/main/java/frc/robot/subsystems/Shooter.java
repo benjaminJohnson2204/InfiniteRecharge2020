@@ -26,8 +26,8 @@ public class Shooter extends SubsystemBase {
    * Creates a new ExampleSubsystem.
  * @return 
    */
-  public double kF = 0.054;   //Gree: 0.0475;
-  public double kP = 0.4; 	  //0.00047
+  public double kF = 0.0523;   //Gree: 0.0475;
+  public double kP = 0.6; 	  //0.00047
   public double kI = 0.0; 	  //0.0000287
   public double kD = 0.0;
 
@@ -62,7 +62,7 @@ public class Shooter extends SubsystemBase {
     outtakeMotors[1].configClosedloopRamp(0);
     outtakeMotors[1].configOpenloopRamp(0);
 
-    //initShuffleboard();
+    initShuffleboard();
   }
 
   public double getMotorInputCurrent(int motorIndex) {
