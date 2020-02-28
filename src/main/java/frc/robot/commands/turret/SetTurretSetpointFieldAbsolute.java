@@ -34,6 +34,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     private final double deadZone = 0.2;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
+  double setpoint, radians;
+  boolean movedJoystick = false;
 
     /**
      * Creates a new ExampleCommand.
@@ -74,6 +76,20 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                         direction = m_controller.getRawAxis(1) < 0;
                         directionTripped = true;
                     }
+
+            //setpoint -= m_driveTrain.getAngle();
+
+            if (setpoint < m_turret.getMinAngle()) {
+              direction = true;
+              setpoint %= 360;
+              if (setpoint > m_turret.getMaxAngle())
+                setpoint = m_turret.getMaxAngle();
+            }
+          }
+        } else if (m_vision.getValidTarget() && !joystickMoved) {
+          usingVisionSetpoint = true;
+          if (!turning) {
+            setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
                     if (direction) {
                         if (m_controller.getRawAxis(0) >= 0)

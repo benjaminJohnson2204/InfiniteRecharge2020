@@ -70,13 +70,13 @@ DriveTrain extends SubsystemBase {
   public DriveTrain() {
     for (TalonFX motor : driveMotors) {
       motor.configFactoryDefault();
-//      motor.configVoltageCompSaturation(12);
-//      motor.enableVoltageCompensation(true);
+      motor.configVoltageCompSaturation(12);
+      motor.enableVoltageCompensation(true);
       // motor.configGetSupplyCurrentLimit(30);
       // motor.configPeakCurrentLimit(40);
       // motor.configPeakCurrentDuration(1000);
       // motor.enableCurrentLimit(true);
-      motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
+      //motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
       motor.configOpenloopRamp(0.1);
       motor.configClosedloopRamp(0.1);
       motor.setNeutralMode(NeutralMode.Coast);

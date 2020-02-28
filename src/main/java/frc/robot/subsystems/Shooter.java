@@ -26,9 +26,9 @@ public class Shooter extends SubsystemBase {
    * Creates a new ExampleSubsystem.
  * @return 
    */
-  public double kF = 0.052;  //0.054;   //Gree: 0.0475;
-  public double kP = 0.6;    //0.4; 	  //0.00047
-  public double kI = 0.0; 	  //0.0000287
+  public double kF = 0.0523;  // 0.054      //  Gree: 0.0475;
+  public double kP = 0.6; 	  //  0.4       //  0.00047
+  public double kI = 0.0; 	                //  0.0000287
   public double kD = 0.0;
 
   public int kI_Zone = 100;

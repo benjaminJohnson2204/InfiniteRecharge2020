@@ -91,19 +91,19 @@ public class Controls extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-	if(DriverStation.getInstance().isDisabled()) {
-	    LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
-	    //angle of the robot's turret in degrees. returned as exp. "angle:169.8"
-	    // the angle value should be maximum 6 characters including the decimal point and maybe a negitive sign
-	    LCDDisplay.display_string("PSI:" + Math.floor(getPressure() * 10) / 10 + " "+ isPressureGood(), 2);
-	    //there should be a reserved space for a pressure value measured in psi
-	    //exp: "psi:128" there should be no decimal point as it will be measured as a whole number
-	    LCDDisplay.display_string("Odometry:" + isPoseGood(), 3);
-	    //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
-	    //bad, the function allows the error to be within 1 unit of 0
-	    LCDDisplay.display_string("Purple is best soda", 4);
-	    //silly stuff
-	    updateSmartDashboard();
-	}
+    if(DriverStation.getInstance().isDisabled()) {
+      LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
+      //angle of the robot's turret in degrees. returned as exp. "angle:169.8"
+      // the angle value should be maximum 6 characters including the decimal point and maybe a negitive sign
+      LCDDisplay.display_string("PSI:" + Math.floor(getPressure() * 10) / 10 + " " + isPressureGood(), 2);
+      //there should be a reserved space for a pressure value measured in psi
+      //exp: "psi:128" there should be no decimal point as it will be measured as a whole number
+      LCDDisplay.display_string("Odometry:" + isPoseGood(), 3);
+      //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
+      //bad, the function allows the error to be within 1 unit of 0
+      LCDDisplay.display_string("Purple is best soda", 4);
+      //silly stuff
+      updateSmartDashboard();
+    }
   }
 }
