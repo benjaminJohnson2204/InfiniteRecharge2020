@@ -13,6 +13,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -105,7 +107,8 @@ DriveTrain extends SubsystemBase {
   }
 
   public double getAngle(){
-    return navX.getAngle();
+    // return navX.getAngle();
+    return 10;
   }
 
   public double getWheelDistanceMeters(int sensorIndex) {

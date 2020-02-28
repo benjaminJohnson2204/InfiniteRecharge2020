@@ -195,7 +195,6 @@ public class RobotContainer {
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
   }
   public void teleOpPeriodic() {
-
   }
   public void autonomousInit() {
   }

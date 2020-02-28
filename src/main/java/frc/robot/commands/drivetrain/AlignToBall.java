@@ -7,7 +7,9 @@
 
 package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
@@ -15,7 +17,7 @@ import java.util.function.DoubleSupplier;
 
 public class AlignToBall extends CommandBase {
 
-    private final double P_TERM = 0.03;
+    private final double P_TERM = 0.05;
     private final double I_TERM = 0;
     private final double D_TERM = 0;
 
@@ -45,11 +47,17 @@ public class AlignToBall extends CommandBase {
             return;
         }
 
+        /* TODO: Align with PID loop
         pid.setSetpoint(vision.getPowerCellX());
+        double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
+        driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
+        */
 
-        while (!pid.atSetpoint()) {
-            double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
-            driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
+        double offset = vision.getPowerCellX();
+        if (offset > 0.18) { // ball is to the right
+            driveTrain.setMotorArcadeDrive(this.throttle.getAsDouble(), P_TERM);
+        } else { // ball is to the left
+            driveTrain.setMotorArcadeDrive(this.throttle.getAsDouble(), -P_TERM);
         }
     }
 

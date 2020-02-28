@@ -154,10 +154,9 @@ public class Vision extends SubsystemBase {
     }
 
     public double getPowerCellX() {
-        double pixels = openSight.getEntry("found-x").getDouble(0);
-
-        // Convert to degrees (5.839 pixels per degree)
-        return pixels * 5.839;
+        // TODO: Calculate degrees from pixels?
+        // return openSight.getEntry("found-x").getDouble(0) * 5.839; // 5.839 pixels per degree
+        return openSight.getEntry("found-x").getDouble(0);
     }
 
     public boolean hasPowerCell() {
