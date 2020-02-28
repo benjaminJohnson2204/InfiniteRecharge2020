@@ -107,6 +107,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                 } else if (m_vision.getValidTarget() && !joystickMoved) {
                     usingVisionSetpoint = true;
                     if (!turning) {
+                        m_vision.ledsOn();
                         setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
                         if (setpoint > m_turret.getMaxAngle()) {
@@ -121,6 +122,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             turning = true;
                         }
                     } else {
+                        m_vision.ledsOff();
                         if (m_turret.atTarget())
                             turning = false;
                     }
