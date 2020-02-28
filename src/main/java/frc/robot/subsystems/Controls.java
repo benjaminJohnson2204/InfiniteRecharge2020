@@ -91,6 +91,7 @@ public class Controls extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // TODO: Turn off LCD backlight if robot is enabled
     if(DriverStation.getInstance().isDisabled()) {
       LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
       //angle of the robot's turret in degrees. returned as exp. "angle:169.8"

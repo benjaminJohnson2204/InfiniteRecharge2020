@@ -158,30 +158,25 @@ public class RobotContainer {
 //    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-    // TODO: Cleanup/formalize operator controls
-    xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
-    xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
-    xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
-    //xBoxButtons[2].whenPressed(new Command());                                          // X - ?
-    //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
+        xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
+        xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
+//    xBoxButtons[2].whileHeld(new TestShooter(m_shooter,m_indexer,m_intake));
+        //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
 
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
-    xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
-    xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake,3700));            // Right Shoulder Button
+        xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));            // Right Shoulder Button
+        xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
 
-//    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
-//    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch downwsa
-    xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
-    xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
-    //xBoxButtons[8].whenPressed(new Command()); //left stick
-    //xBoxButtons[9].whenPressed(new Command()); //right stick
-    xBoxButtons[2].whileHeld(new TestShooter(m_shooter,m_indexer,m_intake));
+        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
+        xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
+        //xBoxButtons[8].whenPressed(new Command()); //left stick
+        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
 
-    xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
-    //xBoxPOVButtons[0].whenPressed(new ZeroDriveTrainEncoders(m_driveTrain));
-  }
+        //xBoxPOVButtons[0].whenPressed(new ZeroDriveTrainEncoders(m_driveTrain));
+        xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

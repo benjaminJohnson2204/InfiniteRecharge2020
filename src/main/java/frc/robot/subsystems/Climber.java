@@ -33,10 +33,10 @@ public class Climber extends SubsystemBase {
   private boolean climbState;
 
   public Climber() {
-    climbMotor.configFactoryDefault(100);
-    climbMotor.setSelectedSensorPosition(0, 0, 100);
+    climbMotor.configFactoryDefault();
+    climbMotor.setSelectedSensorPosition(0);
     climbMotor.setNeutralMode(NeutralMode.Brake);
-    climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 100);
+    climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
   }
 
   public boolean getClimbPistonExtendStatus(){

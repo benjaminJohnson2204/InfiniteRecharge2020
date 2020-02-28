@@ -76,7 +76,7 @@ DriveTrain extends SubsystemBase {
       // motor.configPeakCurrentLimit(40);
       // motor.configPeakCurrentDuration(1000);
       // motor.enableCurrentLimit(true);
-      //motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
+      motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
       motor.configOpenloopRamp(0.1);
       motor.configClosedloopRamp(0.1);
       motor.setNeutralMode(NeutralMode.Coast);

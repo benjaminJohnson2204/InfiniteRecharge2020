@@ -34,8 +34,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     private final double deadZone = 0.2;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
-  double setpoint, radians;
-  boolean movedJoystick = false;
+    double setpoint, radians;
+    boolean movedJoystick = false;
 
     /**
      * Creates a new ExampleCommand.
@@ -72,24 +72,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                     m_vision.ledsOn();
                     m_vision.setLastValidTargetTime();
                     joystickMoved = true;
+
                     if (!directionTripped) {
                         direction = m_controller.getRawAxis(1) < 0;
                         directionTripped = true;
                     }
-
-            //setpoint -= m_driveTrain.getAngle();
-
-            if (setpoint < m_turret.getMinAngle()) {
-              direction = true;
-              setpoint %= 360;
-              if (setpoint > m_turret.getMaxAngle())
-                setpoint = m_turret.getMaxAngle();
-            }
-          }
-        } else if (m_vision.getValidTarget() && !joystickMoved) {
-          usingVisionSetpoint = true;
-          if (!turning) {
-            setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
                     if (direction) {
                         if (m_controller.getRawAxis(0) >= 0)
@@ -116,7 +103,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                                 setpoint = m_turret.getMaxAngle();
                         }
                     }
-                    if(m_vision.getValidTarget()) {
+                    if (m_vision.getValidTarget()) {
                         m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
                         m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
                     }
@@ -153,6 +140,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                 }
 
                 m_turret.setRobotCentricSetpoint(setpoint);
+//                m_turret.setFieldCentricSetpoint(setpoint);
             } else {
                 m_turret.setPercentOutput(m_controller.getRawAxis(0) * 0.2); //manual mode
             }
