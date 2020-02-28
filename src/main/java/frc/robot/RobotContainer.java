@@ -165,16 +165,17 @@ public class RobotContainer {
     xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
     xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
-    xBoxButtons[5].whileHeld(new TestShooter(m_shooter, m_indexer, m_intake));            // Right Shoulder Button
+    xBoxButtons[5].whileHeld(new  RapidFire(m_shooter, m_indexer, m_intake, 4000));            // Right Shoulder Button
 
 //    xBoxRightTrigger.whileHeld(new TestShooterDelayed(m_shooter, m_indexer, m_intake)); //flywheel on toggle
-//    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch down
+//    xBoxButtons[3].whileHeld(new RetractClimber(m_climber)); //Y - winch downwsa
     xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
     xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
     //xBoxButtons[8].whenPressed(new Command()); //left stick
     //xBoxButtons[9].whenPressed(new Command()); //right stick
 
-    //xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+    xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+    //xBoxPOVButtons[0].whenPressed(new ZeroDriveTrainEncoders(m_driveTrain));
   }
 
   /**

@@ -35,6 +35,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
   boolean limelightDisabled = false;
   boolean movedJoystick = false;
   boolean turning, usingVisionSetpoint;
+  private boolean direction, directionTripped, joystickMoved;
   /**
    * Creates a new ExampleCommand.
    *
@@ -52,7 +53,6 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //    addRequirements(driveTrainSubsystem);
     //addRequirements(visionSybsystem);
   }
-  private boolean direction, directionTripped, joystickMoved;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -83,8 +83,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             else
               setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
+//            setpoint -= m_driveTrain.getAngle();
+
             if (setpoint > m_turret.getMaxAngle()) {
-              setpoint -= 360;
+              setpoint %= 360;
               if (setpoint < m_turret.getMinAngle())
                 setpoint = m_turret.getMinAngle();
               direction = false;
@@ -95,9 +97,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             else
               setpoint = -360 + Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
+            //setpoint -= m_driveTrain.getAngle();
+
             if (setpoint < m_turret.getMinAngle()) {
               direction = true;
-              setpoint += 360;
+              setpoint %= 360;
               if (setpoint > m_turret.getMaxAngle())
                 setpoint = m_turret.getMaxAngle();
             }

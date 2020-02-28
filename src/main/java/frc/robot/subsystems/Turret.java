@@ -66,7 +66,7 @@ public class Turret extends SubsystemBase {
     turretMotor.configFactoryDefault();
     turretMotor.setNeutralMode(NeutralMode.Brake);
     turretMotor.setInverted(true);
-    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
+    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 100);
     turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
     turretMotor.config_kF(0, kF);
     turretMotor.config_kP(0, kP);
@@ -188,13 +188,13 @@ public class Turret extends SubsystemBase {
     SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
     SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
     SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
-    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
-    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
-    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
-    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
+//    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+//    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
+//    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
+//    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
     SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
 
-    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
+//    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
   }
 
   @Override

@@ -33,10 +33,10 @@ public class Climber extends SubsystemBase {
   private boolean climbState;
 
   public Climber() {
-    climbMotor.configFactoryDefault();
-    climbMotor.setSelectedSensorPosition(0);
+    climbMotor.configFactoryDefault(100);
+    climbMotor.setSelectedSensorPosition(0, 0, 100);
     climbMotor.setNeutralMode(NeutralMode.Brake);
-    climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 100);
   }
 
   public boolean getClimbPistonExtendStatus(){
@@ -75,7 +75,7 @@ public class Climber extends SubsystemBase {
   }
 
   private void updateShuffleboard(){
-    SmartDashboard.putBoolean("Climb Mode", climbState);
+    SmartDashboard.putBoolean("Climb Mode", getClimbState());
 
     SmartDashboardTab.putNumber("Climber", "Position", encoderUnitsToInches(climbMotor.getSelectedSensorPosition()));
     SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
@@ -88,6 +88,6 @@ public class Climber extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    updateShuffleboard();
+    //updateShuffleboard();
   }
 }
