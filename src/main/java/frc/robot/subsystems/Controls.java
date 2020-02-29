@@ -8,15 +8,14 @@
 package frc.robot.subsystems;
 
 import badlog.lib.BadLog;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.vitruvianlib.I2C.I2CLCD;
+
+import java.sql.Driver;
 
 public class Controls extends SubsystemBase {
   private PowerDistributionPanel pdp = new PowerDistributionPanel(0);
@@ -83,7 +82,6 @@ public class Controls extends SubsystemBase {
       return "Not Good";
     }
   }
-
   private void updateSmartDashboard() {
     SmartDashboardTab.putString("LCDDisplay","turret angle",
             "Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10);
@@ -98,17 +96,19 @@ public class Controls extends SubsystemBase {
       initLogging();
       init = true;
     }
-    LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
-    //angle of the robot's turret in degrees. returned as exp. "angle:169.8"
-    // the angle value should be maximum 6 characters including the decimal point and maybe a negitive sign
-    LCDDisplay.display_string("PSI:" + Math.floor(getPressure() * 10) / 10 + " "+ isPressureGood(), 2);
-    //there should be a reserved space for a pressure value measured in psi
-    //exp: "psi:128" there should be no decimal point as it will be measured as a whole number
-    LCDDisplay.display_string("Odometry:" + isPoseGood(), 3);
-    //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
-    //bad, the function allows the error to be within 1 unit of 0
-    LCDDisplay.display_string("Purple is best soda", 4);
-    //silly stuff
-    updateSmartDashboard();
+    if(DriverStation.getInstance().isDisabled()) {
+        LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
+        //angle of the robot's turret in degrees. returned as exp. "angle:169.8"
+        // the angle value should be maximum 6 characters including the decimal point and maybe a negitive sign
+        LCDDisplay.display_string("PSI:" + Math.floor(getPressure() * 10) / 10 + " " + isPressureGood(), 2);
+        //there should be a reserved space for a pressure value measured in psi
+        //exp: "psi:128" there should be no decimal point as it will be measured as a whole number
+        LCDDisplay.display_string("Odometry:" + isPoseGood(), 3);
+        //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
+        //bad, the function allows the error to be within 1 unit of 0
+        LCDDisplay.display_string("Voltage:" + Math.floor(RobotController.getBatteryVoltage() * 10) / 10 + "V", 4);
+        //silly stuff
+        updateSmartDashboard();
+    }
   }
 }
