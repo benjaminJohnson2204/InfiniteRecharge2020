@@ -34,8 +34,6 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     private final double deadZone = 0.2;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
-    double setpoint, radians;
-    boolean movedJoystick = false;
 
     /**
      * Creates a new ExampleCommand.
