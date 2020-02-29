@@ -26,10 +26,7 @@ import frc.robot.commands.intake.ControlledIntake;
 import frc.robot.commands.intake.SetIntakeManual;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.intake.ToggleIntakePistons;
-import frc.robot.commands.shooter.DefaultFlywheelRPM;
-import frc.robot.commands.shooter.RapidFire;
-import frc.robot.commands.shooter.TestShooter;
-import frc.robot.commands.shooter.TestShooterDelayed;
+import frc.robot.commands.shooter.*;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
@@ -111,23 +108,15 @@ public class RobotContainer {
         m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
                 () -> leftJoystick.getRawAxis(1),
                 () -> rightJoystick.getRawAxis(0)));
-        //CommandScheduler.getInstance().schedule(new ZeroDriveTrainEncoders(m_driveTrain));
 
         m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_controls));
-
-//        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber,
-//                  () -> xBoxController.getRawAxis(0),
-//                  () -> xBoxController.getRawAxis(1)));
 
         m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber, xBoxController));
 
 //    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
 
-        // TODO: Update these to use the correct axis
-//    m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(1)));
-//        m_climber.setDefaultCommand(new SetClimberOutput(m_climber, () -> xBoxController.getRawAxis(5)));
         m_climber.setDefaultCommand(new SetClimberOutput(m_climber, xBoxController));
-        m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> xBoxController.getRawAxis(0)));
+        m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> rightJoystick.getRawAxis(0)));
     }
 
     /**
@@ -158,24 +147,24 @@ public class RobotContainer {
 //    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-        xBoxButtons[0].whileHeld(new EjectAll(m_indexer, m_intake));  // B - Manual Shot
-        xBoxButtons[1].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500));  // B - Manual Shot
-//    xBoxButtons[2].whileHeld(new TestShooter(m_shooter,m_indexer,m_intake));
-        //xBoxButtons[3].whenPressed(new Command());                                          // Y - ?
-
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
-        xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));            // Right Shoulder Button
-        xBoxRightTrigger.whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3500)); //flywheel on toggle
+        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, 3500));                          // A - Set RPM Close
+        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, 3700));                          // B - Set RPM Medium
+        xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
+        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, 3900));                          // Y - Set RPM Far
 
-        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret)); //start - toggle control mode turret
-        xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer)); //select - toggle control mode uptake
+        //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
+        xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
+
+        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
+        //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
         //xBoxButtons[8].whenPressed(new Command()); //left stick
-        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                             // A - toggle driver climb mode?
+        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
 
-        //xBoxPOVButtons[0].whenPressed(new ZeroDriveTrainEncoders(m_driveTrain));
         xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+        //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     }
 
     /**

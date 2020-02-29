@@ -66,6 +66,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 
         if (!m_climber.getClimbState()) {
             if (m_turret.getControlMode() == 1) {
+                // TODO: Add fine adjustment mode when shooting?
                 if ((Math.pow(m_controller.getRawAxis(0), 2) + Math.pow(m_controller.getRawAxis(1), 2)) >= Math.pow(deadZone, 2)) {
                     m_vision.ledsOn();
                     m_vision.setLastValidTargetTime();
