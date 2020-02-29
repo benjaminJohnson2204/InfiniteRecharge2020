@@ -28,10 +28,12 @@ public class LED extends SubsystemBase {
   private int red, green, blue;
   double rainbows = 3;
   double speed = 8;
+  ColorSensor m_colorSensor;
 
-  public LED() {
+  public LED(ColorSensor colorSensor) {
+    m_colorSensor = colorSensor;
     LEDStrip = new AddressableLED(Constants.ledPort);
-    LEDBuffer = new AddressableLEDBuffer(100);
+    LEDBuffer = new AddressableLEDBuffer(90);
     LEDStrip.setLength(LEDBuffer.getLength());
     LEDStrip.setData(LEDBuffer);
     LEDStrip.start();
@@ -116,6 +118,32 @@ public class LED extends SubsystemBase {
     Timer.delay(0.25);
   }
 
+  public void colorToRGB(int color){
+    switch(color){
+      case 1:
+        setRGB(255, 0, 0);
+        break;
+      case 2:
+        setRGB(0, 255, 0);
+        break;
+      case 3:
+        setRGB(0, 255, 255);
+        break;
+      case 4:
+        setRGB(255, 255, 0);
+        break;
+    }
+  }
+
+  int offset = 0;
+  public void colorWheel(){
+    for(int i = 0; i < LEDBuffer.getLength(); i = (int) (i + LEDBuffer.getLength() * 0.125)) {
+      colorToRGB((m_colorSensor.panelColor() + i) % 4);
+      for(int ii = i; ii < (int) (i + LEDBuffer.getLength() * 0.125); ii++)
+        LEDBuffer.setRGB(ii, red, green, blue);
+    }
+  }
+
   int state = -1;
   public void setLED(){
     switch(state){
@@ -153,6 +181,9 @@ public class LED extends SubsystemBase {
       case 8:
         setRGB(0, 255, 0);
         setBlinkingColor(true);
+        break;
+      case 9:
+        colorWheel();
         break;
       default:
         setRGB(106, 90, 205);

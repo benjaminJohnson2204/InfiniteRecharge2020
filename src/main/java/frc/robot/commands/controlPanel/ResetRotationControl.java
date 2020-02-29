@@ -8,7 +8,6 @@
 package frc.robot.commands.controlPanel;
 
 import frc.robot.subsystems.ColorSensor;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**

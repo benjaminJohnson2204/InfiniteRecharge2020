@@ -8,7 +8,6 @@
 package frc.robot.commands.controlPanel;
 
 import frc.robot.subsystems.ColorSensor;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -33,6 +32,7 @@ public class RotationControl extends CommandBase {
   @Override
   public void initialize() {
     // Deploy?
+    m_subsystem.working = true;
     m_subsystem.resetRotationControlVars();
   }
 
@@ -46,6 +46,7 @@ public class RotationControl extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_subsystem.setOutput(0);
+    m_subsystem.working = false;
   }
 
   // Returns true when the command should end.

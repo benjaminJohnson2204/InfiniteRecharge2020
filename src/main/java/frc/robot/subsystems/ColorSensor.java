@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.constants.Constants;
 
 public class ColorSensor extends SubsystemBase {
   /**
@@ -27,10 +27,11 @@ public class ColorSensor extends SubsystemBase {
    */
   public boolean practiceField = true;
   public boolean isColor = false;
+  public boolean working = false;
   public int semiRotations = 0;
   private int colorID;
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
-  public TalonSRX motor = new TalonSRX(Constants.controlPanel);
+  public TalonSRX motor = new TalonSRX(Constants.colorWheelMotor);
   
   public ColorSensor() {
     motor.setNeutralMode(NeutralMode.Brake);
@@ -147,14 +148,6 @@ public class ColorSensor extends SubsystemBase {
     SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
     SmartDashboard.putNumber("Semi-Rotations", semiRotations);
     //SmartDashboard.putString("Color", getColorString());
-  }
-
-  private void updateSmartDashboard() {
-    SmartDashboardTab.putNumber("ColorSensor","Red", getColor().red);
-    SmartDashboardTab.putNumber("ColorSensor","Green", getColor().green);
-    SmartDashboardTab.putNumber("ColorSensor","Blue", getColor().blue);
-    SmartDashboardTab.putNumber("ColorSensor","IR", getIR());
-    SmartDashboardTab.putNumber("ColorSensor","Poximity", getProximity());
     SmartDashboardTab.putNumber("ColorSensor","Panel Color", panelColor());
     SmartDashboardTab.putBoolean("ColorSensor","Rotation Control Complete", rotationControlComplete());
     SmartDashboardTab.putNumber("ColorSensor","Semi Rotations", semiRotations);
