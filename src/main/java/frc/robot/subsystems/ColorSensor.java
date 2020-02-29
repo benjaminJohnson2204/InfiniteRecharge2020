@@ -14,8 +14,9 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.tables.IRemote;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -148,6 +149,17 @@ public class ColorSensor extends SubsystemBase {
     //SmartDashboard.putString("Color", getColorString());
   }
 
+  private void updateSmartDashboard() {
+    SmartDashboardTab.putNumber("ColorSensor","Red", getColor().red);
+    SmartDashboardTab.putNumber("ColorSensor","Green", getColor().green);
+    SmartDashboardTab.putNumber("ColorSensor","Blue", getColor().blue);
+    SmartDashboardTab.putNumber("ColorSensor","IR", getIR());
+    SmartDashboardTab.putNumber("ColorSensor","Poximity", getProximity());
+    SmartDashboardTab.putNumber("ColorSensor","Panel Color", panelColor());
+    SmartDashboardTab.putBoolean("ColorSensor","Rotation Control Complete", rotationControlComplete());
+    SmartDashboardTab.putNumber("ColorSensor","Semi Rotations", semiRotations);
+
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
