@@ -168,6 +168,7 @@ public class Indexer extends SubsystemBase {
     SmartDashboardTab.putBoolean("Indexer","Intake Sensor", getIntakeSensor());
     SmartDashboardTab.putBoolean("Indexer","Indexer Bottom Sensor", getIndexerBottomSensor());
     SmartDashboardTab.putBoolean("Indexer","Indexer Top Sensor", getIndexerTopSensor());
+    SmartDashboardTab.putNumber("Indexer", "Indexer Control Mode", controlMode);
 
   }
 
