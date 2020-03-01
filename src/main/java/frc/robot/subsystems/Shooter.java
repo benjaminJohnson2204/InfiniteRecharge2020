@@ -7,13 +7,13 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FollowerType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,10 +27,18 @@ public class Shooter extends SubsystemBase {
      *
      * @return
      */
-    public double kF = 0.0523;  // 0.054      //  Gree: 0.0475;
-    public double kP = 0.6;      //  0.4       //  0.00047
-    public double kI = 0.0;                    //  0.0000287
-    public double kD = 0.0;
+    private double kF = 0.0523;  // 0.054      //  Gree: 0.0475;
+    private double kP = 0.6;      //  0.4       //  0.00047
+    private double kI = 0.0;                    //  0.0000287
+    private double kD = 0.0;
+
+    private double kS = 0.155;
+    private double kV = 0.111;
+    private double kA = 0.02;
+
+//    private double kP = 1.91;
+//    private double kI = 0.0;
+//    private double kD = 0.0;
 
     public int kI_Zone = 100;
     public int kAllowableError = 50;
@@ -41,12 +49,19 @@ public class Shooter extends SubsystemBase {
     };
 
     public double rpmOutput;
-    public double rpmTolerance = 25.0;
+    public double rpmTolerance = 50.0;
 
     private double setpoint;
+    private boolean timerStart;
+    private double timestamp;
+    private boolean canShoot;
 
-    public Shooter() {
+    private PowerDistributionPanel m_pdp;
 
+    public PIDController flywheelController = new PIDController(kP, kI, kD);
+    public SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
+    public Shooter(PowerDistributionPanel pdp) {
         for (TalonFX outtakeMotor : outtakeMotors) {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
@@ -65,6 +80,8 @@ public class Shooter extends SubsystemBase {
         outtakeMotors[1].configClosedloopRamp(0);
         outtakeMotors[1].configOpenloopRamp(0);
 
+        m_pdp = pdp;
+
         initShuffleboard();
     }
 
@@ -80,8 +97,20 @@ public class Shooter extends SubsystemBase {
       this.setpoint = setpoint;
     }
 
+    private void updatePidRPM() {
+        if (setpoint >= 0)
+            outtakeMotors[0].set(ControlMode.Velocity, setpoint, DemandType.ArbitraryFeedForward,
+                    feedforward.calculate(setpoint / 60.0));
+        else
+            setPower(0);
+    }
+
     public double getSetpoint() {
-      return  setpoint;
+      return setpoint;
+    }
+
+    public boolean canShoot() {
+        return canShoot;
     }
 
     private void updateRPMSetpoint() {
@@ -126,7 +155,7 @@ public class Shooter extends SubsystemBase {
 //    Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
 
         SmartDashboardTab.putNumber("Shooter", "RPM Output", rpmOutput);
-        SmartDashboardTab.putNumber("Shooter", "Flywheel kF", kF);
+//        SmartDashboardTab.putNumber("Shooter", "Flywheel kF", kF);
         SmartDashboardTab.putNumber("Shooter", "Flywheel kP", kP);
         SmartDashboardTab.putNumber("Shooter", "Flywheel kI", kI);
         SmartDashboardTab.putNumber("Shooter", "Flywheel kD", kD);
@@ -140,6 +169,7 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboardTab.putNumber("Shooter", "RPM Primary", getRPM(0));
         SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
+        SmartDashboardTab.putNumber("Shooter", "Setpoint", setpoint);
         SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
 
 
@@ -161,7 +191,24 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         updateRPMSetpoint();
+//        updatePidRPM();
         updateShuffleboard();
         //updatePIDValues();
+
+        if (Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance() && !timerStart) {
+            timerStart = true;
+            timestamp = Timer.getFPGATimestamp();
+        } else if (Math.abs(getSetpoint() - getRPM(0)) > getRPMTolerance() && timerStart) {
+            timestamp = 0;
+            timerStart = false;
+        }
+
+        if(timestamp != 0) {
+            if(Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.1)
+                canShoot = true;
+            else
+                canShoot = false;
+        } else
+            canShoot = false;
     }
 }

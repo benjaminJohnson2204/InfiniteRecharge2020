@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -52,20 +53,21 @@ import static java.util.Map.entry;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
+    private final PowerDistributionPanel pdp = new PowerDistributionPanel();
+
     private final Climber m_climber = new Climber();
-    ;
-    private final DriveTrain m_driveTrain = new DriveTrain();
+    private final DriveTrain m_driveTrain = new DriveTrain(pdp);
     private final Intake m_intake = new Intake();
-    private final Shooter m_shooter = new Shooter();
+    private final Shooter m_shooter = new Shooter(pdp);
     private final Skyhook m_skyhook = new Skyhook();
     private final Turret m_turret = new Turret(m_driveTrain);
     private final Vision m_vision = new Vision();
-    public final Indexer m_indexer = new Indexer();
+    private final Indexer m_indexer = new Indexer();
     private final LED m_led = new LED();
+    private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
 
     private static boolean init = false;
 
-    private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret);
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
     static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);

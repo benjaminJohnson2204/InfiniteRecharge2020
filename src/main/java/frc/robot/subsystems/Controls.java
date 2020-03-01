@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.vitruvianlib.I2C.I2CLCD;
 
 public class Controls extends SubsystemBase {
-    private PowerDistributionPanel pdp = new PowerDistributionPanel(0);
+    private PowerDistributionPanel m_pdp;
     private DriveTrain m_driveTrain;
     private Shooter m_shooter;
     private Turret m_turret;
@@ -27,16 +27,16 @@ public class Controls extends SubsystemBase {
     /**
      * Creates a new ExampleSubsystem.
      */
-    I2CLCD LCDDisplay = new I2CLCD(I2C.Port.kOnboard, 0x27);
+    I2CLCD LCDDisplay = new I2CLCD(I2C.Port.kMXP, 0x27);
     private boolean lcdOn = true;
 
     AnalogInput PressureSensor = new AnalogInput(0);
 
-    public Controls(DriveTrain driveTrain, Shooter shooter, Turret turret) {
+    public Controls(DriveTrain driveTrain, Shooter shooter, Turret turret, PowerDistributionPanel pdp) {
         m_driveTrain = driveTrain;
         m_shooter = shooter;
         m_turret = turret;
-
+        m_pdp = pdp;
         LCDDisplay.init();
     }
 

@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -67,7 +68,9 @@ DriveTrain extends SubsystemBase {
 
   Pose2d pose = new Pose2d();
 
-  public DriveTrain() {
+  PowerDistributionPanel m_pdp;
+
+  public DriveTrain(PowerDistributionPanel pdp) {
     for (TalonFX motor : driveMotors) {
       motor.configFactoryDefault();
       motor.configVoltageCompSaturation(12);
@@ -102,6 +105,7 @@ DriveTrain extends SubsystemBase {
     driveMotors[1].configOpenloopRamp(0);
     driveMotors[3].configOpenloopRamp(0);
 
+    m_pdp = pdp;
     //initShuffleboardValues();
   }
 
@@ -159,7 +163,7 @@ DriveTrain extends SubsystemBase {
   }
 
   public void setVoltageOutput(double leftVoltage, double rightVoltage) {
-    setMotorPercentOutput(leftVoltage/12, rightVoltage/12);
+    setMotorPercentOutput(leftVoltage/m_pdp.getVoltage(), rightVoltage/ m_pdp.getVoltage());
   }
 
   private void setMotorPercentOutput(double leftOutput, double rightOutput) {
