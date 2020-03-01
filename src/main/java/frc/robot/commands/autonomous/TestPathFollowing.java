@@ -26,7 +26,7 @@ import java.util.ArrayList;
 /**
  * An example command that uses an example subsystem.
  */
-public class TestPathFollowing extends CommandBase implements Runnable {
+public class TestPathFollowing extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
   private Trajectory trajectory;
@@ -66,9 +66,6 @@ public class TestPathFollowing extends CommandBase implements Runnable {
 
     trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
 
-    m_notifier = new Notifier(this);
-    m_notifier.startPeriodic(m_period);
-
     RamseteCommand followTrajectory = new RamseteCommand(
             trajectory,
             m_driveTrain::getRobotPose,
@@ -82,11 +79,6 @@ public class TestPathFollowing extends CommandBase implements Runnable {
             m_driveTrain
     );
     CommandScheduler.getInstance().schedule(followTrajectory);
-  }
-
-  @Override
-  public void run() {
-
   }
 
   // Called once the command ends or is interrupted.

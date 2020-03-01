@@ -19,20 +19,12 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.autonomous.*;
-import frc.robot.commands.climber.ExtendClimber;
-import frc.robot.commands.climber.RetractClimber;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.*;
-import frc.robot.commands.indexer.ToggleIndexerControlMode;
 import frc.robot.commands.intake.ControlledIntake;
-import frc.robot.commands.intake.SetIntakeManual;
-import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.intake.ToggleIntakePistons;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
-import frc.robot.commands.intake.*;
-import frc.robot.commands.shooter.RapidFire;
-import frc.robot.commands.shooter.TestShooterDelayed;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -88,7 +80,10 @@ public class RobotContainer {
         ENEMY_PATH,
         CENTER_PATH,
         debug1,
-        debug2
+        debug2,
+        TEST_SEQUENTIAL_FORWARD_AUTO,
+        TEST_SEQUENTIAL_SWITCHING_AUTO,
+        TEST_SEQUENTIAL_REVERSE_AUTO
     }
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
@@ -96,15 +91,15 @@ public class RobotContainer {
     private SelectCommand m_autoCommand = new SelectCommand(
             Map.ofEntries(
                     entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
-                    entry(CommandSelector.TEST_PATH, new TestPath(m_driveTrain, m_shooter, m_indexer, m_intake)),
+                    entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
                     entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
                     entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
                     entry(CommandSelector.debug1, new ReadTrajectory(m_driveTrain, "init4Enemy1", true)),
                     entry(CommandSelector.debug2, new ReadTrajectory(m_driveTrain, "enemy1Shooting1")),
-
-                    entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret))
-
-
+                    entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+                    entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
+                    entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
+                    entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
             ),
             this::selectCommand
     );
