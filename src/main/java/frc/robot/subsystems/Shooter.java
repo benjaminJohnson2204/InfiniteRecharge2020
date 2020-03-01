@@ -58,14 +58,16 @@ public class Shooter extends SubsystemBase {
 
     private PowerDistributionPanel m_pdp;
 
-    public PIDController flywheelController = new PIDController(kP, kI, kD);
-    public SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+//    public PIDController flywheelController = new PIDController(kP, kI, kD);
+//    public SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
     public Shooter(PowerDistributionPanel pdp) {
         for (TalonFX outtakeMotor : outtakeMotors) {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
             outtakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
+            outtakeMotor.configVoltageCompSaturation(12);
+            outtakeMotor.enableVoltageCompensation(true);
         }
         outtakeMotors[0].setInverted(true);
         outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
@@ -94,19 +96,19 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setRPM(double setpoint) {
-      this.setpoint = setpoint;
+        this.setpoint = setpoint;
     }
 
-    private void updatePidRPM() {
-        if (setpoint >= 0)
-            outtakeMotors[0].set(ControlMode.Velocity, setpoint, DemandType.ArbitraryFeedForward,
-                    feedforward.calculate(setpoint / 60.0));
-        else
-            setPower(0);
-    }
+//    private void updatePidRPM() {
+//        if (setpoint >= 0)
+//            outtakeMotors[0].set(ControlMode.Velocity, setpoint, DemandType.ArbitraryFeedForward,
+//                    feedforward.calculate(setpoint / 60.0));
+//        else
+//            setPower(0);
+//    }
 
     public double getSetpoint() {
-      return setpoint;
+        return setpoint;
     }
 
     public boolean canShoot() {
@@ -203,8 +205,8 @@ public class Shooter extends SubsystemBase {
             timerStart = false;
         }
 
-        if(timestamp != 0) {
-            if(Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.1)
+        if (timestamp != 0) {
+            if (Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.1)
                 canShoot = true;
             else
                 canShoot = false;
