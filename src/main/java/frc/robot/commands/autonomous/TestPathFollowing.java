@@ -62,7 +62,7 @@ public class TestPathFollowing extends CommandBase implements Runnable {
 
     var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
 
-    trajectoryConfig.setReversed(false);
+    trajectoryConfig.setReversed(true);
 
     trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
 

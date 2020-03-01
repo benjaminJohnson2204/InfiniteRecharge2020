@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
@@ -61,25 +62,27 @@ public class Controls extends SubsystemBase {
                 "hide", "join:Shooter/Input Currents");
     }
 
+
+    public double getBatteryVoltage() {
+        return m_pdp.getVoltage();
+    }
+
     public double getPressure() {
         return PressureSensor.getAverageVoltage() * (200.0 / 5.0);
     }
 
     public String isPressureGood() {
-        if (getPressure() > 40) {
+        if (getPressure() > 40)
             return "Closed";
-        } else {
+        else
             return "Open";
-        }
     }
 
     public String isPoseGood() {
-        if (Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 &&
-                Math.abs(m_driveTrain.getHeading().getDegrees()) < 1) {
+        if (Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 && Math.abs(m_driveTrain.getHeading()) < 1)
             return "Good";
-        } else {
+        else
             return "Not Good";
-        }
     }
 
     private void updateSmartDashboard() {
