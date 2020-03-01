@@ -43,6 +43,7 @@ public class Vision extends SubsystemBase {
 		PortForwarder.add(6000, "opensight.local", 22);
 		PortForwarder.add(5800, "10.42.1.11", 5800);
 		PortForwarder.add(5801, "10.42.1.11", 5801);
+		PortForwarder.add(5805, "10.42.1.11", 5805);
 
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
