@@ -8,6 +8,7 @@
 package frc.robot.commands.controlPanel;
 
 import frc.robot.subsystems.ColorSensor;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /**
@@ -23,6 +24,7 @@ public class PositionControl extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
   double output;
+  int throttle;
   public PositionControl(ColorSensor subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -38,7 +40,12 @@ public class PositionControl extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.setOutput(0.125 * ((m_subsystem.getFMSColor() + 2) % 4 - m_subsystem.panelColor()));
+    /*if(m_subsystem.panelColor() != 0)
+      throttle = ((m_subsystem.getFMSColor() + 2) % 4 - m_subsystem.panelColor());
+    else if(throttle == 0)
+      throttle = 1;
+    m_subsystem.setOutput(0.115 * throttle);*/
+    m_subsystem.setOutput(0.085 * ((m_subsystem.getFMSColor() + 2) % 4 - m_subsystem.panelColor()));
   }
 
   // Called once the command ends or is interrupted.
@@ -50,6 +57,13 @@ public class PositionControl extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((m_subsystem.getFMSColor() + 2) % 4 == m_subsystem.panelColor());
+    boolean isColor = ((m_subsystem.getFMSColor() + 2) % 4 == m_subsystem.panelColor());
+    if(isColor){
+      Timer.delay(0.3);
+      if(isColor){
+        return true;
+      }
+    }
+    return false;
   }
 }

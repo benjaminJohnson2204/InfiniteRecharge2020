@@ -39,7 +39,7 @@ public class RotationControl extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.setOutput(1);
+    m_subsystem.setOutput(0.23);
   }
 
   // Called once the command ends or is interrupted.

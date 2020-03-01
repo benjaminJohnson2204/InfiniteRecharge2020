@@ -29,6 +29,7 @@ public class ColorSensor extends SubsystemBase {
   public boolean isColor = false;
   public boolean working = false;
   public int semiRotations = 0;
+  public int realIntervals = 0;
   private int colorID;
   public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
   public TalonSRX motor = new TalonSRX(Constants.colorWheelMotor);
@@ -60,7 +61,7 @@ public class ColorSensor extends SubsystemBase {
       if(getColor().blue * 1.25 > getColor().green && getColor().blue * 1.02 < getColor().green && getColor().blue > getColor().red * 1.89){
         return 3;
       }
-      if(getColor().red * 1.83 > getColor().green && getColor().red * 1.78 < getColor().green && getColor().red > getColor().blue * 1.86){
+      if(getColor().red * 1.83 > getColor().green && getColor().red * 1.1 < getColor().green && getColor().red > getColor().blue * 1.86){
         return 4;
       }
       else
@@ -87,11 +88,12 @@ public class ColorSensor extends SubsystemBase {
   public void resetRotationControlVars(){
     isColor = true;
     semiRotations = 0;
+    realIntervals = 0;
     colorID = panelColor();
   }
 
   public boolean rotationControlComplete(){
-    if(panelColor() == colorID && isColor == false){
+    /*if(panelColor() == colorID && isColor == false){
       isColor = true;
       semiRotations++;
     } else if(panelColor() != colorID && isColor){
@@ -100,6 +102,14 @@ public class ColorSensor extends SubsystemBase {
     if(semiRotations >= 6 && isColor == false){
       return true;
     } else
+      return false;*/
+    if(panelColor() != colorID && panelColor() != 0){
+      colorID = panelColor();
+      realIntervals++;
+    }
+    if(realIntervals > 24)
+      return true;
+    else
       return false;
   }
 
@@ -146,11 +156,13 @@ public class ColorSensor extends SubsystemBase {
     }
     SmartDashboard.putString("Panel Color", colorName);
     SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
-    SmartDashboard.putNumber("Semi-Rotations", semiRotations);
+    SmartDashboard.putNumber("Real Intervals", realIntervals);
     //SmartDashboard.putString("Color", getColorString());
     SmartDashboardTab.putNumber("ColorSensor","Panel Color", panelColor());
     SmartDashboardTab.putBoolean("ColorSensor","Rotation Control Complete", rotationControlComplete());
     SmartDashboardTab.putNumber("ColorSensor","Semi Rotations", semiRotations);
+    
+    SmartDashboard.putNumber("Thing", getFMSColor());
 
   }
   @Override
