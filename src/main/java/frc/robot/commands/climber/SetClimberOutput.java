@@ -54,7 +54,6 @@ public class SetClimberOutput extends CommandBase {
 //      SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
 
       if (direction != 0) {
-        timestamp = Timer.getFPGATimestamp();
         if (direction == 1 && !currentDirection) {
           movable = false;
           switchDirection = true;
@@ -71,6 +70,7 @@ public class SetClimberOutput extends CommandBase {
         double output = (m_climber.getClimberPosition() < -512) && (input < 0) ? 0 : input;
         m_climber.setClimberOutput(output);
       } else {
+        timestamp = Timer.getFPGATimestamp();
         if(switchDirection)
           climberReleaseSequence();
         else
