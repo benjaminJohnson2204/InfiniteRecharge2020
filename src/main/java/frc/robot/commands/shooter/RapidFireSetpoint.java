@@ -48,20 +48,11 @@ public class RapidFireSetpoint extends CommandBase {
   @Override
   public void execute() {
 
-    if (Math.abs(m_shooter.getSetpoint() - m_shooter.getRPM(0)) < m_shooter.getRPMTolerance() && !timerStart) {
-      timerStart = true;
-      timestamp = Timer.getFPGATimestamp();
-    } else if (Math.abs(m_shooter.getSetpoint() - m_shooter.getRPM(0)) > m_shooter.getRPMTolerance() && timerStart) {
-      timestamp = 0;
-      timerStart = false;
+    if(m_shooter.canShoot()) {
+      m_indexer.setIndexerOutput(1);
+      m_indexer.setKickerOutput(1);
+      m_intake.setIntakePercentOutput(1);
     }
-
-    if (timestamp != 0 || Timer.getFPGATimestamp() - startTime > 3)
-      if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1 || Timer.getFPGATimestamp() - startTime > 2) {
-        m_indexer.setIndexerOutput(1);
-        m_indexer.setKickerOutput(1);
-        m_intake.setIntakePercentOutput(1);
-      }
   }
 
   // Called once the command ends or is interrupted.

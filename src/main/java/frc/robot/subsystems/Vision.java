@@ -40,7 +40,7 @@ public class Vision extends SubsystemBase {
 	    CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
 
 	    // TODO: What port does opensight use?
-		PortForwarder.add(6000, "opensight.local", 80);
+		PortForwarder.add(6000, "opensight.local", 22);
 		PortForwarder.add(5800, "10.42.1.11", 5800);
 		PortForwarder.add(5801, "10.42.1.11", 5801);
 

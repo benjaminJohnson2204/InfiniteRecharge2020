@@ -68,7 +68,8 @@ public class SetClimberOutput extends CommandBase {
 //        SmartDashboardTab.putString("Climber", "SetClimberOutput", "Manual Control");
 //        SmartDashboardTab.putNumber("Climber", "Input", input);
 
-        double output = (m_climber.getClimberPosition() < -512) && (input < 0) ? 0 : input;
+//        double output = (m_climber.getClimberPosition() < -512) && (input < 0) ? 0 : input;
+        double output = input;
         m_climber.setClimberOutput(output);
       } else {
         if(switchDirection)
