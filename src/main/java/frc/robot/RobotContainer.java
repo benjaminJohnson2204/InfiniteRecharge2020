@@ -199,7 +199,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return m_autoCommand;
+        //return m_autoCommand;
+        return new WaitCommand(0);
     }
 
     public void robotPeriodic() {
