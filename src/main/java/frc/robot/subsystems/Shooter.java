@@ -27,8 +27,8 @@ public class Shooter extends SubsystemBase {
      *
      * @return
      */
-    private double kF = 0.048;  // 0.054      //  Gree: 0.0475;
-    private double kP = 0.08;      //  0.4       //  0.00047
+    private double kF = 0.0523;  // 0.054      //  Gree: 0.0475;
+    private double kP = 0.6;      //  0.4       //  0.00047
     private double kI = 0.0;                    //  0.0000287
     private double kD = 0.0;
 
@@ -66,8 +66,8 @@ public class Shooter extends SubsystemBase {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
             outtakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
-            outtakeMotor.configVoltageCompSaturation(12);
-            outtakeMotor.enableVoltageCompensation(true);
+//            outtakeMotor.configVoltageCompSaturation(12);
+//            outtakeMotor.enableVoltageCompensation(true);
         }
         outtakeMotors[0].setInverted(true);
         outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);

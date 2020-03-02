@@ -31,7 +31,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     private final Climber m_climber;
     private Joystick m_controller;
     double setpoint;
-    private final double deadZone = 0.2;
+    private final double deadZone = 0.5;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
 

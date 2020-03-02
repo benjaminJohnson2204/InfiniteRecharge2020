@@ -160,16 +160,17 @@ public class RobotContainer {
         leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
         leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
+        rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
 //    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
-        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, 3500));                          // A - Set RPM Close
-        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, 3700));                          // B - Set RPM Medium
+        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3550));                          // A - Set RPM Close
+        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3700));                          // B - Set RPM Medium
         xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
-        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, 3900));                          // Y - Set RPM Far
+        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
 
         //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
         xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
@@ -178,6 +179,7 @@ public class RobotContainer {
         //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
         //xBoxButtons[8].whenPressed(new Command()); //left stick
         xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
+
 
         xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
         //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
