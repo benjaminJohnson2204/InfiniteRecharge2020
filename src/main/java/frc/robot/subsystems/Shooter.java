@@ -78,7 +78,7 @@ public class Shooter extends SubsystemBase {
         outtakeMotors[0].config_IntegralZone(0, kI_Zone);
         outtakeMotors[0].config_kD(0, kD);
         outtakeMotors[0].configAllowableClosedloopError(0, kAllowableError);
-        outtakeMotors[0].configClosedloopRamp(0.1);
+        outtakeMotors[0].configClosedloopRamp(0.2);
         outtakeMotors[1].configClosedloopRamp(0);
         outtakeMotors[1].configOpenloopRamp(0);
 

@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.autonomous.*;
 import frc.robot.commands.autonomous.routines.*;
-import frc.robot.commands.climber.ExtendClimber;
-import frc.robot.commands.climber.RetractClimber;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.intake.ControlledIntake;
@@ -32,7 +30,6 @@ import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
-import frc.robot.commands.autonomous.TestPathFollowing;
 import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
@@ -104,24 +101,25 @@ public class RobotContainer {
 
         SmartDashboard.putData(m_autoChooser);
 
-        initializeSubsystems();
-        // Configure the button bindings
-        configureButtonBindings();
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
-//                        entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
-//                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
-//                        entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-//                        entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-//                        entry(CommandSelector.debug1, new ReadTrajectory(m_driveTrain, "init4Enemy1", true)),
-//                        entry(CommandSelector.debug2, new ReadTrajectory(m_driveTrain, "enemy1Shooting1")),
-//                        entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-//                        entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
-//                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
-//                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
+                        entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
+                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
+                        entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_intake, m_indexer, m_shooter, m_turret, m_vision)),
+                        entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+                        entry(CommandSelector.debug1, new ReadTrajectoryOld(m_driveTrain, "init4Enemy1", true)),
+                        entry(CommandSelector.debug2, new ReadTrajectoryOld(m_driveTrain, "enemy1Shooting1")),
+                        entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+                        entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
+                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
+                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
                 ),
                 this::selectCommand
         );
+
+        initializeSubsystems();
+        // Configure the button bindings
+        configureButtonBindings();
     }
 
     public void initializeSubsystems() {
@@ -184,7 +182,6 @@ public class RobotContainer {
         //xBoxButtons[8].whenPressed(new Command()); //left stick
         xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
 
-
         xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
         //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     }
@@ -204,6 +201,11 @@ public class RobotContainer {
 //        return new WaitCommand(0);
     }
 
+    public void disabledInit() {
+        setInitializationState(true);
+        m_driveTrain.setDriveTrainNeutralMode(2);
+    }
+
     public void robotPeriodic() {
 
     }
@@ -211,6 +213,7 @@ public class RobotContainer {
     public void teleOpInit() {
         m_driveTrain.resetEncoderCounts();
         m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+        m_driveTrain.setDriveTrainNeutralMode(0);
     }
 
     public void teleOpPeriodic() {

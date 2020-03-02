@@ -29,7 +29,7 @@ import java.util.ArrayList;
 /**
  * An example command that uses an example subsystem.
  */
-public class ReadTrajectory extends CommandBase {
+public class ReadTrajectoryOld extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveTrain m_driveTrain;
     private Trajectory trajectory;
@@ -44,7 +44,7 @@ public class ReadTrajectory extends CommandBase {
      * @param driveTrain The subsystem used by this command.
      */
 
-    public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
+    public ReadTrajectoryOld(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
         m_driveTrain = driveTrain;
         m_isInverted = isInverted;
         m_filename = filename;
@@ -53,7 +53,7 @@ public class ReadTrajectory extends CommandBase {
         addRequirements(driveTrain);
     }
 
-    public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted) {
+    public ReadTrajectoryOld(DriveTrain driveTrain, String filename, boolean isInverted) {
         m_driveTrain = driveTrain;
         m_isInverted = isInverted;
         m_filename = filename;
@@ -61,7 +61,7 @@ public class ReadTrajectory extends CommandBase {
         addRequirements(driveTrain);
     }
 
-    public ReadTrajectory(DriveTrain driveTrain, String filename) {
+    public ReadTrajectoryOld(DriveTrain driveTrain, String filename) {
         m_driveTrain = driveTrain;
         m_filename = filename;
         // Use addRequirements() here to declare subsystem dependencies.

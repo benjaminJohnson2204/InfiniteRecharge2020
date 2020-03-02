@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
 //    badLog.startLogger();
-    RobotContainer.setInitializationState(true);
+    m_robotContainer.disabledInit();
   }
 
   @Override

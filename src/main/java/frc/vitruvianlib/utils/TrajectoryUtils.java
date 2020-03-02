@@ -21,28 +21,30 @@ public class TrajectoryUtils {
         String fileLine;
         String[] fields;
         ArrayList<Pose2d> trajectoryPoints = new ArrayList<>();
-
+        String fullpath = "/home/lvuser/deploy/Trajectories/" + filename + ".csv";
         try {
-            reader = new BufferedReader(new FileReader(filename));
-            while((fileLine = reader.readLine()) != null) {
+            reader = new BufferedReader(new FileReader(fullpath));
+            while ((fileLine = reader.readLine()) != null) {
                 fields = fileLine.split(",");
                 trajectoryPoints.add(new Pose2d(Double.parseDouble(fields[0]),
-                                                Double.parseDouble(fields[1]),
-                                                Rotation2d.fromDegrees(Double.parseDouble(fields[2]))));
+                        Double.parseDouble(fields[1]),
+                        Rotation2d.fromDegrees(Double.parseDouble(fields[2]))));
 
             }
         } catch (FileNotFoundException e) {
+            System.out.println("Error: Could not find file");
             e.printStackTrace();
         } catch (IOException e) {
+            System.out.println("Error: Could not read file");
             e.printStackTrace();
         }
-        return  trajectoryPoints;
+        return trajectoryPoints;
     }
 
     public static VitruvianRamseteCommand generateRamseteCommand(DriveTrain driveTrain, ArrayList<Pose2d> path, TrajectoryConfig config) {
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(path, config);
 
-        VitruvianRamseteCommand followTrajectory = new VitruvianRamseteCommand(
+        VitruvianRamseteCommand ramseteCommand = new VitruvianRamseteCommand(
                 trajectory,
                 driveTrain::getRobotPose,
                 new RamseteController(),
@@ -56,6 +58,6 @@ public class TrajectoryUtils {
                 path,
                 config
         );
-        return followTrajectory;
+        return ramseteCommand;
     }
 }
