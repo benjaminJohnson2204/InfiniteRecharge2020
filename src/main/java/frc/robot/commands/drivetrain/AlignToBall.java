@@ -7,15 +7,18 @@
 
 package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
+
 import java.util.function.DoubleSupplier;
 
 public class AlignToBall extends CommandBase {
 
-    private final double P_TERM = 0.03;
+    private final double P_TERM = 0.05;
     private final double I_TERM = 0;
     private final double D_TERM = 0;
 
@@ -41,15 +44,13 @@ public class AlignToBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (!vision.hasPowerCell()) {
-            return;
-        }
+        if (vision.hasPowerCell()) {
+            double setpoint = driveTrain.getAngle() + vision.getPowerCellX();
 
-        pid.setSetpoint(vision.getPowerCellX());
+            double leftVoltage = throttle.getAsDouble() * 12.0 + pid.calculate(driveTrain.getAngle(), setpoint);
+            double rightVoltage = throttle.getAsDouble() * 12.0 - pid.calculate(driveTrain.getAngle(), setpoint);
 
-        while (!pid.atSetpoint()) {
-            double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
-            driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
+            driveTrain.setVoltageOutput(leftVoltage, rightVoltage);
         }
     }
 

@@ -7,10 +7,6 @@
 
 package frc.robot.commands.turret;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
@@ -23,28 +19,30 @@ import java.util.function.DoubleSupplier;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetTurretSetpointFieldAbsolute extends CommandBase {
+public class SetTurretSetpointFieldAbsoluteOld extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Turret m_turret;
     private final DriveTrain m_driveTrain;
     private final Vision m_vision;
     private final Climber m_climber;
-    private Joystick m_controller;
+    private DoubleSupplier m_xInput;
+    private DoubleSupplier m_yInput;
     double setpoint;
-    private final double deadZone = 0.5;
+    private final double deadZone = 0.2;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
 
     /**
      * Creates a new ExampleCommand.
      */
-    public SetTurretSetpointFieldAbsolute(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSubsystem,
-                                          Climber climber, Joystick controller) {
+    public SetTurretSetpointFieldAbsoluteOld(Turret turretSubsystem, DriveTrain driveTrainSubsystem, Vision visionSubsystem,
+                                             Climber climber, DoubleSupplier xInput, DoubleSupplier yInput) {
         m_turret = turretSubsystem;
         m_driveTrain = driveTrainSubsystem;
         m_vision = visionSubsystem;
         m_climber = climber;
-        m_controller = controller;
+        m_xInput = xInput;
+        m_yInput = yInput;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(turretSubsystem);
     }
@@ -66,22 +64,20 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 
         if (!m_climber.getClimbState()) {
             if (m_turret.getControlMode() == 1) {
-                // TODO: Add fine adjustment mode when shooting?
-                if ((Math.pow(m_controller.getRawAxis(0), 2) + Math.pow(m_controller.getRawAxis(1), 2)) >= Math.pow(deadZone, 2)) {
+                if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
                     m_vision.ledsOn();
                     m_vision.setLastValidTargetTime();
                     joystickMoved = true;
-
                     if (!directionTripped) {
-                        direction = m_controller.getRawAxis(1) < 0;
+                        direction = m_yInput.getAsDouble() < 0;
                         directionTripped = true;
                     }
 
                     if (direction) {
-                        if (m_controller.getRawAxis(0) >= 0)
-                            setpoint = -Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+                        if (m_xInput.getAsDouble() >= 0)
+                            setpoint = -Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
                         else
-                            setpoint = 360 - Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+                            setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
                         if (setpoint > m_turret.getMaxAngle()) {
                             setpoint -= 360;
@@ -90,10 +86,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             direction = false;
                         }
                     } else {
-                        if (m_controller.getRawAxis(0) < 0)
-                            setpoint = Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+                        if (m_xInput.getAsDouble() < 0)
+                            setpoint = Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
                         else
-                            setpoint = -360 + Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+                            setpoint = -360 + Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
                         if (setpoint < m_turret.getMinAngle()) {
                             direction = true;
@@ -102,14 +98,9 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                                 setpoint = m_turret.getMaxAngle();
                         }
                     }
-                    if (m_vision.getValidTarget()) {
-                        m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
-                        m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
-                    }
                 } else if (m_vision.getValidTarget() && !joystickMoved) {
                     usingVisionSetpoint = true;
                     if (!turning) {
-                        m_vision.ledsOn();
                         setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
                         if (setpoint > m_turret.getMaxAngle()) {
@@ -124,7 +115,6 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             turning = true;
                         }
                     } else {
-                        m_vision.ledsOff();
                         if (m_turret.atTarget())
                             turning = false;
                     }
@@ -134,14 +124,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                 } else {
                     directionTripped = false;
                     joystickMoved = false;
-                    m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-                    m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
                 }
 
                 m_turret.setRobotCentricSetpoint(setpoint);
-//                m_turret.setFieldCentricSetpoint(setpoint);
             } else {
-                m_turret.setPercentOutput(m_controller.getRawAxis(0) * 0.2); //manual mode
+                m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode
             }
         }
     }

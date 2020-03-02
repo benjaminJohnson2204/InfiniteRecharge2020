@@ -30,99 +30,106 @@ import java.util.ArrayList;
  * An example command that uses an example subsystem.
  */
 public class ReadTrajectory extends CommandBase {
-  @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final DriveTrain m_driveTrain;
-  private Trajectory trajectory;
-  private String m_filename;
-  private boolean m_isInverted = false;
-  private DifferentialDriveKinematicsConstraint m_kinematicsConstraint;
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param driveTrain The subsystem used by this command.
-   */
+    @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
+    private final DriveTrain m_driveTrain;
+    private Trajectory trajectory;
+    private String m_filename;
+    private boolean m_isInverted = false;
+    private DifferentialDriveKinematicsConstraint m_kinematicsConstraint;
+    ArrayList<Pose2d> trajectoryWaypoints = new ArrayList<Pose2d>();
 
-  public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
-    m_driveTrain = driveTrain;
-    m_isInverted = isInverted;
-    m_filename = filename;
-    m_kinematicsConstraint = kinematicsConstraint;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
-  }
+    /**
+     * Creates a new ExampleCommand.
+     *
+     * @param driveTrain The subsystem used by this command.
+     */
 
-  public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted) {
-    m_driveTrain = driveTrain;
-    m_isInverted = isInverted;
-    m_filename = filename;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
-  }
-
-  public ReadTrajectory(DriveTrain driveTrain, String filename) {
-    m_driveTrain = driveTrain;
-    m_filename = filename;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    // Start position for all trajectories will be where the robot is currently
-    var startPosition = new Pose2d(m_driveTrain.getRobotPose().getTranslation().getX(),
-                                   m_driveTrain.getRobotPose().getTranslation().getY(),
-                                   Rotation2d.fromDegrees(m_driveTrain.navX.getAngle()));
-
-    String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename;
-    var fileTrajectory = ReadCsvTrajectory.readCsv(filePath);
-
-    var trajectoryWaypoints = new ArrayList<Pose2d>();
-    trajectoryWaypoints.add(startPosition);
-
-    // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
-    for(Pose2d point : fileTrajectory) {
-      if(point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0)
-        continue;
-
-      trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + startPosition.getTranslation().getX(),
-                                         startPosition.getTranslation().getY() + startPosition.getTranslation().getY(),
-                                            point.getRotation()));
+    public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
+        m_driveTrain = driveTrain;
+        m_isInverted = isInverted;
+        m_filename = filename;
+        m_kinematicsConstraint = kinematicsConstraint;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(driveTrain);
     }
 
-    var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
+    public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted) {
+        m_driveTrain = driveTrain;
+        m_isInverted = isInverted;
+        m_filename = filename;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(driveTrain);
+    }
 
-    if(m_kinematicsConstraint != null)
-      trajectoryConfig.addConstraint(m_kinematicsConstraint);
+    public ReadTrajectory(DriveTrain driveTrain, String filename) {
+        m_driveTrain = driveTrain;
+        m_filename = filename;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(driveTrain);
+    }
 
-    trajectoryConfig.setReversed(m_isInverted);
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        trajectoryWaypoints = new ArrayList<Pose2d>();
+        m_driveTrain.navX.reset();
+        m_driveTrain.setDriveTrainNeutralMode(1);
+        m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+        m_driveTrain.resetEncoderCounts();
+        // Start position for all trajectories will be where the robot is currently
+        var startPosition = new Pose2d(m_driveTrain.getRobotPose().getTranslation().getX(),
+                m_driveTrain.getRobotPose().getTranslation().getY(),
+                Rotation2d.fromDegrees(m_driveTrain.navX.getAngle()));
 
-    trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
+        trajectoryWaypoints.add(startPosition);
 
-    RamseteCommand followTrajectory = new RamseteCommand(
-            trajectory,
-            m_driveTrain::getRobotPose,
-            new RamseteController(),
-            m_driveTrain.getFeedforward(),
-            m_driveTrain.getDriveTrainKinematics(),
-            m_driveTrain::getSpeeds,
-            m_driveTrain.getLeftPIDController(),
-            m_driveTrain.getRightPIDController(),
-            m_driveTrain::setVoltageOutput,
-            m_driveTrain
-    );
-    CommandScheduler.getInstance().schedule(followTrajectory);
-  }
+        String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename;
+        var fileTrajectory = ReadCsvTrajectory.readCsv(filePath);
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
+        // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
+        for (Pose2d point : fileTrajectory) {
+//      System.out.printf("X: %.2f\tY: %.2f\n", point.getTranslation().getX(), point.getTranslation().getY());
+            if (point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0)
+                continue;
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+            trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + startPosition.getTranslation().getX(),
+                    startPosition.getTranslation().getY() + startPosition.getTranslation().getY(),
+                    point.getRotation()));
+        }
+
+        var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
+
+        if (m_kinematicsConstraint != null)
+            trajectoryConfig.addConstraint(m_kinematicsConstraint);
+
+        trajectoryConfig.setReversed(m_isInverted);
+
+        trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
+
+        RamseteCommand followTrajectory = new RamseteCommand(
+                trajectory,
+                m_driveTrain::getRobotPose,
+                new RamseteController(),
+                m_driveTrain.getFeedforward(),
+                m_driveTrain.getDriveTrainKinematics(),
+                m_driveTrain::getSpeeds,
+                m_driveTrain.getLeftPIDController(),
+                m_driveTrain.getRightPIDController(),
+                m_driveTrain::setVoltageOutput,
+                m_driveTrain
+        );
+        CommandScheduler.getInstance().schedule(followTrajectory);
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 
 }

@@ -18,8 +18,8 @@ public class ReadCsvTrajectory {
             reader = new BufferedReader(new FileReader(filename));
             while((fileLine = reader.readLine()) != null) {
                 fields = fileLine.split(",");
-                trajectoryPoints.add(new Pose2d(Units.feetToMeters(Double.parseDouble(fields[0])),
-                                                Units.feetToMeters(Double.parseDouble(fields[1])),
+                trajectoryPoints.add(new Pose2d(Double.parseDouble(fields[0]),
+                                                Double.parseDouble(fields[1]),
                                                 Rotation2d.fromDegrees(Double.parseDouble(fields[2]))));
 
             }

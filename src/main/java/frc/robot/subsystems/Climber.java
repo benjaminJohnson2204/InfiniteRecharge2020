@@ -57,8 +57,11 @@ public class Climber extends SubsystemBase {
 
   public void setClimberOutput(double value) {
     // Prevent backdrive
-    if(!(climbMotor.getSelectedSensorPosition() < - 1024))
-      climbMotor.set(ControlMode.PercentOutput, value);
+    climbMotor.set(ControlMode.PercentOutput, value);
+  }
+  
+  public int getClimberPosition() {
+	  return climbMotor.getSelectedSensorPosition();
   }
 
   public void setClimberPosition(double position) {
@@ -75,7 +78,7 @@ public class Climber extends SubsystemBase {
   }
 
   private void updateShuffleboard(){
-    SmartDashboard.putBoolean("Climb Mode", climbState);
+    SmartDashboard.putBoolean("Climb Mode", getClimbState());
 
     SmartDashboardTab.putNumber("Climber", "Position", encoderUnitsToInches(climbMotor.getSelectedSensorPosition()));
     SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
@@ -88,6 +91,6 @@ public class Climber extends SubsystemBase {
   }
   @Override
   public void periodic() {
-    updateShuffleboard();
+    //updateShuffleboard();
   }
 }

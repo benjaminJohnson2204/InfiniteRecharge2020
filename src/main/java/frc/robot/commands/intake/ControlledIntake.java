@@ -82,8 +82,14 @@ public class ControlledIntake extends CommandBase {
         m_intake.setIntakePercentOutput(0.9);
         m_indexer.setKickerOutput(-0.4);
         if (m_indexer.getIndexerBottomSensor() && !intaking) {
-          indexerTimestamp = Timer.getFPGATimestamp();
+          //indexerTimestamp = Timer.getFPGATimestamp();
           intaking = true;
+          m_indexer.setIndexerOutput(0.95);
+//          m_indexer.setRPM(indexRPM);
+        } else {
+          intaking = false;
+          m_indexer.setIndexerOutput(0);
+//          m_indexer.setRPM(0);
         }
 
 //        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && !haveFourTripped) {
@@ -102,7 +108,7 @@ public class ControlledIntake extends CommandBase {
         break;
     }
 
-    updateTimedRollers();
+    //updateTimedRollers();
   }
 
   private void updateTimedRollers() {

@@ -1,5 +1,6 @@
 package frc.robot.commands.turret;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Turret;
 
@@ -7,6 +8,7 @@ public class SetTurretRobotRelativeAngle extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Turret m_turret;
     private double m_setpoint;
+    private double startTime;
     /**
      * Creates a new ExampleCommand.
      *
@@ -22,6 +24,7 @@ public class SetTurretRobotRelativeAngle extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        startTime = Timer.getFPGATimestamp();
         m_turret.setRobotCentricSetpoint(m_setpoint);
     }
 
@@ -38,6 +41,6 @@ public class SetTurretRobotRelativeAngle extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_turret.getTurretAngle() - m_setpoint) < 1;
+        return Math.abs(m_turret.getTurretAngle() - m_setpoint) < 1 || ((Timer.getFPGATimestamp() - startTime) > 2);
     }
 }
