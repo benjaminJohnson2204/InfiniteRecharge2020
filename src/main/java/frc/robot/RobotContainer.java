@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.autonomous.*;
+import frc.robot.commands.autonomous.routines.*;
+import frc.robot.commands.climber.ExtendClimber;
+import frc.robot.commands.climber.RetractClimber;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.intake.ControlledIntake;
@@ -51,14 +54,14 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-    private final Climber m_climber = new Climber();
     private final DriveTrain m_driveTrain = new DriveTrain(pdp);
     private final Intake m_intake = new Intake();
-    private final Shooter m_shooter = new Shooter(pdp);
-    private final Skyhook m_skyhook = new Skyhook();
-    private final Turret m_turret = new Turret(m_driveTrain);
-    private final Vision m_vision = new Vision();
     private final Indexer m_indexer = new Indexer();
+    private final Turret m_turret = new Turret(m_driveTrain);
+    private final Shooter m_shooter = new Shooter(pdp);
+    private final Vision m_vision = new Vision();
+    private final Climber m_climber = new Climber();
+    private final Skyhook m_skyhook = new Skyhook();
     private final LED m_led = new LED();
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
 
@@ -88,21 +91,7 @@ public class RobotContainer {
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
 
-    private SelectCommand m_autoCommand = new SelectCommand(
-            Map.ofEntries(
-                    entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
-                    entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
-                    entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-                    entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-                    entry(CommandSelector.debug1, new ReadTrajectory(m_driveTrain, "init4Enemy1", true)),
-                    entry(CommandSelector.debug2, new ReadTrajectory(m_driveTrain, "enemy1Shooting1")),
-                    entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-                    entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
-                    entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
-                    entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
-            ),
-            this::selectCommand
-    );
+    private SelectCommand m_autoCommand;
 
     /**
      * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -118,6 +107,21 @@ public class RobotContainer {
         initializeSubsystems();
         // Configure the button bindings
         configureButtonBindings();
+        m_autoCommand = new SelectCommand(
+                Map.ofEntries(
+//                        entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
+//                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
+//                        entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+//                        entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+//                        entry(CommandSelector.debug1, new ReadTrajectory(m_driveTrain, "init4Enemy1", true)),
+//                        entry(CommandSelector.debug2, new ReadTrajectory(m_driveTrain, "enemy1Shooting1")),
+//                        entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+//                        entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
+//                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
+//                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
+                ),
+                this::selectCommand
+        );
     }
 
     public void initializeSubsystems() {
@@ -196,8 +200,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        //return m_autoCommand;
-        return new WaitCommand(0);
+        return m_autoCommand;
+//        return new WaitCommand(0);
     }
 
     public void robotPeriodic() {
