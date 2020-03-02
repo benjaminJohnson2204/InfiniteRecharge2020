@@ -10,7 +10,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.orchestra.SetSong;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.climber.EnableClimbMode;
@@ -25,6 +30,7 @@ import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.subsystems.*;
 import frc.robot.constants.Constants;
 import frc.vitruvianlib.utils.JoystickWrapper;
+import frc.vitruvianlib.utils.XBoxTrigger;
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -37,15 +43,16 @@ public class RobotContainer {
     private final PowerDistributionPanel pdp = new PowerDistributionPanel();
 
     private final Climber m_climber = new Climber();
-    private final DriveTrain m_driveTrain = new DriveTrain(pdp);
+//    private final DriveTrain m_driveTrain = new DriveTrain(pdp);
     private final Intake m_intake = new Intake();
-    private final Shooter m_shooter = new Shooter(pdp);
+//    private final Shooter m_shooter = new Shooter(pdp);
     private final Skyhook m_skyhook = new Skyhook();
-    private final Turret m_turret = new Turret(m_driveTrain);
+//    private final Turret m_turret = new Turret(m_driveTrain);
     private final Vision m_vision = new Vision();
     private final Indexer m_indexer = new Indexer();
     private final LED m_led = new LED();
-    private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
+    private final Orchestra1 m_orchestra = new Orchestra1();
+//    private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
 
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
@@ -71,34 +78,34 @@ public class RobotContainer {
         TEST_SEQUENTIAL_REVERSE_AUTO
     }
 
-    SendableChooser<Integer> m_autoChooser = new SendableChooser();
-
-    private SelectCommand m_autoCommand = new SelectCommand(
-            Map.ofEntries(
-                    entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
-                    entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
-                    entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-                    entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-                    entry(CommandSelector.debug1, new ReadTrajectory(m_driveTrain, "init4Enemy1", true)),
-                    entry(CommandSelector.debug2, new ReadTrajectory(m_driveTrain, "enemy1Shooting1")),
-                    entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-                    entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
-                    entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
-                    entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
-            ),
-            this::selectCommand
-    );
+//    SendableChooser<Integer> m_autoChooser = new SendableChooser();
+//
+//    private SelectCommand m_autoCommand = new SelectCommand(
+//            Map.ofEntries(
+//                    entry(CommandSelector.DRIVE_STRAIGHT, new TestPathFollowing(m_driveTrain)),
+//                    entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
+//                    entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+//                    entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+//                    entry(CommandSelector.debug1, new ReadTrajectory(m_driveTrain, "init4Enemy1", true)),
+//                    entry(CommandSelector.debug2, new ReadTrajectory(m_driveTrain, "enemy1Shooting1")),
+//                    entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+//                    entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
+//                    entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
+//                    entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
+//            ),
+//            this::selectCommand
+//    );
 
     /**
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-        for (Enum commandEnum : CommandSelector.values())
-            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
-                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
-
-        SmartDashboard.putData(m_autoChooser);
+//        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
+//        for (Enum commandEnum : CommandSelector.values())
+//            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+//                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
+//
+//        SmartDashboard.putData(m_autoChooser);
 
         initializeSubsystems();
         // Configure the button bindings
@@ -106,18 +113,18 @@ public class RobotContainer {
     }
 
     public void initializeSubsystems() {
-        m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
-                () -> leftJoystick.getRawAxis(1),
-                () -> rightJoystick.getRawAxis(0)));
-
-        m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_controls));
-
-        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber, xBoxController));
-
-//    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
-
-        m_climber.setDefaultCommand(new SetClimberOutput(m_climber, xBoxController));
-        m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> rightJoystick.getRawAxis(0)));
+//        m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
+//                () -> leftJoystick.getRawAxis(1),
+//                () -> rightJoystick.getRawAxis(0)));
+//
+//        m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_controls));
+//
+//        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber, xBoxController));
+//
+////    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
+//
+//        m_climber.setDefaultCommand(new SetClimberOutput(m_climber, xBoxController));
+//        m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> rightJoystick.getRawAxis(0)));
     }
 
     /**
@@ -142,32 +149,32 @@ public class RobotContainer {
         xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
         xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-        leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
-        leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
+//        leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, true));   // Top Button - Switch to high gear
+//        leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, false));  // Bottom Button - Switch to low gear
 
-        rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
+//        rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
 //    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-        xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
-        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
-
-        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3550));                          // A - Set RPM Close
-        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3700));                          // B - Set RPM Medium
-        xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
-        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
+//        xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+//        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+//
+//        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3550));                          // A - Set RPM Close
+//        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3700));                          // B - Set RPM Medium
+//        xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
+//        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
 
         //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
-        xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
-
-        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
-        //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
-        //xBoxButtons[8].whenPressed(new Command()); //left stick
-        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
-
-
-        xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
-        //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
+//        xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
+//
+//        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
+//        //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
+////        //xBoxButtons[8].whenPressed(new Command()); //left stick
+////        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
+//
+//
+//        xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+//        //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
     }
 
     /**
@@ -176,9 +183,10 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
 
-    private CommandSelector selectCommand() {
-        return CommandSelector.values()[m_autoChooser.getSelected()];
-    }
+//    private CommandSelector selectCommand() {
+////        return CommandSelector.values()[m_autoChooser.getSelected()];
+//        return true;
+//    }
 
     public Command getAutonomousCommand() {
         //return m_autoCommand;
@@ -190,8 +198,8 @@ public class RobotContainer {
     }
 
     public void teleOpInit() {
-        m_driveTrain.resetEncoderCounts();
-        m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+//        m_driveTrain.resetEncoderCounts();
+//        m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     }
 
     public void teleOpPeriodic() {
@@ -213,6 +221,6 @@ public class RobotContainer {
     }
 
     public void initalizeLogTopics() {
-        m_controls.initLogging();
+//        m_controls.initLogging();
     }
 }
