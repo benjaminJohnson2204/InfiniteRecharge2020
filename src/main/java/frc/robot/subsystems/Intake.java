@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.constants.Constants;
@@ -25,11 +26,12 @@ public class Intake extends SubsystemBase {
   private double allowableError = 50;
   private double maxVel = 5880;
   private double maxAccel = 58800;
-  private double gearRatio = 1.0/3.0;
+  private double gearRatio = 1.0 / 3.0;
+  private boolean intaking = false;
 
   private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
-  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
-  private CANPIDController canPidController = intakeMotor.getPIDController();
+//  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
+//  private CANPIDController canPidController = intakeMotor.getPIDController();
 
   DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
 
@@ -38,17 +40,24 @@ public class Intake extends SubsystemBase {
     intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     intakeMotor.setInverted(false);
 
-    canPidController.setFF(kFF);
-    canPidController.setP(kP);
-    canPidController.setI(kI);
-    canPidController.setIZone(kI_Zone);
-    canPidController.setD(kD);
-    canPidController.setSmartMotionMaxVelocity(maxVel, 0);
-    canPidController.setSmartMotionMaxAccel(maxAccel, 0);
-    canPidController.setSmartMotionAllowedClosedLoopError(allowableError, 0);
+//    canPidController.setFF(kFF);
+//    canPidController.setP(kP);
+//    canPidController.setI(kI);
+//    canPidController.setIZone(kI_Zone);
+//    canPidController.setD(kD);
+//    canPidController.setSmartMotionMaxVelocity(maxVel, 0);
+//    canPidController.setSmartMotionMaxAccel(maxAccel, 0);
+//    canPidController.setSmartMotionAllowedClosedLoopError(allowableError, 0);
   }
 
-  public boolean getintakePistonExtendStatus(){
+  public boolean getIntakingState() {
+    return intaking;
+  }
+
+  public void setIntakingState(boolean state) {
+    intaking = state;
+  }
+  public boolean getIntakePistonExtendStatus(){
     return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
   }
 
@@ -60,20 +69,25 @@ public class Intake extends SubsystemBase {
     intakeMotor.set(value);
   }
 
-  public double getRPM(){
-    return intakeEncoder.getVelocity() * gearRatio;
-  }
-
-  public void setRPM(double rpm){
-    double setpoint =  rpm / gearRatio;
-    canPidController.setReference(setpoint, ControlType.kSmartVelocity);
-  }
+//  public double getRPM(){
+//    return intakeEncoder.getVelocity() * gearRatio;
+//  }
+//
+//  public void setDirectRPM(double rpm){
+//    canPidController.setReference(rpm, ControlType.kSmartVelocity);
+//  }
+//
+//  public void setRPM(double rpm){
+//    double setpoint =  rpm / gearRatio;
+//    canPidController.setReference(setpoint, ControlType.kSmartVelocity);
+//  }
 
   private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Intake RPM", getRPM());
+    SmartDashboardTab.putBoolean("Intake", "Intake State", getIntakingState());
+    SmartDashboardTab.putBoolean("Intake", "Pistons", getIntakePistonExtendStatus());
   }
   @Override
   public void periodic() {
-    //updateSmartDashboard();
+    updateSmartDashboard();
   }
 }

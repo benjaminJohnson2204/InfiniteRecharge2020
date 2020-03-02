@@ -19,6 +19,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
@@ -28,8 +29,10 @@ public class Indexer extends SubsystemBase {
    */
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
-  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
   CANPIDController pidController = master.getPIDController();
+
+  VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
+
   DigitalInput intakeSensor = new DigitalInput(Constants.intakeSensor);
   DigitalInput indexerTopSensor = new DigitalInput(Constants.indexerTopSensor);
   DigitalInput indexerBottomSensor = new DigitalInput(Constants.indexerBottomSensor);
@@ -54,7 +57,7 @@ public class Indexer extends SubsystemBase {
 
   public Indexer() {
     master.restoreFactoryDefaults();
-    master.setInverted(true);
+    master.setInverted(false);
 
     master.setIdleMode(IdleMode.kBrake);
 
@@ -100,6 +103,14 @@ public class Indexer extends SubsystemBase {
     return !indexerTopSensor.get();
   }
 
+  public void setKickerOutput(double output) {
+    kicker.set(ControlMode.PercentOutput, output);
+  }
+
+  public void setIndexerOutput(double output) {
+    master.set(output);
+  }
+
   boolean pTripped = false;
   public boolean newBall(){
     boolean returnVal;
@@ -116,52 +127,48 @@ public class Indexer extends SubsystemBase {
   }
 
 
-  public void incrementIndexer(double setpoint){
-    targetSetpoint = setpoint;
-    SmartDashboard.putNumber("Target Setpoint", targetSetpoint);
-    pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
-  }
-
+//  public void incrementIndexer(double setpoint){
+//    targetSetpoint = setpoint;
+//    SmartDashboard.putNumber("Target Setpoint", targetSetpoint);
+//    pidController.setReference(targetSetpoint, ControlType.kSmartMotion);
+//  }
+//
   public void setRPM(double rpm) {
     double setpoint = rpm / gearRatio;
     SmartDashboard.putNumber("Indexer Setpoint", setpoint);
     pidController.setReference(setpoint, ControlType.kSmartVelocity);
   }
+//
+//  public void resetEncoderPosition(){
+//    encoder.setPosition(0);
+//  }
+//
+//  public double getPosition(){
+//    return encoder.getPosition();
+//  }
+//
+//  public boolean onTarget() {
+//    return Math.abs(encoder.getPosition() - targetSetpoint) < 1;
+//  }
+//
+//  public double getRPM() {
+//    return encoder.getVelocity() * gearRatio;
+//  }
 
-  public void resetEncoderPosition(){
-    encoder.setPosition(0);
-  }
 
-  public double getPosition(){
-    return encoder.getPosition();
-  }
-
-  public boolean onTarget() {
-    return Math.abs(encoder.getPosition() - targetSetpoint) < 1; 
-  }
-
-  public boolean indexerFull(){
-    return !indexerTopSensor.get();
-  }
-
-  public void setKickerOutput(double output) {
-    kicker.set(ControlMode.PercentOutput, output);
-  }
-
-  public void setIndexerOutput(double output) {
-    master.set(output);
-  }
-
-  public double getRPM() {
-    return encoder.getVelocity() * gearRatio;
-  }
 
   private void initShuffleboard() {
+    // Unstable. Don''t use until WPILib fixes this
     Shuffleboard.getTab("Indexer").addBoolean("Intake Sensor", this::getIntakeSensor);
     Shuffleboard.getTab("Indexer").addBoolean("Indexer Bottom Sensor", this::getIndexerBottomSensor);
     Shuffleboard.getTab("Indexer").addBoolean("Indexer Top Sensor", this::getIndexerTopSensor);
   }
+
   private void updateSmartDashboard(){
+    SmartDashboardTab.putBoolean("Indexer","Intake Sensor", getIntakeSensor());
+    SmartDashboardTab.putBoolean("Indexer","Indexer Bottom Sensor", getIndexerBottomSensor());
+    SmartDashboardTab.putBoolean("Indexer","Indexer Top Sensor", getIndexerTopSensor());
+    SmartDashboardTab.putNumber("Indexer", "Indexer Control Mode", controlMode);
 
   }
 

@@ -5,10 +5,11 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.indexer;
+package frc.robot.commands.intake;
 
 import com.team254.lib.util.MinTimeBoolean;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import frc.robot.constants.Enums.IntakeStates;
 
 import frc.robot.subsystems.Indexer;
@@ -27,8 +28,8 @@ public class ControlledIntake extends CommandBase {
   private final Indexer m_indexer;
   private final Intake m_intake;
 
-  private double intakeRPM = 500;
-  private double indexRPM = 200;
+  private double intakeRPM = 5000;
+  private double indexRPM = 300;
   private double timestamp, intakeTimestamp, indexerTimestamp, fourBallTimestamp;
   private boolean intaking, haveFour, haveFourTripped;
 
@@ -49,6 +50,7 @@ public class ControlledIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_intake.setIntakingState(true);
     timestamp = Timer.getFPGATimestamp();
 
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
@@ -62,44 +64,51 @@ public class ControlledIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     switch (intakeState) {
       case INTAKE_FIVE_BALLS:
-        m_intake.setRPM(0);
+        m_intake.setIntakePercentOutput(0);
         m_indexer.setKickerOutput(0);
         m_indexer.setIndexerOutput(0);
         break;
       case INTAKE_FOUR_BALLS:
-        m_intake.setRPM(intakeRPM);
+        m_intake.setIntakePercentOutput(0.9);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor())
           intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         break;
       case INTAKE_ONE_BALL:
       default:
-        m_intake.setRPM(intakeRPM);
+        m_intake.setIntakePercentOutput(0.9);
         m_indexer.setKickerOutput(-0.4);
         if (m_indexer.getIndexerBottomSensor() && !intaking) {
-          indexerTimestamp = Timer.getFPGATimestamp();
+          //indexerTimestamp = Timer.getFPGATimestamp();
           intaking = true;
+          m_indexer.setIndexerOutput(0.95);
+//          m_indexer.setRPM(indexRPM);
+        } else {
+          intaking = false;
+          m_indexer.setIndexerOutput(0);
+//          m_indexer.setRPM(0);
         }
 
-        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && !haveFourTripped) {
-          fourBallTimestamp = Timer.getFPGATimestamp();
-          haveFourTripped = true;
-        } else if(!m_indexer.getIndexerBottomSensor() || !m_indexer.getIndexerTopSensor()){
-          fourBallTimestamp = 0;
-          haveFourTripped = false;
-          haveFour = false;
-        }
+//        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && !haveFourTripped) {
+//          fourBallTimestamp = Timer.getFPGATimestamp();
+//          haveFourTripped = true;
+//        } else if(!m_indexer.getIndexerBottomSensor() || !m_indexer.getIndexerTopSensor()){
+//          fourBallTimestamp = 0;
+//          haveFourTripped = false;
+//          haveFour = false;
+//        }
 
-        if(haveFour) {
+        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() ) {
           m_indexer.setRPM(0);
           intakeState = IntakeStates.INTAKE_FOUR_BALLS;
         }
         break;
     }
 
-    updateTimedRollers();
+    //updateTimedRollers();
   }
 
   private void updateTimedRollers() {
@@ -125,11 +134,12 @@ public class ControlledIntake extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_intake.setIntakingState(false);
     m_intake.setIntakePercentOutput(0);
     m_indexer.setIndexerOutput(0);
     m_indexer.setKickerOutput(0);
-    //if(intakeState == IntakeStates.INTAKE_FIVE_BALLS)
-      //m_intake.setintakePiston(false);
+    if(intakeState == IntakeStates.INTAKE_FIVE_BALLS)
+      m_intake.setintakePiston(false);
   }
 
   // Returns true when the command should end.

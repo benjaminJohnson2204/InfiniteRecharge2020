@@ -122,7 +122,7 @@ public class SetTurretSetpointFieldAbsoluteWithVisionOld extends CommandBase {
         limelightDisabled = false;
       }
 
-      m_turret.setSetpoint(setpoint);
+      m_turret.setRobotCentricSetpoint(setpoint);
     } else {
       m_turret.setPercentOutput(m_xInput.getAsDouble() * 0.2); //manual mode TODO: re-tune
     }

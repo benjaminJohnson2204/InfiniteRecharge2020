@@ -27,12 +27,12 @@ public class EjectAll extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
 
-  public EjectAll(Indexer indexer, Intake shooter) {
+  public EjectAll(Indexer indexer, Intake intake) {
     m_indexer = indexer;
-    m_shooter = shooter;
+    m_shooter = intake;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(indexer);
-    addRequirements(shooter);
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.

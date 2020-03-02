@@ -5,49 +5,51 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.climber;
+package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Shooter;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class RetractClimber extends CommandBase {
+public class SetRpmSetpoint extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Climber m_climber;
-
-  /*
+  private final Shooter m_shooter;
+  private double m_RPM;
+  /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
    */
-  public RetractClimber(Climber climber) {
-    m_climber = climber;
+  public SetRpmSetpoint(Shooter shooter, double RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(climber);
+    m_shooter = shooter;
+    m_RPM = RPM;
+//    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
   }
+
+  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_climber.setClimbPiston(false);
-    if(!m_climber.getClimbPistonExtendStatus())
-      m_climber.setClimberOutput(0.5);
+    m_shooter.setRPM(m_RPM);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climber.setClimberOutput(0.0);
+    m_shooter.setRPM(-1);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (false);
   }
 }

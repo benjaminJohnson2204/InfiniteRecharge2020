@@ -15,6 +15,8 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Vision;
 import java.util.function.DoubleSupplier;
 
+import java.util.function.DoubleSupplier;
+
 public class AlignToBall extends CommandBase {
 
     private final double P_TERM = 0.05;
@@ -43,6 +45,7 @@ public class AlignToBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+<<<<<<< HEAD
         if (!vision.hasPowerCell()) {
             return;
         }
@@ -58,6 +61,15 @@ public class AlignToBall extends CommandBase {
             driveTrain.setMotorArcadeDrive(this.throttle.getAsDouble(), P_TERM);
         } else { // ball is to the left
             driveTrain.setMotorArcadeDrive(this.throttle.getAsDouble(), -P_TERM);
+=======
+        if (vision.hasPowerCell()) {
+            double setpoint = driveTrain.getAngle() + vision.getPowerCellX();
+
+            double leftVoltage = throttle.getAsDouble() * 12.0 + pid.calculate(driveTrain.getAngle(), setpoint);
+            double rightVoltage = throttle.getAsDouble() * 12.0 - pid.calculate(driveTrain.getAngle(), setpoint);
+
+            driveTrain.setVoltageOutput(leftVoltage, rightVoltage);
+>>>>>>> master
         }
     }
 

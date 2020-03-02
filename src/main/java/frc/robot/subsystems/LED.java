@@ -20,21 +20,22 @@ public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
-  private AddressableLED LEDStripA, LEDStripB;
+  private AddressableLED LEDStrip;
   private AddressableLEDBuffer LEDBuffer;
   int start = (int)Timer.getFPGATimestamp() * 5;
 
+  int stripLength;
   private int red, green, blue;
   double rainbows = 3;
   double speed = 8;
 
   public LED() {
-    LEDStripA = new AddressableLED(Constants.ledPortA);
-//    LEDStripB = new AddressableLED(Constants.ledPortB);
-    LEDBuffer = new AddressableLEDBuffer(39);
-    LEDStripA.setLength(LEDBuffer.getLength());
-    LEDStripA.setData(LEDBuffer);
-    LEDStripA.start();
+    LEDStrip = new AddressableLED(Constants.ledPort);
+    LEDBuffer = new AddressableLEDBuffer(100);
+    LEDStrip.setLength(LEDBuffer.getLength());
+    LEDStrip.setData(LEDBuffer);
+    LEDStrip.start();
+    stripLength = LEDBuffer.getLength() / 2;
 //    LEDStripB.setLength(LEDBuffer.getLength());
 //    LEDStripB.setData(LEDBuffer);
 //    LEDStripB.start();
@@ -48,9 +49,9 @@ public class LED extends SubsystemBase {
   }
 
   public void setRGB(int red, int green, int blue){
-    this.red = red;
-    this.blue = blue;
-    this.green = green;
+    this.red = (int) (red * 0.5);
+    this.blue = (int) (blue * 0.5);
+    this.green = (int) (green * 0.5);
   }
 
   public void setSolidColor(){
@@ -69,51 +70,41 @@ public class LED extends SubsystemBase {
     double time = (int)(5 * Timer.getFPGATimestamp());
     if(!blinkType){
       if(time / 2 == Math.floor(time / 2)){
-        for(int i = 0; i < LEDBuffer.getLength(); i++){
+        for(int i = 0; i < stripLength; i++){
           LEDBuffer.setRGB(i, red, green, blue);
+          LEDBuffer.setRGB(stripLength + i, red, green, blue);
         }
       }
       else
         resetLED();
-    }
-    else {
-      if(time / 2 == Math.floor(time / 2)){
-        resetLED();
-        for(int i = 0; i < LEDBuffer.getLength(); i += 2){
-          LEDBuffer.setRGB(i, red, green, blue);
-        }
+    } else {
+      resetLED();
+      for(int i = head; i < LEDBuffer.getLength(); i += 2){
+        LEDBuffer.setRGB(i % LEDBuffer.getLength(), red, green, blue);
       }
-      else {
-        resetLED();
-        for(int i = 1; i < LEDBuffer.getLength(); i += 2){
-          LEDBuffer.setRGB(i, red, green, blue);
-        }
-      }
+      Timer.delay(0.2);
+      head = ++head % 2;
     }
   }
 
   double hueOffset = 0;
   public void setRainbow(double iterations, double speed){
-    for(int i = 0; i < LEDBuffer.getLength(); i++){
-      LEDBuffer.setHSV(i, (int)(180 * iterations * i / LEDBuffer.getLength() + hueOffset) % 180, 255, 255);
+    for(int i = 0; i < stripLength; i++){
+      LEDBuffer.setHSV(i, (int)(180 * iterations * i / stripLength + hueOffset) % 180, 255, 255);
+      LEDBuffer.setHSV(stripLength + i, (int)(180 * iterations * i / stripLength + hueOffset) % 180, 255, 255);
     }
     hueOffset = (hueOffset + 3 * speed * iterations) % 180;
     Timer.delay(0.05);
   }
 
   int head = 0;
-  public void coolDesign(int interval, int trail){
+  public void trail(int interval){
     resetLED();
-    for(int i = head; i < LEDBuffer.getLength(); i += (interval + trail)){
-      LEDBuffer.setRGB(i, red, green, blue);
-      /*for(int ii = trail; ii > 0; ii--){
-        double mag = ii / (trail + 1);
-        LEDBuffer.setRGB(i - (trail - ii + 1), (int)(mag * red), (int)(mag * green), (int)(mag * blue));
-      }*/
+    for(int i = head; i < LEDBuffer.getLength(); i += interval){
+      LEDBuffer.setRGB(i % LEDBuffer.getLength(), red, green, blue);
     }
-    
-    head = (head + 1) % (interval + trail);
     Timer.delay(0.03);
+    head = ++head % interval;
   }
 
   public void flash(){
@@ -125,34 +116,49 @@ public class LED extends SubsystemBase {
     Timer.delay(0.25);
   }
 
-  public void setBuffer() {
-    LEDStripA.setData(LEDBuffer);
-//    LEDStripB.setData(LEDBuffer);
-  }
-
   int state = -1;
   public void setLED(){
     switch(state){
-      /*case 0:
+      case 0:
         setRainbow(3, 8);
-        break;*/
+        break;
       case 1:
         setRGB(255, 200, 0);
         setBlinkingColor(true);
         break;
       case 2:
         setRGB(255, 0, 0);
-        setBlinkingColor(true);
+        setSolidColor();
         break;
       case 3:
         setRGB(255, 255, 255);
         flash();
         break;
+      case 4:
+        setRGB(66, 194, 23);
+        trail(5);
+        break;
+      case 5:
+        setRGB(0, 110, 255);
+        setBlinkingColor(true);
+        break;
+      case 6:
+        setRGB(255, 110, 0);
+        trail(8);
+        break;
+      case 7:
+        setRGB(255, 0, 0);
+        setBlinkingColor(true);
+        break;
+      case 8:
+        setRGB(0, 255, 0);
+        setBlinkingColor(true);
+        break;
       default:
         setRGB(106, 90, 205);
         setBlinkingColor(true);
     }
-    LEDStripA.setData(LEDBuffer);
+    LEDStrip.setData(LEDBuffer);
   }
 
   public void setState(int state){
@@ -167,5 +173,6 @@ public class LED extends SubsystemBase {
     speed = SmartDashboard.getNumber("Speed", 0);
     setBuffer();*/
     setLED();
+    LEDStrip.setData(LEDBuffer);
   }
 }

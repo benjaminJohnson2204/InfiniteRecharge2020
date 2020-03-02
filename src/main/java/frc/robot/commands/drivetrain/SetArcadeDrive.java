@@ -10,6 +10,7 @@ package frc.robot.commands.drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Intake;
 
 import java.util.function.DoubleSupplier;
 
@@ -19,19 +20,21 @@ import java.util.function.DoubleSupplier;
 public class SetArcadeDrive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
+  private final Intake m_intake;
   private final DoubleSupplier m_throttle, m_turn;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public SetArcadeDrive(DriveTrain subsystem, DoubleSupplier throttle, DoubleSupplier turn) {
-    m_driveTrain = subsystem;
+  public SetArcadeDrive(DriveTrain driveTrain, Intake intake, DoubleSupplier throttle, DoubleSupplier turn) {
+    m_driveTrain = driveTrain;
+    m_intake = intake;
     m_throttle = throttle;
     m_turn = turn;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(driveTrain);
   }
 
   // Called when the command is initially scheduled.
@@ -51,6 +54,9 @@ public class SetArcadeDrive extends CommandBase {
     double throttle = joystickY;
     throttle = throttle < 0 ? Math.max(-0.7, throttle) : throttle;
     double turn = (m_driveTrain.getDriveShifterStatus() ? 0.5 : 0.35) * joystickX;
+
+//    if(m_intake.getIntakingState())
+//      throttle = - throttle;
 
     m_driveTrain.setMotorArcadeDrive(throttle, turn);
 //    if (Robot.climber.climbMode == 1) {

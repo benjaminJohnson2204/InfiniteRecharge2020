@@ -30,7 +30,7 @@ public class ToggleTurretControlMode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_turret.toggleControlMode();
+    m_turret.setControlMode(m_turret.getControlMode() != 1 ? 1 : 0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

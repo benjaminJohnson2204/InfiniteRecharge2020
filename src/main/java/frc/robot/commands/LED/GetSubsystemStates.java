@@ -7,9 +7,10 @@
 
 package frc.robot.commands.LED;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.LED;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.*;
 
 /**
  * An example command that uses an example subsystem.
@@ -18,15 +19,27 @@ public class GetSubsystemStates extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final LED m_led;
   private final Indexer m_indexer;
+  private final Intake m_intake;
+  private final Vision m_vision;
+  private final Turret m_turret;
+  private final Climber m_climber;
+  private final Controls m_controls;
+  private final RobotContainer m_robotContainer;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param The subsystem used by this command.
    */
-  public GetSubsystemStates(LED led, Indexer indexer) {
+  public GetSubsystemStates(RobotContainer robotContainer, LED led, Indexer indexer, Intake intake, Vision vision, Turret turret, Climber climber, Controls controls) {
+    m_robotContainer = robotContainer;
     m_led = led;
     m_indexer = indexer;
+    m_intake = intake;
+    m_vision = vision;
+    m_turret = turret;
+    m_climber = climber;
+    m_controls = controls;
     // Use addRequirements() here to declare subsystem dependencies.    
     addRequirements(led);
   }
@@ -43,20 +56,43 @@ public class GetSubsystemStates extends CommandBase {
   public void execute() {
     m_led.setRGB(75, 20, 150);
     m_led.setSolidColor();
-    if(/*climb mode enabled*/false){
-      m_led.setState(0);
-    }
-    else if(/*Turret is aligning to target*/false || /*Flywheel is spinning, but is not at the required velocity*/false){
-      m_led.setState(1);
-    }
-    else if(m_indexer.getIndexerTopSensor()) {
-      m_led.setState(2);
-    }
-    else if(m_indexer.newBall()) {
-      m_led.setState(3);
-    }
-    else
+
+    // robot is initializing
+    if(!m_robotContainer.getInitializationState()) {
       m_led.setState(-1);
+    }  else {
+      if(DriverStation.getInstance().isDisabled()) {
+        if(isRobotReady())
+          m_led.setState(8);
+        else
+          m_led.setState(7);
+      } else {
+        if (m_climber.getClimbState()) {
+          m_led.setState(0);
+        } else if (m_intake.getIntakingState()) {
+          if (m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIntakeSensor()) {
+            m_led.setState(2);
+          } else if (m_indexer.newBall()) {
+            m_led.setState(3);
+          } else {
+            m_led.setState(4);
+          }
+        } else {
+          if (m_vision.hasTarget()) {
+            m_led.setState(5);
+          } else if (!m_vision.hasTarget()) {
+            m_led.setState(6);
+          }
+        }
+      }
+    }
+  }
+
+  private boolean isRobotReady() {
+    if(m_turret.getInitialHome()) // && PSI is high (?). Save for comp
+      return true;
+    else
+      return false;
   }
 
   // Called once the command ends or is interrupted.

@@ -18,166 +18,210 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class Turret extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  double kF = 0.05;     //0.05
-  double kP = 0.155;    //0.155
-  double kI = 0.0001;    //0.00075
-  double kD = 0.00766;  //0.00766
-  int kI_Zone = 900;    //900
-  int kMaxIAccum = 500000;    //900
-  int kErrorBand = 50;
-  double maxAngle = 315;
-  double minAngle = -135;
-  double gearRatio = 18.0 / 120.0;
-  private double setpoint = 0; //angle
+    /**
+     * Creates a new ExampleSubsystem.
+     */
+    double kF = 0.07;     //0.05
+    double kP = 0.155;    //0.155
+    double kI = 0.0001;    //0.00075
+    double kD = 0.00766;  //0.00766
 
-  private int encoderUnitsPerRotation = 4096;
-  private int controlMode = 1;
+    int kI_Zone = 900;    //900 // 254: 1/kP?
+    int kMaxIAccum = 500000;//kI_Zone *3; //500000;    //900
+    int kErrorBand = 50;//degreesToEncoderUnits(0.5);
 
-  private final DriveTrain m_driveTrain;
+    int kCruiseVelocity = 14000; //degreesToEncoderUnits(180) * 10;
+    int kMotionAcceleration = kCruiseVelocity * 10;
 
-  private Timer timeout = new Timer();
+    double maxAngle = 45;   // 195;
+    double minAngle = -45;  // -135;
+    double gearRatio = 18.0 / 120.0;
+    private double setpoint = 0; //angle
 
-  private CANCoder encoder = new CANCoder(Constants.turretEncoder);
+    private int encoderUnitsPerRotation = 4096;
+    private int controlMode = 1;
+    private boolean initialHome;
 
-  private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
+    private final DriveTrain m_driveTrain;
 
-  private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
-  private boolean turretHomeSensorLatch = false;
+    private Timer timeout = new Timer();
 
-  public Turret(DriveTrain driveTrain) {
-    m_driveTrain = driveTrain;
-    encoder.configFactoryDefault();
-    encoder.setPositionToAbsolute();
-    encoder.configSensorDirection(true);
+    private CANCoder encoder = new CANCoder(Constants.turretEncoder);
 
-    turretMotor.configFactoryDefault();
-    turretMotor.setNeutralMode(NeutralMode.Brake);
-    turretMotor.setInverted(true);
-    turretMotor.setSelectedSensorPosition(0);
-    turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
-    turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
-    turretMotor.config_kF(0, kF);
-    turretMotor.config_kP(0, kP);
-    turretMotor.config_kI(0, kI);
-    turretMotor.config_IntegralZone(0, kI_Zone);
-    turretMotor.configMaxIntegralAccumulator(0, kMaxIAccum);
-    turretMotor.config_kD(0, kD);
-    turretMotor.configMotionCruiseVelocity(14000);
-    turretMotor.configMotionAcceleration(140000);
-    turretMotor.configAllowableClosedloopError(0, kErrorBand);
+    private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
+
+    private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
+    private boolean turretHomeSensorLatch = false;
+
+    public Turret(DriveTrain driveTrain) {
+        m_driveTrain = driveTrain;
+        encoder.configFactoryDefault();
+        encoder.setPositionToAbsolute();
+        encoder.configSensorDirection(true);
+
+        turretMotor.configFactoryDefault();
+        turretMotor.setNeutralMode(NeutralMode.Brake);
+        turretMotor.setInverted(true);
+        turretMotor.configRemoteFeedbackFilter(61, RemoteSensorSource.CANCoder, 0, 0);
+        turretMotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+        turretMotor.config_kF(0, kF);
+        turretMotor.config_kP(0, kP);
+        turretMotor.config_kI(0, kI);
+        turretMotor.config_IntegralZone(0, kI_Zone);
+        turretMotor.configMaxIntegralAccumulator(0, kMaxIAccum);
+        turretMotor.config_kD(0, kD);
+        turretMotor.configMotionCruiseVelocity(kCruiseVelocity);
+        turretMotor.configMotionAcceleration(kMotionAcceleration);
+        turretMotor.configAllowableClosedloopError(0, kErrorBand);
+
+        //turretPID.enableContinuousInput(0, 360);
+
+        //initShuffleboard();
+    }
+
+    public void resetEncoder() {
+        turretMotor.setSelectedSensorPosition(0);
+        encoder.setPosition(0);
+    }
+
+    public void setControlMode(int mode) {
+        controlMode = mode;
+    }
+
+    public int getControlMode() {
+        return controlMode;
+    }
+
+    public double getTurretAngle() {
+        return encoderUnitsToDegrees(turretMotor.getSelectedSensorPosition());
+    }
+
+    public double getFieldRelativeAngle() {
+        return getTurretAngle() - m_driveTrain.navX.getAngle();
+    }
+
+    public double getMaxAngle() {
+        return maxAngle;
+    }
+
+    public double getMinAngle() {
+        return minAngle;
+    }
+
+    public boolean getTurretHome() {
+        return !turretHomeSensor.get();
+    }
 
 
-    //turretPID.enableContinuousInput(0, 360);
+    public boolean getInitialHome() {
+        return initialHome;
+    }
 
-    //initShuffleboard();
-  }
+    public double getSetpoint() {
+        return setpoint;
+    }
 
-  public void resetEncoder(){
-    turretMotor.setSelectedSensorPosition(0);
-    encoder.setPosition(0);
-  }
+    public void setPercentOutput(double output) {
+        turretMotor.set(ControlMode.PercentOutput, output);
+    }
 
-  public void toggleControlMode() {
-    if(controlMode == 0)
-      controlMode = 1;
-    else
-      controlMode = 0;
-  }
+    public void setRobotCentricSetpoint(double setpoint) {
+        this.setpoint = setpoint;
+    }
 
-  public int getControlMode() {
-    return controlMode;
-  }
+    public void setFieldCentricSetpoint(double setpoint) {
+        setpoint -= m_driveTrain.navX.getAngle();
 
-  public double getTurretAngle(){
-    return encoderUnitsToDegrees(turretMotor.getSelectedSensorPosition());
-  }
+        if (setpoint > getMaxAngle())
+            setpoint -= 360;
+        else if (setpoint < getMinAngle())
+            setpoint += 360;
 
-  public double getFieldRelativeAngle(){
-    return getTurretAngle() - m_driveTrain.navX.getAngle();
-  }
+        this.setpoint = setpoint;
+    }
 
-  public double getMaxAngle() {
-    return maxAngle;
-  }
+    public void setClosedLoopPosition() {
+        turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(getSetpoint()));
+    }
 
-  public double getMinAngle() {
-    return minAngle;
-  }
+    public void setSetpoint(double setpoint) {
+        turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(setpoint));
+    }
 
-  public boolean getTurretHome() {
-    return !turretHomeSensor.get();
-  }
+    public int degreesToEncoderUnits(double degrees) {
+        return (int) (degrees * (1.0 / gearRatio) * (encoderUnitsPerRotation / 360.0));
+    }
 
-  public double getSetpoint() {
-    return setpoint;
-  }
+    public double encoderUnitsToDegrees(double encoderUnits) {
+        return encoderUnits * gearRatio * (360.0 / encoderUnitsPerRotation);
+    }
 
-  public void setPercentOutput(double output){
-    turretMotor.set(ControlMode.PercentOutput, output);
-  }
+    public boolean atTarget() {
+        return Math.abs(turretMotor.getClosedLoopError()) < kErrorBand;
+    }
 
-  public void setSetpoint(double setpoint){
-    this.setpoint = setpoint;
-  }
+    public void clearIAccum() {
+        turretMotor.setIntegralAccumulator(0);
+    }
 
-  public void setClosedLoopPosition(){
-    turretMotor.set(ControlMode.MotionMagic, degreesToEncoderUnits(setpoint));
-  }
+    private void setTurretLatch(boolean state) {
+        turretHomeSensorLatch = state;
+    }
 
-  public int degreesToEncoderUnits(double degrees) {
-    return (int)(degrees * (1.0 / gearRatio) * (encoderUnitsPerRotation / 360.0));
-  }
+    private boolean getTurretLatch() {
+        return turretHomeSensorLatch;
+    }
 
-  public double encoderUnitsToDegrees(double encoderUnits) {
-    return encoderUnits * gearRatio * (360.0 / encoderUnitsPerRotation);
-  }
+    private void initShuffleboard() {
+        // Unstable. Don''t use until WPILib fixes this
+        Shuffleboard.getTab("Turret").addNumber("Turret Motor Output", turretMotor::getMotorOutputPercent);
+        Shuffleboard.getTab("Turret").addNumber("Turret Robot Relative Angle", this::getTurretAngle);
+        Shuffleboard.getTab("Turret").addNumber("Turret Field Relative Angle", this::getFieldRelativeAngle);
+        Shuffleboard.getTab("Turret").addNumber("Turret Setpoint", this::getSetpoint);
+        Shuffleboard.getTab("Turret").addNumber("Turret Error", turretMotor::getClosedLoopError);
+        Shuffleboard.getTab("Turret").addNumber("Turret IAccum", turretMotor::getIntegralAccumulator);
+        Shuffleboard.getTab("Turret").addBoolean("Home", this::getTurretHome);
+    }
 
-  public boolean atTarget(){
-    return Math.abs(turretMotor.getClosedLoopError()) < kErrorBand;
-  }
+    private void updateSmartdashboard() {
+        SmartDashboard.putNumber("Turret Angle", getFieldRelativeAngle());
 
-  public void clearIAccum() {
-    turretMotor.setIntegralAccumulator(0);
-  }
+        SmartDashboardTab.putNumber("Turret", "Turret Motor Output", turretMotor.getMotorOutputPercent());
+        SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
+        SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
+        SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
+//    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+//    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
+//    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
+//    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
+        SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
 
-  private void initShuffleboard() {
-    Shuffleboard.getTab("Turret").addNumber("Turret Motor Output", turretMotor::getMotorOutputPercent);
-    Shuffleboard.getTab("Turret").addNumber("Turret Robot Relative Angle", this::getTurretAngle);
-    Shuffleboard.getTab("Turret").addNumber("Turret Field Relative Angle", this::getFieldRelativeAngle);
-    Shuffleboard.getTab("Turret").addNumber("Turret Setpoint", this::getSetpoint);
-    Shuffleboard.getTab("Turret").addNumber("Turret Error", turretMotor::getClosedLoopError);
-    Shuffleboard.getTab("Turret").addNumber("Turret IAccum", turretMotor::getIntegralAccumulator);
-    //Shuffleboard.getTab("Turret").addBoolean("Home", this::getTurretHome);
-  }
+//    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
+    }
 
-  private void updateSmartdashboard() {
-    SmartDashboard.putNumber("Robot Relative Turret Angle", getTurretAngle());
-    SmartDashboard.putNumber("Field Relative Turret Angle", getFieldRelativeAngle());
-    SmartDashboard.putNumber("Turret Setpoint", setpoint);
-    SmartDashboard.putNumber("Turret Error Degrees", encoderUnitsToDegrees(turretMotor.getClosedLoopError()));
-//    SmartDashboard.putNumber("Turret Motor Output", turretMotor.getMotorOutputPercent());
+    @Override
+    public void periodic() {
+        if (getControlMode() == 1)
+            setClosedLoopPosition();
 
-  }
+        // This method will be called once per scheduler run
+        // TODO: FIX
+        if (!getTurretLatch() && getTurretHome()) {
+            turretMotor.setSelectedSensorPosition(0);
+            encoder.setPosition(0);
+            setTurretLatch(true);
+        } else if (getTurretLatch() && !getTurretHome())
+            setTurretLatch(false);
 
-  @Override
-  public void periodic() {
-    if(getControlMode() == 1)
-      setClosedLoopPosition();
+        if (!initialHome)
+            if (getTurretHome())
+                initialHome = true;
 
-    // This method will be called once per scheduler run
-    if(!turretHomeSensorLatch && getTurretHome()) {
-      turretMotor.setSelectedSensorPosition(0);
-      turretHomeSensorLatch = true;
-    } else if(turretHomeSensorLatch && !getTurretHome())
-      turretHomeSensorLatch = false;
-
-    updateSmartdashboard();
-  }
+        updateSmartdashboard();
+    }
 }

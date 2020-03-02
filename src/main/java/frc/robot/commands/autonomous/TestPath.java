@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -26,20 +27,25 @@ import java.util.ArrayList;
 /**
  * An example command that uses an example subsystem.
  */
-public class TestPathFollowing extends CommandBase {
+public class TestPath extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
   private Trajectory trajectory;
   private static double m_period = 0.02;
   private Notifier m_notifier;
+  private ArrayList<Pose2d> m_path;
+  private boolean m_isInverted;
   /**
    * Creates a new ExampleCommand.
    *
    * @param driveTrain The subsystem used by this command.
    */
-  public TestPathFollowing(DriveTrain driveTrain) {
+  public TestPath(DriveTrain driveTrain, ArrayList<Pose2d> path, boolean isInverted) {
     m_driveTrain = driveTrain;
+    m_path = path;
+    m_isInverted = isInverted;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(m_driveTrain);
   }
 
   // Called when the command is initially scheduled.
@@ -48,23 +54,14 @@ public class TestPathFollowing extends CommandBase {
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
 
-    var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(-3), Rotation2d.fromDegrees(0));
-
-    var trajectoryWaypoints = new ArrayList<Pose2d>();
-    trajectoryWaypoints.add(startPosition);
-    trajectoryWaypoints.add(stopPosition);
-
-
     var trajectoryConstraints = new DifferentialDriveKinematicsConstraint(m_driveTrain.getDriveTrainKinematics(),
                                                     3);
 
-
     var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
 
-    trajectoryConfig.setReversed(true);
+    trajectoryConfig.setReversed(m_isInverted);
 
-    trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
+    trajectory = TrajectoryGenerator.generateTrajectory(m_path, trajectoryConfig);
 
     RamseteCommand followTrajectory = new RamseteCommand(
             trajectory,
