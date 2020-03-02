@@ -1,8 +1,9 @@
-package frc.robot.commands.autonomous;
+package frc.robot.commands.autonomous.routines;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.autonomous.ReadTrajectory;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.intake.TimedIntake;
 import frc.robot.subsystems.*;

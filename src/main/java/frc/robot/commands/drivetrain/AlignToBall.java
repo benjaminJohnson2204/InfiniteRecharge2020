@@ -45,23 +45,6 @@ public class AlignToBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-<<<<<<< HEAD
-        if (!vision.hasPowerCell()) {
-            return;
-        }
-
-        /* TODO: Align with PID loop
-        pid.setSetpoint(vision.getPowerCellX());
-        double output = pid.calculate(driveTrain.getAngle(), vision.getPowerCellX());
-        driveTrain.setMotorArcadeDrive(-this.throttle.getAsDouble(), output);
-        */
-
-        double offset = vision.getPowerCellX();
-        if (offset > 0.18) { // ball is to the right
-            driveTrain.setMotorArcadeDrive(this.throttle.getAsDouble(), P_TERM);
-        } else { // ball is to the left
-            driveTrain.setMotorArcadeDrive(this.throttle.getAsDouble(), -P_TERM);
-=======
         if (vision.hasPowerCell()) {
             double setpoint = driveTrain.getAngle() + vision.getPowerCellX();
 
@@ -69,7 +52,6 @@ public class AlignToBall extends CommandBase {
             double rightVoltage = throttle.getAsDouble() * 12.0 - pid.calculate(driveTrain.getAngle(), setpoint);
 
             driveTrain.setVoltageOutput(leftVoltage, rightVoltage);
->>>>>>> master
         }
     }
 

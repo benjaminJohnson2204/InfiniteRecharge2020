@@ -66,8 +66,8 @@ public class Shooter extends SubsystemBase {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
             outtakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
-            outtakeMotor.configVoltageCompSaturation(12);
-            outtakeMotor.enableVoltageCompensation(true);
+//            outtakeMotor.configVoltageCompSaturation(12);
+//            outtakeMotor.enableVoltageCompensation(true);
         }
         outtakeMotors[0].setInverted(true);
         outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
@@ -157,7 +157,7 @@ public class Shooter extends SubsystemBase {
 //    Shuffleboard.getTab("Shooter").addNumber("Power", () -> this.outtakeMotors[0].getMotorOutputPercent());
 
         SmartDashboardTab.putNumber("Shooter", "RPM Output", rpmOutput);
-//        SmartDashboardTab.putNumber("Shooter", "Flywheel kF", kF);
+        SmartDashboardTab.putNumber("Shooter", "Flywheel kF", kF);
         SmartDashboardTab.putNumber("Shooter", "Flywheel kP", kP);
         SmartDashboardTab.putNumber("Shooter", "Flywheel kI", kI);
         SmartDashboardTab.putNumber("Shooter", "Flywheel kD", kD);
@@ -195,7 +195,7 @@ public class Shooter extends SubsystemBase {
         updateRPMSetpoint();
 //        updatePidRPM();
         updateShuffleboard();
-        //updatePIDValues();
+//        updatePIDValues();
 
         if (Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance() && !timerStart) {
             timerStart = true;

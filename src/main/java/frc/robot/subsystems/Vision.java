@@ -7,10 +7,6 @@
 
 package frc.robot.subsystems;
 
-<<<<<<< HEAD
-=======
-import edu.wpi.first.cameraserver.CameraServer;
->>>>>>> master
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
@@ -45,6 +41,7 @@ public class Vision extends SubsystemBase {
 		PortForwarder.add(6000, "opensight.local", 22);
 		PortForwarder.add(5800, "10.42.1.11", 5800);
 		PortForwarder.add(5801, "10.42.1.11", 5801);
+		PortForwarder.add(5805, "10.42.1.11", 5805);
 
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
@@ -199,12 +196,9 @@ public class Vision extends SubsystemBase {
 	}
 
     public double getPowerCellX() {
-        // TODO: Calculate degrees from pixels?
-        // return openSight.getEntry("found-x").getDouble(0) * 5.839; // 5.839 pixels per degree
-        return openSight.getEntry("found-x").getDouble(0);
+        return openSight.getEntry("found-x").getDouble(0) * 100;
     }
 
-<<<<<<< HEAD
     public boolean hasPowerCell() {
         return openSight.getEntry("found").getBoolean(false);
     }
@@ -223,33 +217,4 @@ public class Vision extends SubsystemBase {
         updateSmartDashboard();
         updateValidTarget();
     }
-=======
-	public boolean hasPowerCell() {
-		return openSight.getEntry("found").getBoolean(false);
-	}
-
-	private void initShuffleboard() {
-		// Unstable. Don''t use until WPILib fixes this
-		Shuffleboard.getTab("Turret").addBoolean("Vision Valid Output", this::getValidTarget);
-		Shuffleboard.getTab("Turret").addNumber("Vision Target X", this::getFilteredTargetX);
-
-	}
-
-	public void updateSmartDashboard() {
-		SmartDashboard.putBoolean("Limelight Has Target", hasTarget());
-		SmartDashboard.putNumber("Limelight Target X", getTargetX());
-		SmartDashboard.putNumber("Limelight Target Distance", getTargetDistance());
-		SmartDashboard.putNumber("Limelight Pipeline", getPipeline());
-
-		SmartDashboardTab.putBoolean("Turret", "Vision Valid Output", getValidTarget());
-		SmartDashboardTab.putNumber("Turret", "Vision Target X", getFilteredTargetX());
-	}
-
-	@Override
-	public void periodic() {
-		// This method will be called once per scheduler run
-		updateSmartDashboard();
-		updateValidTarget();
-	}
->>>>>>> master
 }

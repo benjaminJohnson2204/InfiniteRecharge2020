@@ -60,6 +60,13 @@ DriveTrain extends SubsystemBase {
             new TalonFX(Constants.rightRearDriveMotor)
     };
 
+    private boolean[] brakeMode = {
+            true,
+            false,
+            true,
+            false
+    };
+
     DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
     public AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
@@ -192,10 +199,14 @@ DriveTrain extends SubsystemBase {
             case 2:
                 for (var motor : driveMotors)
                     motor.setNeutralMode(NeutralMode.Coast);
+                for (var brakeMode : brakeMode)
+                    brakeMode = false;
                 break;
             case 1:
                 for (var motor : driveMotors)
                     motor.setNeutralMode(NeutralMode.Brake);
+                for (var brakeMode : brakeMode)
+                    brakeMode = true;
                 break;
             case 0:
             default:
@@ -203,6 +214,10 @@ DriveTrain extends SubsystemBase {
                 driveMotors[1].setNeutralMode(NeutralMode.Coast);
                 driveMotors[2].setNeutralMode(NeutralMode.Brake);
                 driveMotors[3].setNeutralMode(NeutralMode.Coast);
+                brakeMode[0] = true;
+                brakeMode[1] = false;
+                brakeMode[2] = true;
+                brakeMode[3] = false;
                 break;
         }
     }

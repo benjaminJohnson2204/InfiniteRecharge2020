@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DriveTrain;
-import frc.vitruvianlib.utils.ReadCsvTrajectory;
+import frc.vitruvianlib.utils.TrajectoryUtils;
 
 import java.util.ArrayList;
 
@@ -81,10 +81,8 @@ public class ReadTrajectory extends CommandBase {
                 m_driveTrain.getRobotPose().getTranslation().getY(),
                 Rotation2d.fromDegrees(m_driveTrain.navX.getAngle()));
 
-        trajectoryWaypoints.add(startPosition);
-
-        String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename;
-        var fileTrajectory = ReadCsvTrajectory.readCsv(filePath);
+        String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename + ".csv";
+        var fileTrajectory = TrajectoryUtils.readCsvTrajectory(filePath);
 
         // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
         for (Pose2d point : fileTrajectory) {
