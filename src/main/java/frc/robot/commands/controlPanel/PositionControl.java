@@ -24,7 +24,7 @@ public class PositionControl extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
   double output;
-  int throttle;
+  int difference;
   public PositionControl(ColorSensor subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.

@@ -33,7 +33,7 @@ public class LED extends SubsystemBase {
   public LED(ColorSensor colorSensor) {
     m_colorSensor = colorSensor;
     LEDStrip = new AddressableLED(Constants.ledPort);
-    LEDBuffer = new AddressableLEDBuffer(90);
+    LEDBuffer = new AddressableLEDBuffer(36);
     LEDStrip.setLength(LEDBuffer.getLength());
     LEDStrip.setData(LEDBuffer);
     LEDStrip.start();
@@ -136,11 +136,46 @@ public class LED extends SubsystemBase {
   }
 
   int offset = 0;
+  
+  int cRed = 0;
+  int cGreen = 0;
+  int cBlue = 0;
+  int realPanelColor = 0;
   public void colorWheel(){
-    for(int i = 0; i < LEDBuffer.getLength(); i = (int) (i + LEDBuffer.getLength() * 0.125)) {
+    /*for(int i = 0; i < LEDBuffer.getLength(); i = (int) (i + LEDBuffer.getLength() * 0.125)) {
       colorToRGB((m_colorSensor.panelColor() + i) % 4);
       for(int ii = i; ii < (int) (i + LEDBuffer.getLength() * 0.125); ii++)
         LEDBuffer.setRGB(ii, red, green, blue);
+    }*/
+    
+    if(m_colorSensor.panelColor() != 0)
+      realPanelColor = m_colorSensor.panelColor();
+    for(int i = 0; i < 7; i++) {
+      switch((realPanelColor + i) % 4 + 1) {
+        case 1:
+          cRed = 255;
+          cGreen = 0;
+          cBlue = 0;
+          break;
+        case 2:
+          cRed = 0;
+          cGreen = 255;
+          cBlue = 0;
+          break;
+        case 3:
+          cRed = 0;
+          cGreen = 255;
+          cBlue = 255;
+          break;
+        case 4:
+          cRed = 255;
+          cGreen = 255;
+          cBlue = 0;
+          break;
+      }
+      for(int ii = (int) Math.floor(i * LEDBuffer.getLength() / 7); ii < (int) Math.floor((i + 1) * LEDBuffer.getLength() / 7); ii++){
+        LEDBuffer.setRGB(ii, cRed, cGreen, cBlue);
+      }
     }
   }
 
