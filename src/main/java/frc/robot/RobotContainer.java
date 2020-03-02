@@ -167,8 +167,8 @@ public class RobotContainer {
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
-        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3550));                          // A - Set RPM Close
-        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3700));                          // B - Set RPM Medium
+        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
+        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // B - Set RPM Medium
         xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
         xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
 

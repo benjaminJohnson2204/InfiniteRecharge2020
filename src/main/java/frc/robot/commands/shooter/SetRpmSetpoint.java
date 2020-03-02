@@ -29,9 +29,7 @@ public class SetRpmSetpoint extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_RPM = RPM;
-    m_vision = Vision;
-    m_vision.ledsOn();
-    m_vision.setLastValidTargetTime();
+    m_vision = vision;
 //    addRequirements(shooter);
   }
 
@@ -44,6 +42,8 @@ public class SetRpmSetpoint extends CommandBase {
   @Override
   public void execute() {
     m_shooter.setRPM(m_RPM);
+    m_vision.ledsOn();
+    m_vision.setLastValidTargetTime();
   }
 
   // Called once the command ends or is interrupted.
