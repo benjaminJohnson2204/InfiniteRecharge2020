@@ -44,8 +44,6 @@ public class SetRpmSetpoint extends CommandBase {
     m_vision.ledsOn();
     m_vision.setLastValidTargetTime();
     m_shooter.setRPM(m_RPM);
-    m_vision.ledsOn();
-    m_vision.setLastValidTargetTime();
   }
 
   // Called once the command ends or is interrupted.
