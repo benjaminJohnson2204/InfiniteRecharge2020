@@ -9,16 +9,11 @@ package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
-
-import java.util.function.DoubleSupplier;
 
 /**
  * An example command that uses an example subsystem.
@@ -102,7 +97,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                                 setpoint = m_turret.getMaxAngle();
                         }
                     }
-                    if (m_vision.getValidTarget()) {
+                    if (m_vision.getValidTarget() && m_turret.onTarget()) {
                         m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
                         m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
                     }
@@ -125,7 +120,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                         }
                     } else {
                         m_vision.ledsOff();
-                        if (m_turret.atTarget())
+                        if (m_turret.onTarget())
                             turning = false;
                     }
                 } else if (!m_vision.getValidTarget() && !joystickMoved) {
