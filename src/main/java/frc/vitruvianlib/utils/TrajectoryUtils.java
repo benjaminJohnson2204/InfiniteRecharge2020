@@ -1,0 +1,61 @@
+package frc.vitruvianlib.utils;
+
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
+import edu.wpi.first.wpilibj.util.Units;
+import frc.robot.commands.autonomous.VitruvianRamseteCommand;
+import frc.robot.subsystems.DriveTrain;
+
+import java.io.*;
+import java.util.ArrayList;
+
+public class TrajectoryUtils {
+    public static ArrayList<Pose2d> readCsvTrajectory(String filename) {
+        BufferedReader reader;
+        String fileLine;
+        String[] fields;
+        ArrayList<Pose2d> trajectoryPoints = new ArrayList<>();
+
+        try {
+            reader = new BufferedReader(new FileReader(filename));
+            while((fileLine = reader.readLine()) != null) {
+                fields = fileLine.split(",");
+                trajectoryPoints.add(new Pose2d(Double.parseDouble(fields[0]),
+                                                Double.parseDouble(fields[1]),
+                                                Rotation2d.fromDegrees(Double.parseDouble(fields[2]))));
+
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  trajectoryPoints;
+    }
+
+    public static VitruvianRamseteCommand generateRamseteCommand(DriveTrain driveTrain, ArrayList<Pose2d> path, TrajectoryConfig config) {
+        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(path, config);
+
+        VitruvianRamseteCommand followTrajectory = new VitruvianRamseteCommand(
+                trajectory,
+                driveTrain::getRobotPose,
+                new RamseteController(),
+                driveTrain.getFeedforward(),
+                driveTrain.getDriveTrainKinematics(),
+                driveTrain::getSpeeds,
+                driveTrain.getLeftPIDController(),
+                driveTrain.getRightPIDController(),
+                driveTrain::setVoltageOutput,
+                driveTrain,
+                path,
+                config
+        );
+        return followTrajectory;
+    }
+}
