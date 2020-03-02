@@ -45,11 +45,12 @@ public class TestPathFollowing extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
+    m_driveTrain.resetAngle();
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
 
     var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(-3), Rotation2d.fromDegrees(0));
+    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
 
     var trajectoryWaypoints = new ArrayList<Pose2d>();
     trajectoryWaypoints.add(startPosition);

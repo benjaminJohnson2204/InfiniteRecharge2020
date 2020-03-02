@@ -36,11 +36,11 @@ DriveTrain extends SubsystemBase {
     private double wheelDiameter = 0.5;
     private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 2048;
 
-    private double kS = 0.26;
-    private double kV = 2.22;
-    private double kA = 0.0329;
+    private double kS = 0.193;
+    private double kV = 2.24;
+    private double kA = 0.0181;
 
-    public double kP = 3.17;
+    public double kP = 1.7;
     public double kI = 0;
     public double kD = 0;
 
@@ -122,6 +122,10 @@ DriveTrain extends SubsystemBase {
 
     public double getHeading() {
         return Math.IEEEremainder(-navX.getAngle(), 360);
+    }
+
+    public void resetAngle() {
+        navX.zeroYaw();
     }
 
     public double getWheelDistanceMeters(int sensorIndex) {
