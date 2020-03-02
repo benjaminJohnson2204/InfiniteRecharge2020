@@ -7,12 +7,12 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import frc.robot.constants.Constants;
 import com.ctre.phoenix.music.Orchestra;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants;
 
-public class Orchestra1 extends SubsystemBase {
+public class TalonOrchestra extends SubsystemBase {
 
   private final TalonFX[] talons = {
           new TalonFX(Constants.leftRearDriveMotor),
@@ -23,9 +23,9 @@ public class Orchestra1 extends SubsystemBase {
           new TalonFX(Constants.flywheelMotorB)
   };
 
-  private Orchestra1 orchestra;
+  private Orchestra orchestra;
 
-  public Orchestra1() {
+  public TalonOrchestra() {
     for (TalonFX talon : talons) {
       orchestra.addInstrument(talon);
     }
