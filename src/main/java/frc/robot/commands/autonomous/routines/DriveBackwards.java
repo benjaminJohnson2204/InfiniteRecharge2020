@@ -25,7 +25,7 @@ public class DriveBackwards extends SequentialCommandGroup {
         path.add(new Pose2d(Units.feetToMeters(4),0, new Rotation2d()));
         var driveBackwards = TrajectoryUtils.generateRamseteCommand(driveTrain, path, config);
 
-
-        addCommands(new ResetOdometry(driveTrain), driveBackwards);
+        addCommands(new ResetOdometry(driveTrain),
+                driveBackwards);
     }
 }

@@ -7,8 +7,6 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
@@ -16,7 +14,7 @@ import frc.robot.subsystems.Vision;
 /**
  * An example command that uses an example subsystem.
  */
-public class SetRpmSetpoint extends CommandBase {
+public class SetAndHoldRpmSetpoint extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Shooter m_shooter;
   private final Vision m_vision;
@@ -25,7 +23,7 @@ public class SetRpmSetpoint extends CommandBase {
    * Creates a new ExampleCommand.
    *
    */
-  public SetRpmSetpoint(Shooter shooter, Vision vision, double RPM) {
+  public SetAndHoldRpmSetpoint(Shooter shooter, Vision vision, double RPM) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_shooter = shooter;
     m_RPM = RPM;
@@ -49,7 +47,6 @@ public class SetRpmSetpoint extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setRPM(-1);
   }
 
   // Returns true when the command should end.
