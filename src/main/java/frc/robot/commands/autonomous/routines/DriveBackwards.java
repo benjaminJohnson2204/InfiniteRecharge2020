@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.autonomous.GenerateRamseteCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.intake.TimedIntake;
 import frc.robot.commands.shooter.RapidFire;
@@ -26,6 +27,6 @@ public class DriveBackwards extends SequentialCommandGroup {
         var driveBackwards = TrajectoryUtils.generateRamseteCommand(driveTrain, path, config);
 
         addCommands(new ResetOdometry(driveTrain),
-                driveBackwards);
+                    driveBackwards);
     }
 }

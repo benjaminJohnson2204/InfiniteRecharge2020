@@ -200,6 +200,11 @@ public class Turret extends SubsystemBase {
 //    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
         SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
 
+//        try {
+//            SmartDashboardTab.putString("DriveTrain", "Turret Command", this.getCurrentCommand().getName());
+//        }catch (Exception e) {
+//
+//        }
 //    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
     }
 

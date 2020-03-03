@@ -26,9 +26,9 @@ public class TrajectoryUtils {
             reader = new BufferedReader(new FileReader(fullpath));
             while ((fileLine = reader.readLine()) != null) {
                 fields = fileLine.split(",");
-                trajectoryPoints.add(new Pose2d(Double.parseDouble(fields[0]),
-                        Double.parseDouble(fields[1]),
-                        Rotation2d.fromDegrees(Double.parseDouble(fields[2]))));
+                trajectoryPoints.add(new Pose2d(Units.feetToMeters(Double.parseDouble(fields[0])),
+                                                Units.feetToMeters(Double.parseDouble(fields[1])),
+                                                Rotation2d.fromDegrees(Double.parseDouble(fields[2]))));
 
             }
         } catch (FileNotFoundException e) {

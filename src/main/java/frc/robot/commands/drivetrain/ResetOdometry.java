@@ -29,7 +29,6 @@ public class ResetOdometry extends CommandBase {
   public ResetOdometry(DriveTrain driveTrain) {
     m_driveTrain = driveTrain;
 
-
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
   }
@@ -39,7 +38,7 @@ public class ResetOdometry extends CommandBase {
   public void initialize() {
     m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
-    m_driveTrain.navX.reset();
+    m_driveTrain.resetAngle();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

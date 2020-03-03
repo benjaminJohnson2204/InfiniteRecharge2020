@@ -34,13 +34,12 @@ DriveTrain extends SubsystemBase {
     private double gearRatioLow = 1 / 7.49;
     private double gearRatioHigh = 1 / 14.14;
     private double wheelDiameter = 0.5;
-    private double ticksPerMeter = Units.feetToMeters(wheelDiameter * Math.PI) / 2048;
 
-    private double kS = 0.193;
-    private double kV = 2.24;
-    private double kA = 0.0181;
+    private double kS = 0.19;
+    private double kV = 2.23;
+    private double kA = 0.0289;
 
-    public double kP = 1.7;
+    public double kP = 1.33;
     public double kI = 0;
     public double kD = 0;
 
@@ -64,7 +63,7 @@ DriveTrain extends SubsystemBase {
     public AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
-    DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    DifferentialDriveOdometry odometry;
 
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
@@ -76,8 +75,8 @@ DriveTrain extends SubsystemBase {
     public DriveTrain(PowerDistributionPanel pdp) {
         for (TalonFX motor : driveMotors) {
             motor.configFactoryDefault();
-            motor.configVoltageCompSaturation(12);
-            motor.enableVoltageCompensation(true);
+//            motor.configVoltageCompSaturation(12);
+//            motor.enableVoltageCompensation(true);
             // motor.configGetSupplyCurrentLimit(30);
             // motor.configPeakCurrentLimit(40);
             // motor.configPeakCurrentDuration(1000);
@@ -110,6 +109,7 @@ DriveTrain extends SubsystemBase {
 
         m_pdp = pdp;
         //initShuffleboardValues();
+        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     }
 
     public int getEncoderCount(int sensorIndex) {
@@ -129,7 +129,9 @@ DriveTrain extends SubsystemBase {
     }
 
     public double getWheelDistanceMeters(int sensorIndex) {
-        return driveMotors[sensorIndex].getSelectedSensorPosition() * ticksPerMeter;
+        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+
+        return (driveMotors[sensorIndex].getSelectedSensorPosition() / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
     }
 
     public double getMotorInputCurrent(int motorIndex) {
@@ -174,9 +176,9 @@ DriveTrain extends SubsystemBase {
     }
 
     public void setVoltageOutput(double leftVoltage, double rightVoltage) {
-        setMotorPercentOutput(leftVoltage / m_pdp.getVoltage(), rightVoltage / m_pdp.getVoltage());
         SmartDashboardTab.putNumber("DriveTrain", "Left Voltage", leftVoltage);
         SmartDashboardTab.putNumber("DriveTrain", "Right Voltage", rightVoltage);
+        setMotorPercentOutput(leftVoltage / m_pdp.getVoltage(), rightVoltage / m_pdp.getVoltage());
     }
 
     private void setMotorPercentOutput(double leftOutput, double rightOutput) {
@@ -224,7 +226,7 @@ DriveTrain extends SubsystemBase {
         double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
 
         double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-        double rightMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+        double rightMetersPerSecond = (driveMotors[2].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
 
         // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
         return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);

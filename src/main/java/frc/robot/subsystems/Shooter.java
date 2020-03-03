@@ -174,7 +174,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboardTab.putNumber("Shooter", "Setpoint", setpoint);
         SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
 
-
+        SmartDashboardTab.putBoolean("DriveTrain", "CanShoot", canShoot());
     }
 
     public void updatePIDValues() {

@@ -38,6 +38,12 @@ public class VitruvianRamseteCommand extends RamseteCommand {
     }
 
     @Override
+    public void execute() {
+        super.execute();
+        SmartDashboardTab.putBoolean("DriveTrain", "isRunning", true);
+    }
+
+    @Override
     public void initialize() {
         super.initialize();
         autoStartTime = Timer.getFPGATimestamp();
@@ -59,8 +65,14 @@ public class VitruvianRamseteCommand extends RamseteCommand {
         double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_path.get(m_path.size() - 1).getTranslation().getX()));
         double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_path.get(m_path.size() - 1).getTranslation().getY()));
         double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_path.get(m_path.size() - 1).getRotation().getDegrees());
-        boolean isFinished = ((deltaX < 0.25) && (deltaY < 0.25) && (deltaRot < 2)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
+        boolean isFinished = ((deltaX < 0.25) && (deltaY < 0.25) && (deltaRot < 4)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
         SmartDashboardTab.putBoolean("DriveTrain", "Ramsete Command Finished", isFinished);
         return isFinished;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        SmartDashboardTab.putBoolean("DriveTrain", "isRunning", false);
     }
 }
