@@ -98,7 +98,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
 //                                setpoint = m_turret.getMaxAngle();
                         }
                     }
-                    if (m_vision.getValidTarget() && m_turret.onTarget()) {
+                    if (m_vision.getValidTarget() && Math.abs(m_vision.getFilteredTargetX()) < 20) {
                         m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
                         m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
                     }
