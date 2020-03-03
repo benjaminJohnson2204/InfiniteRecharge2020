@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class DriveBackwards extends SequentialCommandGroup {
     public DriveBackwards(DriveTrain driveTrain) {
         TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
-        config.setReversed(true);
+        config.setReversed(false);
         ArrayList<Pose2d> path = new ArrayList<>();
         path.add(new Pose2d(0,0, new Rotation2d()));
         path.add(new Pose2d(Units.feetToMeters(4),0, new Rotation2d()));
