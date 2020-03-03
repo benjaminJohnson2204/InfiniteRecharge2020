@@ -46,6 +46,7 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
 
         addCommands(
                 new ResetOdometry(driveTrain),
+                new SetDriveShifters(driveTrain, false),
                 new SetAndHoldRpmSetpoint(shooter, vision, 3500),
                 new SetTurretRobotRelativeAngle(turret, -25),
                 new AutoUseVisionCorrection(turret, vision),
