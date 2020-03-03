@@ -79,10 +79,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             setpoint = 360 - Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
 
                         if (setpoint > m_turret.getMaxAngle()) {
-                            setpoint -= 360;
-                            if (setpoint < m_turret.getMinAngle())
-                                setpoint = m_turret.getMinAngle();
-                            direction = false;
+                            setpoint = m_turret.getMaxAngle();
+//                            setpoint -= 360;
+//                            if (setpoint < m_turret.getMinAngle())
+//                                setpoint = m_turret.getMinAngle();
+//                            direction = false;
                         }
                     } else {
                         if (m_controller.getRawAxis(0) < 0)
@@ -91,10 +92,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             setpoint = -360 + Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
 
                         if (setpoint < m_turret.getMinAngle()) {
-                            direction = true;
-                            setpoint += 360;
-                            if (setpoint > m_turret.getMaxAngle())
-                                setpoint = m_turret.getMaxAngle();
+                            setpoint = m_turret.getMinAngle();
+//                            setpoint += 360;
+//                            if (setpoint > m_turret.getMaxAngle())
+//                                setpoint = m_turret.getMaxAngle();
                         }
                     }
                     if (m_vision.getValidTarget() && m_turret.onTarget()) {
@@ -108,15 +109,17 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                         setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
                         if (setpoint > m_turret.getMaxAngle()) {
-                            setpoint -= 360;
-                            if (setpoint < m_turret.getMinAngle())
-                                setpoint = m_turret.getMinAngle();
-                            turning = true;
+                            setpoint = m_turret.getMaxAngle();
+//                            setpoint -= 360;
+//                            if (setpoint < m_turret.getMinAngle())
+//                                setpoint = m_turret.getMinAngle();
+//                            turning = true;
                         } else if (setpoint < m_turret.getMinAngle()) {
-                            setpoint += 360;
-                            if (setpoint > m_turret.getMaxAngle())
-                                setpoint = m_turret.getMaxAngle();
-                            turning = true;
+                            setpoint = m_turret.getMinAngle();
+//                            setpoint += 360;
+//                            if (setpoint > m_turret.getMaxAngle())
+//                                setpoint = m_turret.getMaxAngle();
+//                            turning = true;
                         }
                     } else {
                         m_vision.ledsOff();
