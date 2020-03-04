@@ -55,8 +55,8 @@ public class RobotContainer {
     private final Intake m_intake = new Intake();
     private final Indexer m_indexer = new Indexer();
     private final Turret m_turret = new Turret(m_driveTrain);
-    private final Shooter m_shooter = new Shooter(pdp);
     private final Vision m_vision = new Vision();
+    private final Shooter m_shooter = new Shooter(m_vision, pdp);
     private final Climber m_climber = new Climber();
     private final Skyhook m_skyhook = new Skyhook();
     private final ColorSensor m_colorSensor = new ColorSensor();

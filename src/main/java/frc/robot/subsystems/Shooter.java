@@ -57,11 +57,12 @@ public class Shooter extends SubsystemBase {
     private boolean canShoot;
 
     private PowerDistributionPanel m_pdp;
+    private Vision m_vision;
 
 //    public PIDController flywheelController = new PIDController(kP, kI, kD);
 //    public SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
-    public Shooter(PowerDistributionPanel pdp) {
+    public Shooter(Vision vision, PowerDistributionPanel pdp) {
         for (TalonFX outtakeMotor : outtakeMotors) {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
@@ -81,7 +82,8 @@ public class Shooter extends SubsystemBase {
         outtakeMotors[0].configClosedloopRamp(0.2);
         outtakeMotors[1].configClosedloopRamp(0);
         outtakeMotors[1].configOpenloopRamp(0);
-
+        
+        m_vision = vision;
         m_pdp = pdp;
 
         initShuffleboard();
@@ -197,19 +199,22 @@ public class Shooter extends SubsystemBase {
         updateShuffleboard();
 //        updatePIDValues();
 
-        if (Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance() && !timerStart) {
+        if ((Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance()) && m_vision.hasTarget() && 
+        		(Math.abs(m_vision.getTargetX()) < 1) && !timerStart) {
             timerStart = true;
             timestamp = Timer.getFPGATimestamp();
-        } else if (Math.abs(getSetpoint() - getRPM(0)) > getRPMTolerance() && timerStart) {
+        } else if (((Math.abs(getSetpoint() - getRPM(0)) > getRPMTolerance()) || !m_vision.hasTarget() || 
+        		(Math.abs(m_vision.getTargetX()) > 1)) && timerStart) {
             timestamp = 0;
             timerStart = false;
         }
 
         if (timestamp != 0) {
-            if (Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.1)
+            if (Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.6)
                 canShoot = true;
             else
                 canShoot = false;
+            
         } else
             canShoot = false;
     }
