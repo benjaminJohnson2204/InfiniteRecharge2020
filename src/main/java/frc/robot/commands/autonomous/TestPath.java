@@ -7,8 +7,6 @@
 
 package frc.robot.commands.autonomous;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -16,88 +14,54 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DriveTrain;
-import frc.vitruvianlib.utils.ReadCsvTrajectory;
 
 import java.util.ArrayList;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ReadTrajectory extends CommandBase {
+public class TestPath extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
   private Trajectory trajectory;
-  private String m_filename;
-  private boolean m_isInverted = false;
-  private DifferentialDriveKinematicsConstraint m_kinematicsConstraint;
+  private static double m_period = 0.02;
+  private Notifier m_notifier;
+  private ArrayList<Pose2d> m_path;
+  private boolean m_isInverted;
   /**
    * Creates a new ExampleCommand.
    *
    * @param driveTrain The subsystem used by this command.
    */
-
-  public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
+  public TestPath(DriveTrain driveTrain, ArrayList<Pose2d> path, boolean isInverted) {
     m_driveTrain = driveTrain;
+    m_path = path;
     m_isInverted = isInverted;
-    m_filename = filename;
-    m_kinematicsConstraint = kinematicsConstraint;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
-  }
-
-  public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted) {
-    m_driveTrain = driveTrain;
-    m_isInverted = isInverted;
-    m_filename = filename;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
-  }
-
-  public ReadTrajectory(DriveTrain driveTrain, String filename) {
-    m_driveTrain = driveTrain;
-    m_filename = filename;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveTrain);
+    addRequirements(m_driveTrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // Start position for all trajectories will be where the robot is currently
-    var startPosition = new Pose2d(m_driveTrain.getRobotPose().getTranslation().getX(),
-                                   m_driveTrain.getRobotPose().getTranslation().getY(),
-                                   Rotation2d.fromDegrees(m_driveTrain.navX.getAngle()));
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+    m_driveTrain.resetEncoderCounts();
 
-    String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename;
-    var fileTrajectory = ReadCsvTrajectory.readCsv(filePath);
-
-    var trajectoryWaypoints = new ArrayList<Pose2d>();
-    trajectoryWaypoints.add(startPosition);
-
-    // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
-    for(Pose2d point : fileTrajectory) {
-      if(point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0)
-        continue;
-
-      trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + startPosition.getTranslation().getX(),
-                                         startPosition.getTranslation().getY() + startPosition.getTranslation().getY(),
-                                            point.getRotation()));
-    }
+    var trajectoryConstraints = new DifferentialDriveKinematicsConstraint(m_driveTrain.getDriveTrainKinematics(),
+                                                    3);
 
     var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
 
-    if(m_kinematicsConstraint != null)
-      trajectoryConfig.addConstraint(m_kinematicsConstraint);
-
     trajectoryConfig.setReversed(m_isInverted);
 
-    trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
+    trajectory = TrajectoryGenerator.generateTrajectory(m_path, trajectoryConfig);
 
     RamseteCommand followTrajectory = new RamseteCommand(
             trajectory,

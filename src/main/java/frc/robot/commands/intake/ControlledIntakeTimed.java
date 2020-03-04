@@ -7,23 +7,16 @@
 
 package frc.robot.commands.intake;
 
-import com.team254.lib.util.MinTimeBoolean;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Enums.IntakeStates;
-
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-
-import javax.swing.*;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ControlledIntake extends CommandBase {
+public class ControlledIntakeTimed extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Indexer m_indexer;
   private final Intake m_intake;
@@ -33,15 +26,17 @@ public class ControlledIntake extends CommandBase {
   private double timestamp, intakeTimestamp, indexerTimestamp, fourBallTimestamp;
   private boolean intaking, haveFour, haveFourTripped;
 
+  private double startTime, m_duration;
   private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ControlledIntake(Intake intake, Indexer indexer) {
+  public ControlledIntakeTimed(Intake intake, Indexer indexer, double duration) {
     m_intake = intake;
     m_indexer = indexer;
+    m_duration = duration;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake);
     addRequirements(indexer);
@@ -50,6 +45,7 @@ public class ControlledIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    startTime = Timer.getFPGATimestamp();
     m_intake.setIntakingState(true);
     timestamp = Timer.getFPGATimestamp();
 
@@ -145,6 +141,6 @@ public class ControlledIntake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Timer.getFPGATimestamp() > (startTime + m_duration);
   }
 }

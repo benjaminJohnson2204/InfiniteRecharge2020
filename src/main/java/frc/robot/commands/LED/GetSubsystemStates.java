@@ -95,7 +95,9 @@ public class GetSubsystemStates extends CommandBase {
   }
 
   private boolean isRobotReady() {
-    if(m_turret.getInitialHome()) // && PSI is high (?). Save for comp
+    if(DriverStation.getInstance().isFMSAttached() && m_turret.getInitialHome() && m_controls.isPressureGood() == "Closed") // && PSI is high (?). Save for comp
+      return true;
+    else if(m_turret.getInitialHome()) // && PSI is high (?). Save for comp
       return true;
     else
       return false;

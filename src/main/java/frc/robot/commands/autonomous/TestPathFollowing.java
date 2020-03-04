@@ -26,7 +26,7 @@ import java.util.ArrayList;
 /**
  * An example command that uses an example subsystem.
  */
-public class TestPathFollowing extends CommandBase implements Runnable {
+public class TestPathFollowing extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
   private Trajectory trajectory;
@@ -45,11 +45,12 @@ public class TestPathFollowing extends CommandBase implements Runnable {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
     m_driveTrain.resetEncoderCounts();
+    m_driveTrain.resetAngle();
+    m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
 
     var startPosition = new Pose2d(Units.feetToMeters(0), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(-3), Rotation2d.fromDegrees(0));
+    var stopPosition = new Pose2d(Units.feetToMeters(6), Units.feetToMeters(0), Rotation2d.fromDegrees(0));
 
     var trajectoryWaypoints = new ArrayList<Pose2d>();
     trajectoryWaypoints.add(startPosition);
@@ -62,12 +63,9 @@ public class TestPathFollowing extends CommandBase implements Runnable {
 
     var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(4));
 
-    trajectoryConfig.setReversed(false);
+    trajectoryConfig.setReversed(true);
 
     trajectory = TrajectoryGenerator.generateTrajectory(trajectoryWaypoints, trajectoryConfig);
-
-    m_notifier = new Notifier(this);
-    m_notifier.startPeriodic(m_period);
 
     RamseteCommand followTrajectory = new RamseteCommand(
             trajectory,
@@ -82,11 +80,6 @@ public class TestPathFollowing extends CommandBase implements Runnable {
             m_driveTrain
     );
     CommandScheduler.getInstance().schedule(followTrajectory);
-  }
-
-  @Override
-  public void run() {
-
   }
 
   // Called once the command ends or is interrupted.

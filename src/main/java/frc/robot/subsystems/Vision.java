@@ -40,9 +40,10 @@ public class Vision extends SubsystemBase {
 	    CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
 
 	    // TODO: What port does opensight use?
-		PortForwarder.add(6000, "opensight.local", 80);
+		PortForwarder.add(6000, "opensight.local", 22);
 		PortForwarder.add(5800, "10.42.1.11", 5800);
 		PortForwarder.add(5801, "10.42.1.11", 5801);
+		PortForwarder.add(5805, "10.42.1.11", 5805);
 
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
@@ -197,10 +198,9 @@ public class Vision extends SubsystemBase {
 	}
 
     public double getPowerCellX() {
-        double pixels = openSight.getEntry("found-x").getDouble(0);
-
-        // Convert to degrees (5.839 pixels per degree)
-        return pixels * 5.839;
+        // TODO: Calculate degrees from pixels?
+        // return openSight.getEntry("found-x").getDouble(0) * 5.839; // 5.839 pixels per degree
+        return openSight.getEntry("found-x").getDouble(0);
     }
 
 	public boolean hasPowerCell() {

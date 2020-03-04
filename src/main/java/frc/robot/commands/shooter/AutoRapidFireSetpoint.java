@@ -16,26 +16,25 @@ import frc.robot.subsystems.Shooter;
 /**
  * An example command that uses an example subsystem.
  */
-public class RapidFire extends CommandBase {
+public class AutoRapidFireSetpoint extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Shooter m_shooter;
     private final Indexer m_indexer;
     private final Intake m_intake;
-    private double startTime, timestamp;
+    private double startTime, m_timeout;
     private boolean timerStart;
-    private double m_rpm;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param RobotContainer.m_shooter The subsystem used by this command.
      */
-    public RapidFire(Shooter shooter, Indexer indexer, Intake intake, double rpm) {
+    public AutoRapidFireSetpoint(Shooter shooter, Indexer indexer, Intake intake, double timeout) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_shooter = shooter;
         m_indexer = indexer;
         m_intake = intake;
-        m_rpm = rpm;
+        m_timeout = timeout;
         addRequirements(shooter);
         addRequirements(indexer);
         addRequirements(intake);
@@ -50,22 +49,11 @@ public class RapidFire extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        m_shooter.setRPM(m_rpm);
-
-        if (Math.abs(m_rpm - m_shooter.getTestRPM()) < m_shooter.getRPMTolerance() && !timerStart) {
-            timerStart = true;
-            timestamp = Timer.getFPGATimestamp();
-        } else if (Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) > m_shooter.getRPMTolerance() && timerStart) {
-            timestamp = 0;
-            timerStart = false;
+        if (m_shooter.canShoot() || (Timer.getFPGATimestamp() - startTime) > ((m_timeout / 2.0) < 1 ? 1 : (m_timeout / 2.0))) {
+            m_indexer.setIndexerOutput(1);
+            m_indexer.setKickerOutput(1);
+            m_intake.setIntakePercentOutput(1);
         }
-
-        if (timestamp != 0 || Timer.getFPGATimestamp() - startTime > 3)
-            if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1 || Timer.getFPGATimestamp() - startTime > 2) {
-                m_indexer.setIndexerOutput(1);
-                m_indexer.setKickerOutput(1);
-                m_intake.setIntakePercentOutput(1);
-            }
     }
 
     // Called once the command ends or is interrupted.
@@ -80,6 +68,6 @@ public class RapidFire extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (false);
+        return (Timer.getFPGATimestamp() - startTime) > m_timeout;
     }
 }
