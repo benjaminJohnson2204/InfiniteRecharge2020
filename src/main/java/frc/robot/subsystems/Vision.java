@@ -42,8 +42,9 @@ public class Vision extends SubsystemBase {
 	UsbCamera camera;
 
 	public Vision() {
+//		camera = CameraServer.getInstance().startAutomaticCapture();
 		camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
-//	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
 	    camera.setExposureManual(25);
 	    camera.setResolution(320, 240);
 	    camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);

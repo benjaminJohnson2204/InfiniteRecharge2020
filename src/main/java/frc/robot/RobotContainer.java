@@ -76,15 +76,9 @@ public class RobotContainer {
 
     private enum CommandSelector {
         DRIVE_STRAIGHT,
-        TEST_PATH,
-        FULL_PATH,
-        ENEMY_PATH,
-        CENTER_PATH,
-        debug1,
-        debug2,
-        TEST_SEQUENTIAL_FORWARD_AUTO,
-        TEST_SEQUENTIAL_SWITCHING_AUTO,
-        TEST_SEQUENTIAL_REVERSE_AUTO
+        ALLIANCE_TRENCH_STRAIGHT,
+        ALLIANCE_TRENCH_SPLINE,
+        ENEMY_TRENCH,
     }
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
@@ -105,8 +99,9 @@ public class RobotContainer {
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
                         entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
+                        entry(CommandSelector.ALLIANCE_TRENCH_STRAIGHT, new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))
 //                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
-                        entry(CommandSelector.FULL_PATH, new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))
+//                        entry(CommandSelector.FULL_PATH, new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))
 //                        entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
 //                        entry(CommandSelector.debug1, new ReadTrajectoryOld(m_driveTrain, "init4Enemy1", true)),
 //                        entry(CommandSelector.debug2, new ReadTrajectoryOld(m_driveTrain, "enemy1Shooting1")),
