@@ -94,34 +94,32 @@ public class RobotContainer {
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        initializeSubsystems();
-        configureButtonBindings();
+        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
+        for (Enum commandEnum : CommandSelector.values())
+            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
+
+        SmartDashboard.putData(m_autoChooser);
 
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
                         entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
-//                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
-                        entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))
-//                        entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-//                        entry(CommandSelector.debug1, new ReadTrajectoryOld(m_driveTrain, "init4Enemy1", true)),
-//                        entry(CommandSelector.debug2, new ReadTrajectoryOld(m_driveTrain, "enemy1Shooting1")),
-//                        entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
-//                        entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
-//                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
-//                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
+                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
+                        entry(CommandSelector.FULL_PATH, new AllyTrenchPath(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision)),
+                        entry(CommandSelector.ENEMY_PATH, new EnemyAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+                        entry(CommandSelector.debug1, new ReadTrajectoryOld(m_driveTrain, "init4Enemy1", true)),
+                        entry(CommandSelector.debug2, new ReadTrajectoryOld(m_driveTrain, "enemy1Shooting1")),
+                        entry(CommandSelector.CENTER_PATH, new CenterAutoPath(m_driveTrain, m_shooter, m_indexer, m_intake, m_turret)),
+                        entry(CommandSelector.TEST_SEQUENTIAL_FORWARD_AUTO, new TestSequentialForward(m_driveTrain)),
+                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
+                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
                 ),
                 this::selectCommand
         );
 
-        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-        for (Enum commandEnum : CommandSelector.values())
-            if (commandEnum != CommandSelector.DRIVE_STRAIGHT) {
-                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
-            }
-
-        SmartDashboard.putData(m_autoChooser);
-
+        initializeSubsystems();
         // Configure the button bindings
+        configureButtonBindings();
     }
 
     public void initializeSubsystems() {
@@ -172,7 +170,7 @@ public class RobotContainer {
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
 
         xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
-        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // B - Set RPM Medium
+        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
         xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
         xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
 

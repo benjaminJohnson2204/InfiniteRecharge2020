@@ -79,11 +79,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             setpoint = 360 - Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
 
                         if (setpoint > m_turret.getMaxAngle()) {
-                            setpoint = m_turret.getMaxAngle();
-//                            setpoint -= 360;
-//                            if (setpoint < m_turret.getMinAngle())
-//                                setpoint = m_turret.getMinAngle();
-//                            direction = false;
+//                            setpoint = m_turret.getMaxAngle(); //if there is an overlap, use this and comment out the 4 following lines.
+                            setpoint -= 360;
+                            if (setpoint < m_turret.getMinAngle())
+                                setpoint = m_turret.getMinAngle();
+                            direction = false;
                         }
                     } else {
                         if (m_controller.getRawAxis(0) < 0)
@@ -92,10 +92,11 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                             setpoint = -360 + Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
 
                         if (setpoint < m_turret.getMinAngle()) {
-                            setpoint = m_turret.getMinAngle();
-//                            setpoint += 360;
-//                            if (setpoint > m_turret.getMaxAngle())
-//                                setpoint = m_turret.getMaxAngle();
+//                            setpoint = m_turret.getMinAngle();
+                            setpoint += 360;
+                            if (setpoint > m_turret.getMaxAngle())
+                                setpoint = m_turret.getMaxAngle();
+                            direction = true;
                         }
                     }
                     if (m_vision.getValidTarget() && Math.abs(m_vision.getFilteredTargetX()) < 20) {
