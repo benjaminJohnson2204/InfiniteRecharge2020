@@ -23,6 +23,7 @@ public class GetSubsystemStates extends CommandBase {
   private final Vision m_vision;
   private final Turret m_turret;
   private final Climber m_climber;
+  private final ColorSensor m_colorSensor;
   private final Controls m_controls;
   private final RobotContainer m_robotContainer;
 
@@ -31,7 +32,7 @@ public class GetSubsystemStates extends CommandBase {
    *
    * @param The subsystem used by this command.
    */
-  public GetSubsystemStates(RobotContainer robotContainer, LED led, Indexer indexer, Intake intake, Vision vision, Turret turret, Climber climber, Controls controls) {
+  public GetSubsystemStates(RobotContainer robotContainer, LED led, Indexer indexer, Intake intake, Vision vision, Turret turret, Climber climber, ColorSensor colorSensor, Controls controls) {
     m_robotContainer = robotContainer;
     m_led = led;
     m_indexer = indexer;
@@ -39,6 +40,7 @@ public class GetSubsystemStates extends CommandBase {
     m_vision = vision;
     m_turret = turret;
     m_climber = climber;
+    m_colorSensor = colorSensor;
     m_controls = controls;
     // Use addRequirements() here to declare subsystem dependencies.    
     addRequirements(led);
@@ -69,7 +71,11 @@ public class GetSubsystemStates extends CommandBase {
       } else {
         if (m_climber.getClimbState()) {
           m_led.setState(0);
-        } else if (m_intake.getIntakingState()) {
+        } 
+        else if(m_colorSensor.working) {
+          m_led.setState(9);
+        }
+        else if (m_intake.getIntakingState()) {
           if (m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIntakeSensor()) {
             m_led.setState(2);
           } else if (m_indexer.newBall()) {
