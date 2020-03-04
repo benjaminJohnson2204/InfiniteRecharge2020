@@ -60,7 +60,8 @@ public class RobotContainer {
     private final Vision m_vision = new Vision();
     private final Climber m_climber = new Climber();
     private final Skyhook m_skyhook = new Skyhook();
-    private final LED m_led = new LED();
+    private final ColorSensor m_colorSensor = new ColorSensor();
+    private final LED m_led = new LED(m_colorSensor);
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
 
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
@@ -130,7 +131,7 @@ public class RobotContainer {
                 () -> leftJoystick.getRawAxis(1),
                 () -> rightJoystick.getRawAxis(0)));
 
-        m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_controls));
+        m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_colorSensor, m_controls));
 
         m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber, xBoxController));
 
