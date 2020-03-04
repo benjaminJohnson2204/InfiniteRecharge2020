@@ -72,14 +72,14 @@ public class ReadTrajectoryOld extends CommandBase {
     @Override
     public void initialize() {
         trajectoryWaypoints = new ArrayList<Pose2d>();
-        m_driveTrain.navX.reset();
+        m_driveTrain.resetAngle();
         m_driveTrain.setDriveTrainNeutralMode(1);
         m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
         m_driveTrain.resetEncoderCounts();
         // Start position for all trajectories will be where the robot is currently
         var startPosition = new Pose2d(m_driveTrain.getRobotPose().getTranslation().getX(),
                 m_driveTrain.getRobotPose().getTranslation().getY(),
-                Rotation2d.fromDegrees(m_driveTrain.navX.getAngle()));
+                Rotation2d.fromDegrees(m_driveTrain.getAngle()));
 
         String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename + ".csv";
         var fileTrajectory = TrajectoryUtils.readCsvTrajectory(filePath);

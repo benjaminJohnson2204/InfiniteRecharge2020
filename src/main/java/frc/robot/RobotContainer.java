@@ -94,8 +94,12 @@ public class RobotContainer {
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        initializeSubsystems();
-        configureButtonBindings();
+        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
+        for (Enum commandEnum : CommandSelector.values())
+            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
+
+        SmartDashboard.putData(m_autoChooser);
 
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
@@ -113,15 +117,9 @@ public class RobotContainer {
                 this::selectCommand
         );
 
-        m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-        for (Enum commandEnum : CommandSelector.values())
-            if (commandEnum != CommandSelector.DRIVE_STRAIGHT) {
-                m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
-            }
-
-        SmartDashboard.putData(m_autoChooser);
-
+        initializeSubsystems();
         // Configure the button bindings
+        configureButtonBindings();
     }
 
     public void initializeSubsystems() {

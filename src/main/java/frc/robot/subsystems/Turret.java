@@ -102,7 +102,7 @@ public class Turret extends SubsystemBase {
     }
 
     public double getFieldRelativeAngle() {
-        return getTurretAngle() - m_driveTrain.navX.getAngle();
+        return getTurretAngle() - m_driveTrain.getAngle();
     }
 
     public double getMaxAngle() {
@@ -134,7 +134,7 @@ public class Turret extends SubsystemBase {
     }
 
     public void setFieldCentricSetpoint(double setpoint) {
-        setpoint -= m_driveTrain.navX.getAngle();
+        setpoint -= m_driveTrain.getAngle();
 
         if (setpoint > getMaxAngle())
             setpoint -= 360;

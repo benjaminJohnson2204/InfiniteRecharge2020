@@ -60,7 +60,7 @@ DriveTrain extends SubsystemBase {
     };
 
     DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
-    public AHRS navX = new AHRS(SerialPort.Port.kMXP);
+    private AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
     DifferentialDriveOdometry odometry;
