@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -36,8 +38,13 @@ public class Vision extends SubsystemBase {
 
 	SlewRateLimiter targetXFilter = new SlewRateLimiter(20);
 
+	UsbCamera camera;
 	public Vision() {
-	    CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
+		camera = CameraServer.getInstance().startAutomaticCapture();
+	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+	    camera.setExposureManual(25);
+	    camera.setResolution(320, 160);
+		//CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
 
 	    // TODO: What port does opensight use?
 		PortForwarder.add(6000, "opensight.local", 22);

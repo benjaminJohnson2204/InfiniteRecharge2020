@@ -31,8 +31,8 @@ import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
-    private double gearRatioLow = 1 / 7.49;
-    private double gearRatioHigh = 1 / 14.14;
+    private double gearRatioLow = 1 / 14.14;
+    private double gearRatioHigh = 1 / 7.49;
     private double wheelDiameter = 0.5;
 
     private double kS = 0.19;

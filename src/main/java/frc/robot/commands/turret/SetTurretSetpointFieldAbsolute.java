@@ -9,6 +9,8 @@ package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
@@ -67,37 +69,48 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                     m_vision.setLastValidTargetTime();
                     joystickMoved = true;
 
-                    if (!directionTripped) {
-                        direction = m_controller.getRawAxis(1) < 0;
-                        directionTripped = true;
-                    }
+                    if (m_controller.getRawAxis(0) >= 0)
+                        setpoint = -Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+                    else
+                        setpoint = Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
 
-                    if (direction) {
-                        if (m_controller.getRawAxis(0) >= 0)
-                            setpoint = -Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
-                        else
-                            setpoint = 360 - Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+                    if(setpoint > m_turret.getMaxAngle())
+                        setpoint = m_turret.getMaxAngle();
 
-                        if (setpoint > m_turret.getMaxAngle()) {
-                            setpoint = m_turret.getMaxAngle();
-//                            setpoint -= 360;
-//                            if (setpoint < m_turret.getMinAngle())
-//                                setpoint = m_turret.getMinAngle();
-//                            direction = false;
-                        }
-                    } else {
-                        if (m_controller.getRawAxis(0) < 0)
-                            setpoint = Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
-                        else
-                            setpoint = -360 + Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
-
-                        if (setpoint < m_turret.getMinAngle()) {
-                            setpoint = m_turret.getMinAngle();
-//                            setpoint += 360;
-//                            if (setpoint > m_turret.getMaxAngle())
-//                                setpoint = m_turret.getMaxAngle();
-                        }
-                    }
+                    if(setpoint < m_turret.getMinAngle())
+                        setpoint = m_turret.getMinAngle();
+//                    if (!directionTripped) {
+//                        direction = m_controller.getRawAxis(1) < 0;
+//                        directionTripped = true;
+//                    }
+//
+//                    if (direction) {
+//                        if (m_controller.getRawAxis(0) >= 0)
+//                            setpoint = -Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+//                        else
+//                            setpoint = 360 - Math.toDegrees(Math.atan2(-m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+//
+//                        if (setpoint > m_turret.getMaxAngle()) {
+//                            setpoint = m_turret.getMaxAngle();
+////                            setpoint -= 360;
+////                            if (setpoint < m_turret.getMinAngle())
+////                                setpoint = m_turret.getMinAngle();
+////                            direction = false;
+//                        }
+//                    } else {
+//                        if (m_controller.getRawAxis(0) < 0)
+//                            setpoint = Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+//                        else
+//                            setpoint = -360 + Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
+//
+//                        if (setpoint < m_turret.getMinAngle()) {
+//                            setpoint = m_turret.getMinAngle();
+////                            setpoint += 360;
+////                            if (setpoint > m_turret.getMaxAngle())
+////                                setpoint = m_turret.getMaxAngle();
+////                            direction = true;
+//                        }
+//                    }
                     if (m_vision.getValidTarget() && Math.abs(m_vision.getFilteredTargetX()) < 20) {
                         m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
                         m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
@@ -135,7 +148,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                     m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
                     m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
                 }
-
+//                SmartDashboardTab.putNumber("Turret", "Angle Setpoint", setpoint);
                 m_turret.setRobotCentricSetpoint(setpoint);
 //                m_turret.setFieldCentricSetpoint(setpoint);
             } else {
