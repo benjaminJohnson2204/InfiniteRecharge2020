@@ -23,8 +23,8 @@ import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
 import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.TrajectoryUtils;
 
-public class AllyTrenchPath extends SequentialCommandGroup {
-    public AllyTrenchPath(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision) {
+public class AllyTrenchPathStraight extends SequentialCommandGroup {
+    public AllyTrenchPathStraight(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision) {
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(11), Units.feetToMeters(20));
         configA.setReversed(true);
         configA.setEndVelocity(0);
