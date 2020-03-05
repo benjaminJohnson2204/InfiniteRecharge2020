@@ -22,77 +22,71 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
 public class ColorSensor extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  public boolean practiceField = true;
-  public boolean isColor = false;
-  public boolean working = false;
-  public int semiRotations = 0;
-  public int realIntervals = 0;
-  private int colorID;
-  public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
-  public TalonSRX motor = new TalonSRX(Constants.colorWheelMotor);
-  
-  public ColorSensor() {
-    motor.setNeutralMode(NeutralMode.Brake);
-  }
+    /**
+     * Creates a new ExampleSubsystem.
+     */
+    public boolean practiceField = true;
+    public boolean isColor = false;
+    public boolean working = false;
+    public int semiRotations = 0;
+    public int realIntervals = 0;
+    private int colorID;
+    public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
+    public TalonSRX motor = new TalonSRX(Constants.colorWheelMotor);
 
-  public Color getColor() {
-    return sensor.getColor();
-  }
-
-  public double getIR() {
-    return sensor.getIR();
-  }
-
-  public int getProximity() {
-    return sensor.getProximity();
-  }
-
-  public int panelColor(){ // none = 0; red = 1; green = 2; blue = 3; yellow = 4
-    if(practiceField){
-      if(getColor().red > getColor().green && getColor().green * 1.8 > getColor().red){
-        return 1;
-      }
-      if(getColor().red * 2.26 < getColor().green && getColor().blue * 2.16 < getColor().green){
-        return 2;
-      }
-      if(getColor().blue * 1.25 > getColor().green && getColor().blue * 1.02 < getColor().green && getColor().blue > getColor().red * 1.89){
-        return 3;
-      }
-      if(getColor().red * 1.83 > getColor().green && getColor().red * 1.1 < getColor().green && getColor().red > getColor().blue * 1.86){
-        return 4;
-      }
-      else
-        return 0;
+    public ColorSensor() {
+        motor.setNeutralMode(NeutralMode.Brake);
     }
-    else {
-      if(getColor().red > getColor().blue * 3 && getColor().red > getColor().green * 1.33){
-        return 1;
-      }
-      else if(getColor().green > getColor().red * 2.75 && getColor().green > getColor().blue * 1.8){
-        return 2;
-      }
-      else if(getColor().blue < getColor().green * 1.15 && getColor().green < getColor().blue * 1.15 && getColor().blue > getColor().red * 2.5){
-        return 3;
-      }
-      else if(getColor().green < getColor().red * 1.8 && getColor().green > getColor().red * 1.65){
-        return 4;
-      }
-      else
-        return 0;
+
+    public Color getColor() {
+        return sensor.getColor();
     }
-  }
 
-  public void resetRotationControlVars(){
-    isColor = true;
-    semiRotations = 0;
-    realIntervals = 0;
-    colorID = panelColor();
-  }
+    public double getIR() {
+        return sensor.getIR();
+    }
 
-  public boolean rotationControlComplete(){
+    public int getProximity() {
+        return sensor.getProximity();
+    }
+
+    public int panelColor() { // none = 0; red = 1; green = 2; blue = 3; yellow = 4
+        if (practiceField) {
+            if (getColor().red > getColor().green && getColor().green * 1.8 > getColor().red) {
+                return 1;
+            }
+            if (getColor().red * 2.26 < getColor().green && getColor().blue * 2.16 < getColor().green) {
+                return 2;
+            }
+            if (getColor().blue * 1.25 > getColor().green && getColor().blue * 1.02 < getColor().green && getColor().blue > getColor().red * 1.89) {
+                return 3;
+            }
+            if (getColor().red * 1.83 > getColor().green && getColor().red * 1.1 < getColor().green && getColor().red > getColor().blue * 1.86) {
+                return 4;
+            } else
+                return 0;
+        } else {
+            if (getColor().red > getColor().blue * 3 && getColor().red > getColor().green * 1.33) {
+                return 1;
+            } else if (getColor().green > getColor().red * 2.75 && getColor().green > getColor().blue * 1.8) {
+                return 2;
+            } else if (getColor().blue < getColor().green * 1.15 && getColor().green < getColor().blue * 1.15 && getColor().blue > getColor().red * 2.5) {
+                return 3;
+            } else if (getColor().green < getColor().red * 1.8 && getColor().green > getColor().red * 1.65) {
+                return 4;
+            } else
+                return 0;
+        }
+    }
+
+    public void resetRotationControlVars() {
+        isColor = true;
+        semiRotations = 0;
+        realIntervals = 0;
+        colorID = panelColor();
+    }
+
+    public boolean rotationControlComplete() {
     /*if(panelColor() == colorID && isColor == false){
       isColor = true;
       semiRotations++;
@@ -103,71 +97,72 @@ public class ColorSensor extends SubsystemBase {
       return true;
     } else
       return false;*/
-    if(panelColor() != colorID && panelColor() != 0){
-      colorID = panelColor();
-      realIntervals++;
+        if (panelColor() != colorID && panelColor() != 0) {
+            colorID = panelColor();
+            realIntervals++;
+        }
+        if (realIntervals > 24)
+            return true;
+        else
+            return false;
     }
-    if(realIntervals > 24)
-      return true;
-    else
-      return false;
-  }
 
-  public void setOutput(double output){
-    motor.set(ControlMode.PercentOutput, output);
-  }
-
-  public int getFMSColor() {
-    String message = DriverStation.getInstance().getGameSpecificMessage();
-    switch(message){
-      case "R":
-        return 1;
-      case "G":
-        return 2;
-      case "B":
-        return 3;
-      case "Y":
-        return 4;
-      default:
-        return -1;
+    public void setOutput(double output) {
+        motor.set(ControlMode.PercentOutput, output);
     }
-  }
-  
-  public void updateSmartDashboard() {
-    String colorName = "Not Close Enough";
-    SmartDashboard.putNumber("Red", getColor().red);
-    SmartDashboard.putNumber("Green", getColor().green);
-    SmartDashboard.putNumber("Blue", getColor().blue);
-    SmartDashboard.putNumber("IR", getIR());
-    SmartDashboard.putNumber("Proximity", getProximity());
-    switch(panelColor()){
-      case 1:
-        colorName = "Red";
-        break;
-      case 2:
-        colorName = "Green";
-        break;
-      case 3:
-        colorName = "Blue";
-        break;
-      case 4:
-        colorName = "Yellow";
-        break;
-    }
-    SmartDashboard.putString("Panel Color", colorName);
-    SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
-    SmartDashboard.putNumber("Real Intervals", realIntervals);
-    //SmartDashboard.putString("Color", getColorString());
-    SmartDashboardTab.putNumber("ColorSensor","Panel Color", panelColor());
-    SmartDashboardTab.putBoolean("ColorSensor","Rotation Control Complete", rotationControlComplete());
-    SmartDashboardTab.putNumber("ColorSensor","Semi Rotations", semiRotations);
-    
-    SmartDashboard.putNumber("Thing", getFMSColor());
 
-  }
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    updateSmartDashboard();
-  }
+    public int getFMSColor() {
+        String message = DriverStation.getInstance().getGameSpecificMessage();
+        switch (message) {
+            case "R":
+                return 1;
+            case "G":
+                return 2;
+            case "B":
+                return 3;
+            case "Y":
+                return 4;
+            default:
+                return -1;
+        }
+    }
+
+    public void updateSmartDashboard() {
+        String colorName = "Not Close Enough";
+        SmartDashboard.putNumber("Red", getColor().red);
+        SmartDashboard.putNumber("Green", getColor().green);
+        SmartDashboard.putNumber("Blue", getColor().blue);
+        SmartDashboard.putNumber("IR", getIR());
+        SmartDashboard.putNumber("Proximity", getProximity());
+        switch (panelColor()) {
+            case 1:
+                colorName = "Red";
+                break;
+            case 2:
+                colorName = "Green";
+                break;
+            case 3:
+                colorName = "Blue";
+                break;
+            case 4:
+                colorName = "Yellow";
+                break;
+        }
+        SmartDashboard.putString("Panel Color", colorName);
+        SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
+        SmartDashboard.putNumber("Real Intervals", realIntervals);
+        //SmartDashboard.putString("Color", getColorString());
+        SmartDashboardTab.putNumber("ColorSensor", "Panel Color", panelColor());
+        SmartDashboardTab.putBoolean("ColorSensor", "Rotation Control Complete", rotationControlComplete());
+        SmartDashboardTab.putNumber("ColorSensor", "Semi Rotations", semiRotations);
+
+        SmartDashboard.putNumber("Thing", getFMSColor());
+
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        //updateSmartDashboard();
+    }
 }

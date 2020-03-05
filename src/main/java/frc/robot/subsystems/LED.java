@@ -33,7 +33,7 @@ public class LED extends SubsystemBase {
   public LED(ColorSensor colorSensor) {
     m_colorSensor = colorSensor;
     LEDStrip = new AddressableLED(Constants.ledPort);
-    LEDBuffer = new AddressableLEDBuffer(36);
+    LEDBuffer = new AddressableLEDBuffer(100);
     LEDStrip.setLength(LEDBuffer.getLength());
     LEDStrip.setData(LEDBuffer);
     LEDStrip.start();

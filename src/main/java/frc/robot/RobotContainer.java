@@ -125,7 +125,7 @@ public class RobotContainer {
 
         m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_colorSensor, m_controls));
 
-        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_climber, xBoxController));
+        m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_shooter, m_climber, xBoxController));
 
 //    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
 
