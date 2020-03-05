@@ -9,7 +9,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -22,6 +21,7 @@ import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.autonomous.routines.*;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.*;
+import frc.robot.commands.intake.AutoControlledIntake;
 import frc.robot.commands.intake.ControlledIntake;
 import frc.robot.commands.intake.ToggleIntakePistons;
 import frc.robot.commands.shooter.*;
@@ -163,7 +163,7 @@ public class RobotContainer {
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
-        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer)); // Deploy intake
+        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
 
         xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
         xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium

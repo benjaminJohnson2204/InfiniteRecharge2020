@@ -7,18 +7,25 @@
 
 package frc.robot.commands.intake;
 
+import com.team254.lib.util.MinTimeBoolean;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import frc.robot.constants.Enums.IntakeStates;
+
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+
+import javax.swing.*;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ControlledIntake extends CommandBase {
+public class AutoControlledIntake extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final Indexer m_indexer;
   private final Intake m_intake;
@@ -27,7 +34,6 @@ public class ControlledIntake extends CommandBase {
   private double indexRPM = 300;
   private double timestamp, intakeTimestamp, indexerTimestamp, fourBallTimestamp;
   private boolean intaking, haveFour, haveFourTripped;
-  private Joystick m_controller;
 
   private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
   /**
@@ -35,10 +41,9 @@ public class ControlledIntake extends CommandBase {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ControlledIntake(Intake intake, Indexer indexer, Joystick controller) {
+  public AutoControlledIntake(Intake intake, Indexer indexer) {
     m_intake = intake;
     m_indexer = indexer;
-    m_controller = controller;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(intake);
     addRequirements(indexer);
@@ -67,8 +72,6 @@ public class ControlledIntake extends CommandBase {
         m_intake.setIntakePercentOutput(0);
         m_indexer.setKickerOutput(0);
         m_indexer.setIndexerOutput(0);
-        m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
-        m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
         break;
       case INTAKE_FOUR_BALLS:
         m_intake.setIntakePercentOutput(0.9);
@@ -133,8 +136,6 @@ public class ControlledIntake extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-    m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
     m_intake.setIntakingState(false);
     m_intake.setIntakePercentOutput(0);
     m_indexer.setIndexerOutput(0);

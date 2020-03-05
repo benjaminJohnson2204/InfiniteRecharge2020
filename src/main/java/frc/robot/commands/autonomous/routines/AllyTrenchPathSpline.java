@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
-import frc.robot.commands.intake.ControlledIntake;
-import frc.robot.commands.intake.ControlledIntakeTimed;
+import frc.robot.commands.intake.AutoControlledIntake;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.AutoRapidFireSetpoint;
 import frc.robot.commands.shooter.SetAndHoldRpmSetpoint;
@@ -54,9 +53,9 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
                 new SetDriveShifters(driveTrain, false),
                 new ParallelDeadlineGroup(
                         startToTrenchCommand,
-                        new ControlledIntake(intake, indexer)
+                        new AutoControlledIntake(intake, indexer)
                 ),
-                new ControlledIntake(intake, indexer).withTimeout(0.5),
+                new AutoControlledIntake(intake, indexer).withTimeout(0.5),
                 new SetIntakePiston(intake, false),
                 new ParallelDeadlineGroup(
                         trenchToShootCommand,

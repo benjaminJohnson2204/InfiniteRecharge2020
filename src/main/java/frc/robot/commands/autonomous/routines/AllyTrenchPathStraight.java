@@ -1,10 +1,8 @@
 package frc.robot.commands.autonomous.routines;
 
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -13,11 +11,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
-import frc.robot.commands.intake.ControlledIntake;
-import frc.robot.commands.intake.ControlledIntakeTimed;
+import frc.robot.commands.intake.AutoControlledIntake;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.AutoRapidFireSetpoint;
-import frc.robot.commands.shooter.RapidFireSetpoint;
 import frc.robot.commands.shooter.SetAndHoldRpmSetpoint;
 import frc.robot.commands.turret.AutoUseVisionCorrection;
 import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
@@ -58,9 +54,9 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
                 new SetDriveShifters(driveTrain, false),
                 new ParallelDeadlineGroup(
                         startToTrenchCommand,
-                        new ControlledIntake(intake, indexer)
+                        new AutoControlledIntake(intake, indexer)
                 ),
-                new ControlledIntake(intake, indexer).withTimeout(0.5),
+                new AutoControlledIntake(intake, indexer).withTimeout(0.5),
                 new SetIntakePiston(intake, false),
                 new ParallelDeadlineGroup(
                         trenchToShootCommand,
