@@ -57,7 +57,7 @@ public class Indexer extends SubsystemBase {
 
   public Indexer() {
     master.restoreFactoryDefaults();
-    master.setInverted(false);
+    master.setInverted(true);
 
     master.setIdleMode(IdleMode.kBrake);
 
