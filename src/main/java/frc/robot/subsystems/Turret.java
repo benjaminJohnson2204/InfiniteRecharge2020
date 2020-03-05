@@ -27,12 +27,12 @@ public class Turret extends SubsystemBase {
      * Creates a new ExampleSubsystem.
      */
     double kF = 0.07;     //0.05
-    double kP = 0.155;    //0.155
-    double kI = 0.0001;    //0.00075
-    double kD = 0.00766;  //0.00766
+    double kP = 0.2;    //0.155
+    double kI = 0.0015;    //0.00075
+    double kD = 0.0;  //0.00766
 
     int kI_Zone = 900;    //900 // 254: 1/kP?
-    int kMaxIAccum = 500000;//kI_Zone *3; //500000;    //900
+    int kMaxIAccum = 1000000;//kI_Zone *3; //500000;    //900
     int kErrorBand = 50;//degreesToEncoderUnits(0.5);
 
     int kCruiseVelocity = 14000;
