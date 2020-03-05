@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
+import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.intake.ControlledIntake;
 import frc.robot.commands.intake.ControlledIntakeTimed;
@@ -40,11 +41,15 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
 
         addCommands(
                 new ResetOdometry(driveTrain),
+                new SetDriveNeutralMode(driveTrain,0),
                 new SetDriveShifters(driveTrain, false),
                 new SetAndHoldRpmSetpoint(shooter, vision, 3800),
                 new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
                 new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
-                new AutoRapidFireSetpoint(shooter, indexer, intake,1).withTimeout(2),
+                new ConditionalCommand(new WaitCommand(0),
+                                       new WaitCommand(0.5),
+                                       shooter::canShoot),
+                new AutoRapidFireSetpoint(shooter, indexer, intake,1).withTimeout(1),
                 new SetIntakePiston(intake, true),
                 new SetDriveShifters(driveTrain, false),
                 new ParallelDeadlineGroup(
@@ -59,6 +64,9 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
                         new SetAndHoldRpmSetpoint(shooter, vision, 3800)
                 ).andThen(()->driveTrain.setMotorTankDrive(0,0)),
                 new AutoUseVisionCorrection(turret, vision).withTimeout(0.75),
+                new ConditionalCommand(new WaitCommand(0),
+                                       new WaitCommand(0.5),
+                                       shooter::canShoot),
                 new ConditionalCommand(new AutoRapidFireSetpoint(shooter, indexer, intake,6),
                                        new WaitCommand(0),
                                        vision::hasTarget)
