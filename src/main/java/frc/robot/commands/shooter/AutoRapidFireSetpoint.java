@@ -21,7 +21,7 @@ public class AutoRapidFireSetpoint extends CommandBase {
     private final Shooter m_shooter;
     private final Indexer m_indexer;
     private final Intake m_intake;
-    private double startTime, m_timeout;
+    private double startTime, m_shootTimeout;
     private boolean timerStart;
 
     /**
@@ -29,12 +29,12 @@ public class AutoRapidFireSetpoint extends CommandBase {
      *
      * @param RobotContainer.m_shooter The subsystem used by this command.
      */
-    public AutoRapidFireSetpoint(Shooter shooter, Indexer indexer, Intake intake, double timeout) {
+    public AutoRapidFireSetpoint(Shooter shooter, Indexer indexer, Intake intake, double shootTimeout) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_shooter = shooter;
         m_indexer = indexer;
         m_intake = intake;
-        m_timeout = timeout;
+        m_shootTimeout = shootTimeout;
         addRequirements(shooter);
         addRequirements(indexer);
         addRequirements(intake);
@@ -49,7 +49,7 @@ public class AutoRapidFireSetpoint extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (m_shooter.canShoot() || (Timer.getFPGATimestamp() - startTime) > ((m_timeout / 2.0) < 1 ? 1 : (m_timeout / 2.0))) {
+        if (m_shooter.canShoot() || (Timer.getFPGATimestamp() - startTime) > m_shootTimeout) {
             m_indexer.setIndexerOutput(1);
             m_indexer.setKickerOutput(1);
             m_intake.setIntakePercentOutput(1);
@@ -68,6 +68,6 @@ public class AutoRapidFireSetpoint extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (Timer.getFPGATimestamp() - startTime) > m_timeout;
+        return false;
     }
 }
