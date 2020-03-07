@@ -30,7 +30,7 @@ public class ControlledIntake extends CommandBase {
   private Joystick m_controller;
 
   private IntakeStates intakeState = IntakeStates.INTAKE_EMPTY;
-  /**
+  /*
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
@@ -81,7 +81,7 @@ public class ControlledIntake extends CommandBase {
         m_intake.setIntakePercentOutput(0.8);
         m_indexer.setKickerOutput(-0.4);
         if (m_indexer.getIndexerBottomSensor()) {
-          m_indexer.setIndexerOutput(0.8);
+          m_indexer.setIndexerOutput(0.95);
         } else {
           m_indexer.setIndexerOutput(0);
         }

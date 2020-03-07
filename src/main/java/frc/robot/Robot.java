@@ -62,6 +62,7 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
 //    badLog.startLogger();
         m_robotContainer.disabledInit();
+        //To engage the ratchet on the climber, call on the function, not the class.
     }
 
     @Override

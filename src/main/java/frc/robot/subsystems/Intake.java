@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
 
   public Intake() {
     intakeMotor.restoreFactoryDefaults();
-    intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     intakeMotor.setInverted(false);
 
 //    canPidController.setFF(kFF);
