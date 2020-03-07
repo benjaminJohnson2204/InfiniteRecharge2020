@@ -45,7 +45,7 @@ public class PositionControl extends CommandBase {
     else if(throttle == 0)
       throttle = 1;
     m_subsystem.setOutput(0.115 * throttle);*/
-    m_subsystem.setOutput(0.085 * ((m_subsystem.getFMSColor() + 2) % 4 - m_subsystem.panelColor()));
+    m_subsystem.setOutput(0.1);
   }
 
   // Called once the command ends or is interrupted.
@@ -57,7 +57,7 @@ public class PositionControl extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean isColor = ((m_subsystem.getFMSColor() + 2) % 4 == m_subsystem.panelColor());
+    boolean isColor = ((m_subsystem.getFMSColor() + 2) % 4 + 1 == m_subsystem.panelColor());
     if(isColor){
       Timer.delay(0.3);
       if(isColor){

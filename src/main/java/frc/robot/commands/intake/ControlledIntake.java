@@ -71,24 +71,19 @@ public class ControlledIntake extends CommandBase {
         m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
         break;
       case INTAKE_FOUR_BALLS:
-        m_intake.setIntakePercentOutput(0.9);
+        m_intake.setIntakePercentOutput(0.8);
         m_indexer.setKickerOutput(0);
         if (m_indexer.getIntakeSensor())
           intakeState = IntakeStates.INTAKE_FIVE_BALLS;
         break;
       case INTAKE_ONE_BALL:
       default:
-        m_intake.setIntakePercentOutput(0.9);
+        m_intake.setIntakePercentOutput(0.8);
         m_indexer.setKickerOutput(-0.4);
-        if (m_indexer.getIndexerBottomSensor() && !intaking) {
-          //indexerTimestamp = Timer.getFPGATimestamp();
-          intaking = true;
-          m_indexer.setIndexerOutput(0.95);
-//          m_indexer.setRPM(indexRPM);
+        if (m_indexer.getIndexerBottomSensor()) {
+          m_indexer.setIndexerOutput(0.8);
         } else {
-          intaking = false;
           m_indexer.setIndexerOutput(0);
-//          m_indexer.setRPM(0);
         }
 
 //        if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && !haveFourTripped) {

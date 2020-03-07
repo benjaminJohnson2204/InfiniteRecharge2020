@@ -25,7 +25,7 @@ public class ColorSensor extends SubsystemBase {
     /**
      * Creates a new ExampleSubsystem.
      */
-    public boolean practiceField = true;
+    public boolean practiceField = false;
     public boolean isColor = false;
     public boolean working = false;
     public int semiRotations = 0;
@@ -148,7 +148,10 @@ public class ColorSensor extends SubsystemBase {
                 colorName = "Yellow";
                 break;
         }
-        SmartDashboard.putString("Panel Color", colorName);
+        SmartDashboard.putBoolean("Red", panelColor() == 1);
+        SmartDashboard.putBoolean("Green", panelColor() == 2);
+        SmartDashboard.putBoolean("Blue", panelColor() == 3);
+        SmartDashboard.putBoolean("Yellow", panelColor() == 4);
         SmartDashboard.putBoolean("Rotation Control Complete", rotationControlComplete());
         SmartDashboard.putNumber("Real Intervals", realIntervals);
         //SmartDashboard.putString("Color", getColorString());

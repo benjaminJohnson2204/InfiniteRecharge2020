@@ -114,13 +114,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                         m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
                         m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
                     }
-                } else {
-                    directionTripped = false;
-                    joystickMoved = false;
-                    m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-                    m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
-                }
-                if (m_vision.hasTarget() && !joystickMoved) {
+                } else if (m_vision.hasTarget() && !joystickMoved) {
                     usingVisionSetpoint = true;
                     if (!turning) {
                         m_vision.ledsOn();
@@ -144,10 +138,15 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                         if (m_turret.onTarget())
                             turning = false;
                     }
-                } else if (!m_vision.hasTarget()) {
+                } else if (!m_vision.hasTarget() && !joystickMoved) {
                     usingVisionSetpoint = false;
                     setpoint = m_turret.getTurretAngle();
-                } 
+                } else {
+                    directionTripped = false;
+                    joystickMoved = false;
+                    m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+                    m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+                }
                 
                 if(m_shooter.canShoot()) {
                     m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.8);

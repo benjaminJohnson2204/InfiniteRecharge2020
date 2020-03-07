@@ -44,8 +44,8 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
                 new SetDriveNeutralMode(driveTrain,0),
                 new SetDriveShifters(driveTrain, false),
                 new SetAndHoldRpmSetpoint(shooter, vision, 3800),
-                new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
-                new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
+                new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.25),
+                new AutoUseVisionCorrection(turret, vision).withTimeout(0.35),
                 new ConditionalCommand(new WaitCommand(0),
                                        new WaitCommand(0.5),
                                        shooter::canShoot),
@@ -56,14 +56,14 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
                         startToTrenchCommand,
                         new AutoControlledIntake(intake, indexer)
                 ),
-                new AutoControlledIntake(intake, indexer).withTimeout(0.5),
+                new AutoControlledIntake(intake, indexer).withTimeout(0.25),
                 new SetIntakePiston(intake, false),
                 new ParallelDeadlineGroup(
                         trenchToShootCommand,
                         new SetTurretRobotRelativeAngle(turret, -25),
                         new SetAndHoldRpmSetpoint(shooter, vision, 3800)
                 ).andThen(()->driveTrain.setMotorTankDrive(0,0)),
-                new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
+                new AutoUseVisionCorrection(turret, vision).withTimeout(0.25),
                 new ConditionalCommand(new WaitCommand(0),
                                        new WaitCommand(0.5),
                                        shooter::canShoot),
