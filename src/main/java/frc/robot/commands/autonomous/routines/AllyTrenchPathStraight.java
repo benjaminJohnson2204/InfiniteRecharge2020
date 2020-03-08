@@ -14,6 +14,7 @@ import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.intake.AutoControlledIntake;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.shooter.AutoRapidFireSetpoint;
+import frc.robot.commands.shooter.AutoRapidFireSetpoint2;
 import frc.robot.commands.shooter.SetAndHoldRpmSetpoint;
 import frc.robot.commands.turret.AutoUseVisionCorrection;
 import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
@@ -49,7 +50,7 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
                 new ConditionalCommand(new WaitCommand(0),
                                        new WaitCommand(0.5),
                                        shooter::canShoot),
-                new AutoRapidFireSetpoint(shooter, indexer, intake,1).withTimeout(1.25),
+                new AutoRapidFireSetpoint(shooter, indexer, intake,1).withTimeout(1.5),
                 new SetIntakePiston(intake, true),
                 new SetDriveShifters(driveTrain, false),
                 new ParallelDeadlineGroup(
@@ -60,16 +61,17 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
                 new SetIntakePiston(intake, false),
                 new ParallelDeadlineGroup(
                         trenchToShootCommand,
-                        new SetTurretRobotRelativeAngle(turret, -25),
+                        new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.25),
                         new SetAndHoldRpmSetpoint(shooter, vision, 3800)
                 ).andThen(()->driveTrain.setMotorTankDrive(0,0)),
-                new AutoUseVisionCorrection(turret, vision).withTimeout(0.25),
+                new AutoUseVisionCorrection(turret, vision).withTimeout(0.75),
                 new ConditionalCommand(new WaitCommand(0),
                                        new WaitCommand(0.5),
                                        shooter::canShoot),
-                new ConditionalCommand(new AutoRapidFireSetpoint(shooter, indexer, intake,6),
-                                       new WaitCommand(0),
-                                       vision::hasTarget)
+//                new ConditionalCommand(new AutoRapidFireSetpoint(shooter, indexer, intake,6),
+//                                       new WaitCommand(0),
+//                                       vision::hasTarget)
+                 new AutoRapidFireSetpoint2(shooter, indexer, intake,6)
         );
     }
 }
