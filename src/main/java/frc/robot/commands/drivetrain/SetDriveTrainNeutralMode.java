@@ -1,36 +1,37 @@
-package frc.robot.commands.turret;
+package frc.robot.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.DriveTrain;
 
-public class SetTurretRobotRelativeAngle extends CommandBase {
+public class SetDriveTrainNeutralMode extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final Turret m_turret;
-    private double m_setpoint;
-    private double startTime;
+    private final DriveTrain m_driveTrain;
+    private int m_mode;
     /**
      * Creates a new ExampleCommand.
      *
      * @param subsystem The subsystem used by this command.
      */
-    public SetTurretRobotRelativeAngle(Turret subsystem, double setpoint) {
-        m_turret = subsystem;
-        m_setpoint = setpoint;
+    public SetDriveTrainNeutralMode(DriveTrain driveTrain, int mode) {
+        m_driveTrain = driveTrain;
+        m_mode = mode;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
+        addRequirements(driveTrain);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        startTime = Timer.getFPGATimestamp();
-        m_turret.setRobotCentricSetpoint(m_setpoint);
+        m_driveTrain.setDriveTrainNeutralMode(m_mode);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+
+
     }
 
     // Called once the command ends or is interrupted.
@@ -41,6 +42,6 @@ public class SetTurretRobotRelativeAngle extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_turret.getTurretAngle() - m_setpoint) < 1;
+        return true;
     }
 }

@@ -22,14 +22,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DriveTrain;
-import frc.vitruvianlib.utils.ReadCsvTrajectory;
+import frc.vitruvianlib.utils.TrajectoryUtils;
 
 import java.util.ArrayList;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class ReadTrajectory extends CommandBase {
+public class ReadTrajectoryOld extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveTrain m_driveTrain;
     private Trajectory trajectory;
@@ -44,7 +44,7 @@ public class ReadTrajectory extends CommandBase {
      * @param driveTrain The subsystem used by this command.
      */
 
-    public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
+    public ReadTrajectoryOld(DriveTrain driveTrain, String filename, boolean isInverted, DifferentialDriveKinematicsConstraint kinematicsConstraint) {
         m_driveTrain = driveTrain;
         m_isInverted = isInverted;
         m_filename = filename;
@@ -53,7 +53,7 @@ public class ReadTrajectory extends CommandBase {
         addRequirements(driveTrain);
     }
 
-    public ReadTrajectory(DriveTrain driveTrain, String filename, boolean isInverted) {
+    public ReadTrajectoryOld(DriveTrain driveTrain, String filename, boolean isInverted) {
         m_driveTrain = driveTrain;
         m_isInverted = isInverted;
         m_filename = filename;
@@ -61,7 +61,7 @@ public class ReadTrajectory extends CommandBase {
         addRequirements(driveTrain);
     }
 
-    public ReadTrajectory(DriveTrain driveTrain, String filename) {
+    public ReadTrajectoryOld(DriveTrain driveTrain, String filename) {
         m_driveTrain = driveTrain;
         m_filename = filename;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -72,19 +72,17 @@ public class ReadTrajectory extends CommandBase {
     @Override
     public void initialize() {
         trajectoryWaypoints = new ArrayList<Pose2d>();
-        m_driveTrain.navX.reset();
+        m_driveTrain.resetAngle();
         m_driveTrain.setDriveTrainNeutralMode(1);
         m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
         m_driveTrain.resetEncoderCounts();
         // Start position for all trajectories will be where the robot is currently
         var startPosition = new Pose2d(m_driveTrain.getRobotPose().getTranslation().getX(),
                 m_driveTrain.getRobotPose().getTranslation().getY(),
-                Rotation2d.fromDegrees(m_driveTrain.navX.getAngle()));
+                Rotation2d.fromDegrees(m_driveTrain.getAngle()));
 
-        trajectoryWaypoints.add(startPosition);
-
-        String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename;
-        var fileTrajectory = ReadCsvTrajectory.readCsv(filePath);
+        String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename + ".csv";
+        var fileTrajectory = TrajectoryUtils.readCsvTrajectory(filePath);
 
         // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
         for (Pose2d point : fileTrajectory) {

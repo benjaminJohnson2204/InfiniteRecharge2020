@@ -7,7 +7,6 @@
 
 package frc.robot.commands.turret;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
@@ -115,7 +114,7 @@ public class SetTurretSetpointFieldAbsoluteOld extends CommandBase {
                             turning = true;
                         }
                     } else {
-                        if (m_turret.atTarget())
+                        if (m_turret.onTarget())
                             turning = false;
                     }
                 } else if (!m_vision.getValidTarget() && !joystickMoved) {

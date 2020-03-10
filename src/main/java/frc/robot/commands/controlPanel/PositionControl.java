@@ -5,56 +5,65 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.shooter;
+package frc.robot.commands.controlPanel;
 
+import frc.robot.subsystems.ColorSensor;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Vision;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class SetRpmSetpoint extends CommandBase {
+public class PositionControl extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final Shooter m_shooter;
-  private final Vision m_vision;
-  private double m_RPM;
+  private final ColorSensor m_subsystem;
+
   /**
    * Creates a new ExampleCommand.
    *
+   * @param subsystem The subsystem used by this command.
    */
-  public SetRpmSetpoint(Shooter shooter, Vision vision, double RPM) {
+  double output;
+  int difference;
+  public PositionControl(ColorSensor subsystem) {
+    m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    m_shooter = shooter;
-    m_RPM = RPM;
-    m_vision = vision;
-//  addRequirements(shooter);
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_subsystem.working = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_vision.ledsOn();
-    m_vision.setLastValidTargetTime();
-    m_shooter.setRPM(m_RPM);
+    /*if(m_subsystem.panelColor() != 0)
+      throttle = ((m_subsystem.getFMSColor() + 2) % 4 - m_subsystem.panelColor());
+    else if(throttle == 0)
+      throttle = 1;
+    m_subsystem.setOutput(0.115 * throttle);*/
+    m_subsystem.setOutput(0.085 * ((m_subsystem.getFMSColor() + 2) % 4 - m_subsystem.panelColor()));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setRPM(-1);
+    m_subsystem.working = false;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    boolean isColor = ((m_subsystem.getFMSColor() + 2) % 4 == m_subsystem.panelColor());
+    if(isColor){
+      Timer.delay(0.3);
+      if(isColor){
+        return true;
+      }
+    }
     return false;
   }
 }

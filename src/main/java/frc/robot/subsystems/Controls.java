@@ -93,6 +93,7 @@ public class Controls extends SubsystemBase {
         SmartDashboardTab.putString("LCDDisplay", "Odometry", "Odometry:" + isPoseGood());
     }
 
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
@@ -107,7 +108,7 @@ public class Controls extends SubsystemBase {
             LCDDisplay.display_string("Odometry:" + isPoseGood(), 3);
             //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
             //bad, the function allows the error to be within 1 unit of 0
-            LCDDisplay.display_string("Purple is best soda", 4);
+            LCDDisplay.display_string("Battery Voltage: " + Math.floor(getBatteryVoltage()*100)/100, 4);
             if (!lcdOn) {
                 LCDDisplay.backlight(true);
                 lcdOn = true;
