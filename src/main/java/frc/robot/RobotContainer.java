@@ -187,7 +187,7 @@ public class RobotContainer {
         xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
         //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
 //        SmartDashboard.putData("disable climb mode", new DisableClimbMode(m_climber,m_turret));
-Qqaaaaa
+
     }
 
     /**
