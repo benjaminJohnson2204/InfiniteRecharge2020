@@ -15,18 +15,18 @@ import frc.robot.constants.Constants;
 public class TalonOrchestra extends SubsystemBase {
 
   private final TalonFX[] talons = {
-          new TalonFX(Constants.leftRearDriveMotor),
-          new TalonFX(Constants.rightRearDriveMotor),
-          new TalonFX(Constants.rightFrontDriveMotor),
-          new TalonFX(Constants.leftFrontDriveMotor),
-          new TalonFX(Constants.flywheelMotorA),
-          new TalonFX(Constants.flywheelMotorB)
+//          new TalonFX(Constants.leftRearDriveMotor),
+//          new TalonFX(Constants.rightRearDriveMotor),
+//          new TalonFX(Constants.rightFrontDriveMotor),
+//          new TalonFX(Constants.leftFrontDriveMotor),
+//          new TalonFX(Constants.flywheelMotorA),
+//          new TalonFX(Constants.flywheelMotorB)
   };
 
   private Orchestra orchestra;
 
-  public TalonOrchestra() {
-    for (TalonFX talon : talons) {
+  public TalonOrchestra(DriveTrain driveTrain) {
+    for (TalonFX talon : driveTrain.getDriveMotors()) {
       orchestra.addInstrument(talon);
     }
   }

@@ -256,6 +256,10 @@ DriveTrain extends SubsystemBase {
         odometry.resetPosition(pose, rotation);
     }
 
+    public TalonFX[] getDriveMotors() {
+        return driveMotors;
+    }
+
     private void initShuffleboardValues() {
         // Unstable. Don''t use until WPILib fixes this
         Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
