@@ -15,20 +15,35 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
 
 public class Vision extends SubsystemBase {
-	private NetworkTable limelight;
-	private NetworkTable openSight;
-
 	// Variables for calculating distance
 	private final double TARGET_HEIGHT = 98.25; // Outer port height above carpet in inches
 	private final double LIMELIGHT_MOUNT_ANGLE = 32; // Angle that the Limelight is mounted at
 	private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
+
+	private final double INNER_PORT_SLOPE = 1;
+	private final double INNER_PORT_OFFSET = 1;
+
+	private final double HORIZONTAL_TARGET_PIXEL_WIDTH = 1;
+	private final double HORIZONTAL_TARGET_PIXEL_THRESHOLD = 1;
+	private final double VERTICAL_TARGET_PIXEL_WIDTH = 1;
+	private final double VERTICAL_TARGET_PIXEL_THRESHOLD = 1;
+
+	private NetworkTable limelight;
+	private NetworkTable openSight;
+
+	private final DriveTrain m_driveTrain;
+
+	private boolean resetPose;
 
 	private double lastValidTargetTime;
 	private boolean validTarget;
@@ -38,10 +53,12 @@ public class Vision extends SubsystemBase {
 	int index = 0;
 
 	SlewRateLimiter targetXFilter = new SlewRateLimiter(20);
+	SlewRateLimiter innerTargetXFilter = new SlewRateLimiter(20);
 
 	UsbCamera camera;
 
-	public Vision() {
+	public Vision(DriveTrain driveTrain) {
+		m_driveTrain = driveTrain;
 //		camera = CameraServer.getInstance().startAutomaticCapture();
 		camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
 	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
@@ -97,36 +114,36 @@ public class Vision extends SubsystemBase {
 		return targetXFilter.calculate(getTargetX());
 	}
 	
-	public boolean isValidInnerPort() {
-		// TODO: Solve this problem
-		/* Imagine the valid area where you can aim at the 
-		 * Inner Port as a triangle. Given the limelight's distance
-		 * to the center of the Inner Port target and the angle it returns,
-		 * how do I return true when I'm in the valid shooting area?
-		 * .......*-------- Inner Port
-		 * ....../ \
-		 * ...../___\------ Outer Port
-		 * ..../     \
-		 * .../       \
-		 * ../         \--- Valid Area to shoot from 
-		 * ./           \
-		 * /_____________\
-		 * 
-		 */
-		double angle = 90.0 - Math.abs(getTargetY());
-		double distance = getTargetDistance();
-		
-		double x = Math.sin(angle) * distance;
-		double y = Math.cos(angle) * distance;
-		
-		double ratio = x / y;
-		
-		return false;
+	public double getSmartTargetX() {
+		double xDistance = Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getX());
+		double yDistance = Math.abs(Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getY()));
+
+		double maxYDistance = INNER_PORT_SLOPE * xDistance + INNER_PORT_OFFSET;
+
+		if(yDistance < maxYDistance) {
+			xDistance += 29.25 / 12.0;
+			return innerTargetXFilter.calculate(Math.signum(getFilteredTargetX()) * Units.radiansToDegrees(Math.atan(xDistance / yDistance)));
+		} else {
+			return getFilteredTargetX();
+		}
 	}
 
-	public double getInnerTargetX() {
-		// TODO: Add adjustment for inner port
-		return limelight.getEntry("tx").getDouble(0);
+	private void resetPoseByVision() {
+		if(!resetPose) {
+			if((Math.abs(getHorizontalSidelength() - HORIZONTAL_TARGET_PIXEL_WIDTH) < HORIZONTAL_TARGET_PIXEL_THRESHOLD) &&
+			   (Math.abs(getVerticalSidelength() - VERTICAL_TARGET_PIXEL_WIDTH) < VERTICAL_TARGET_PIXEL_THRESHOLD)) {
+				double targetRadians = Units.degreesToRadians(getFilteredTargetX());
+				double xDistance = Math.abs(Math.cos(targetRadians)) * getTargetDistance();
+				double yDistance = -Math.signum(getFilteredTargetX()) * Math.abs(Math.sin(targetRadians)) * getTargetDistance();
+
+				m_driveTrain.resetOdometry(new Pose2d(xDistance, yDistance, new Rotation2d()),
+						Rotation2d.fromDegrees(m_driveTrain.getHeading()));
+
+				resetPose = true;
+			}
+		} else if(resetPose && !hasTarget()) {
+			resetPose = false;
+		}
 	}
 
 	public boolean hasTarget() {
@@ -241,5 +258,7 @@ public class Vision extends SubsystemBase {
 		// This method will be called once per scheduler run
 		updateSmartDashboard();
 		updateValidTarget();
+
+		//resetPoseByVision();
 	}
 }
