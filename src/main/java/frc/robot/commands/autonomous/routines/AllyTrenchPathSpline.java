@@ -4,10 +4,8 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.VitruvianRamseteCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
@@ -27,16 +25,12 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
         configA.setEndVelocity(0);
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        var startToTrenchPath = TrajectoryUtils.readCsvTrajectory("init1Ally2");
-        var startToTrenchCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, startToTrenchPath, configA);
 
         var configB = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(4));
         configB.setReversed(false);
         configB.setEndVelocity(0);
         configB.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configB.getMaxVelocity()));
         configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        var trenchToShootPath = TrajectoryUtils.readCsvTrajectory("ally2Ally3");
-        var trenchToShootCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, trenchToShootPath, configB);
 
         addCommands(
                 new ResetOdometry(driveTrain),
@@ -52,13 +46,13 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
                 new SetIntakePiston(intake, true),
                 new SetDriveShifters(driveTrain, false),
                 new ParallelDeadlineGroup(
-                        startToTrenchCommand,
+                        new VitruvianRamseteCommand("init1Ally2", driveTrain, configA),
                         new AutoControlledIntake(intake, indexer)
                 ),
                 new AutoControlledIntake(intake, indexer).withTimeout(0.5),
                 new SetIntakePiston(intake, false),
                 new ParallelDeadlineGroup(
-                        trenchToShootCommand,
+                        new VitruvianRamseteCommand("ally2Ally3", driveTrain, configA),
                         new SetTurretRobotRelativeAngle(turret, 0),
                         new SetAndHoldRpmSetpoint(shooter, vision, 3800)
                 ).andThen(()->driveTrain.setMotorTankDrive(0,0)),

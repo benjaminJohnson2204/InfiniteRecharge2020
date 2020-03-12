@@ -6,10 +6,8 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.VitruvianRamseteCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
@@ -32,7 +30,6 @@ public class ShootAndDriveBack extends SequentialCommandGroup {
         ArrayList<Pose2d> path = new ArrayList<>();
         path.add(new Pose2d(0,0, new Rotation2d()));
         path.add(new Pose2d(Units.feetToMeters(-5),0, new Rotation2d()));
-        var driveBackwards = TrajectoryUtils.generateRamseteCommand(driveTrain, path, config);
 
         addCommands(
                 new ResetOdometry(driveTrain),
@@ -46,7 +43,7 @@ public class ShootAndDriveBack extends SequentialCommandGroup {
                                        new WaitCommand(0.5),
                                        shooter::canShoot),
                 new AutoRapidFireSetpoint(shooter, indexer, intake,1).withTimeout(3),
-                driveBackwards.andThen(()->driveTrain.setMotorTankDrive(0,0))
+                new VitruvianRamseteCommand(path, driveTrain, config).andThen(()->driveTrain.setMotorTankDrive(0,0))
         );
     }
 }

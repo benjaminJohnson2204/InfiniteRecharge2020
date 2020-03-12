@@ -102,7 +102,7 @@ public class RobotContainer {
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
                         entry(CommandSelector.SHOOT_AND_DRIVE_BACK, new ShootAndDriveBack(m_driveTrain,m_intake,m_indexer,m_turret,m_shooter,m_vision)),
-                        entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
+//                        entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
                         entry(CommandSelector.DO_NOTHING, new DoNothing()),
                         entry(CommandSelector.SHOOT_AND_DRIVE_FORWARD, new ShootAndDriveForward(m_driveTrain,m_intake,m_indexer,m_turret,m_shooter,m_vision)),
                         entry(CommandSelector.ALLIANCE_TRENCH_STRAIGHT, new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))

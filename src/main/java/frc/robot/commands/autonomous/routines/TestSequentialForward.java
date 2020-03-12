@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.autonomous.GenerateRamseteCommand;
 import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.subsystems.DriveTrain;
 
@@ -26,11 +25,11 @@ public class TestSequentialForward extends SequentialCommandGroup {
         pathB.add(new Pose2d(Units.feetToMeters(5), Units.feetToMeters(-5), new Rotation2d(Units.degreesToRadians(-90))));
         pathB.add(new Pose2d(Units.feetToMeters(0), Units.feetToMeters(-10),new Rotation2d(Units.degreesToRadians(-180))));
 
-        var trajectoryCommandA = new GenerateRamseteCommand(driveTrain, pathA, startConfig);
-        var trajectoryCommandB = new GenerateRamseteCommand(driveTrain, pathB, secondPathConfig);
-        addCommands(new ResetOdometry(driveTrain),
-                    trajectoryCommandA.getRamseteCommand(),
-                    new ResetOdometry(driveTrain),
-                    trajectoryCommandB.getRamseteCommand());
+//        var trajectoryCommandA = new GenerateRamseteCommand(driveTrain, pathA, startConfig);
+//        var trajectoryCommandB = new GenerateRamseteCommand(driveTrain, pathB, secondPathConfig);
+//        addCommands(new ResetOdometry(driveTrain),
+//                    trajectoryCommandA.getRamseteCommand(),
+//                    new ResetOdometry(driveTrain),
+//                    trajectoryCommandB.getRamseteCommand());
     }
 }
