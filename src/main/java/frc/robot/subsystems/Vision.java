@@ -43,6 +43,7 @@ public class Vision extends SubsystemBase {
 	private NetworkTable openSight;
 
 	private final DriveTrain m_driveTrain;
+	private final Turret m_turret;
 
 	private boolean resetPose;
 
@@ -58,8 +59,9 @@ public class Vision extends SubsystemBase {
 
 	UsbCamera camera;
 
-	public Vision(DriveTrain driveTrain) {
+	public Vision(DriveTrain driveTrain, Turret turret) {
 		m_driveTrain = driveTrain;
+		m_turret = turret;
 //		camera = CameraServer.getInstance().startAutomaticCapture();
 		camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
 	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
@@ -135,7 +137,7 @@ public class Vision extends SubsystemBase {
 		if(!resetPose) {
 			if((Math.abs(getHorizontalSidelength() - HORIZONTAL_TARGET_PIXEL_WIDTH) < HORIZONTAL_TARGET_PIXEL_THRESHOLD) &&
 			   (Math.abs(getVerticalSidelength() - VERTICAL_TARGET_PIXEL_WIDTH) < VERTICAL_TARGET_PIXEL_THRESHOLD)) {
-				double targetRadians = Units.degreesToRadians(getFilteredTargetX());
+				double targetRadians = Units.degreesToRadians(m_turret.getFieldRelativeAngle());
 				double xDistance = Math.abs(Math.cos(targetRadians)) * getTargetDistance();
 				double yDistance = -Math.signum(getFilteredTargetX()) * Math.abs(Math.sin(targetRadians)) * getTargetDistance();
 
