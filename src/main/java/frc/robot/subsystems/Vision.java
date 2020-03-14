@@ -30,6 +30,7 @@ public class Vision extends SubsystemBase {
 	private final double LIMELIGHT_MOUNT_ANGLE = 32; // Angle that the Limelight is mounted at
 	private final double LIMELIGHT_HEIGHT = 37.31; // Limelight height above the ground in inches
 
+	private final double MIN_TARGET_DISTANCE = 1;
 	private final double INNER_PORT_SLOPE = 1;
 	private final double INNER_PORT_OFFSET = 1;
 
@@ -115,17 +116,19 @@ public class Vision extends SubsystemBase {
 	}
 	
 	public double getSmartTargetX() {
-		double xDistance = Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getX());
-		double yDistance = Math.abs(Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getY()));
+		if(getTargetDistance() > MIN_TARGET_DISTANCE) {
+			double xDistance = Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getX());
+			double yDistance = Math.abs(Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getY()));
 
-		double maxYDistance = INNER_PORT_SLOPE * xDistance + INNER_PORT_OFFSET;
+			double maxYDistance = INNER_PORT_SLOPE * xDistance + INNER_PORT_OFFSET;
 
-		if(yDistance < maxYDistance) {
-			xDistance += 29.25 / 12.0;
-			return innerTargetXFilter.calculate(Math.signum(getFilteredTargetX()) * Units.radiansToDegrees(Math.atan(xDistance / yDistance)));
-		} else {
-			return getFilteredTargetX();
+			if (yDistance < maxYDistance) {
+				xDistance += 29.25 / 12.0;
+				return innerTargetXFilter.calculate(Math.signum(getFilteredTargetX()) * Units.radiansToDegrees(Math.atan(xDistance / yDistance)));
+			}
 		}
+
+		return getFilteredTargetX();
 	}
 
 	private void resetPoseByVision() {
