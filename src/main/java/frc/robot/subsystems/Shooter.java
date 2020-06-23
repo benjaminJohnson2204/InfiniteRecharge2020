@@ -32,6 +32,11 @@ public class Shooter extends SubsystemBase {
     private double kI = 0.0;                    //  0.0000287
     private double kD = 0.0;
 
+//    private double kF = 0.0523;  // 0.054      //  Gree: 0.0475;
+//    private double kP = 0.6;      //  0.4       //  0.00047
+//    private double kI = 0.0;                    //  0.0000287
+//    private double kD = 0.0;
+
     private double kS = 0.155;
     private double kV = 0.111;
     private double kA = 0.02;
@@ -67,8 +72,8 @@ public class Shooter extends SubsystemBase {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
             outtakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
-//            outtakeMotor.configVoltageCompSaturation(12);
-//            outtakeMotor.enableVoltageCompensation(true);
+            outtakeMotor.configVoltageCompSaturation(10);
+            outtakeMotor.enableVoltageCompensation(true);
         }
         outtakeMotors[0].setInverted(true);
         outtakeMotors[1].follow(outtakeMotors[0], FollowerType.PercentOutput);
@@ -175,6 +180,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
         SmartDashboardTab.putNumber("Shooter", "Setpoint", setpoint);
         SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
+        SmartDashboardTab.putNumber("Shooter", "Error", getSetpoint()-getRPM(0));
 
         SmartDashboardTab.putBoolean("DriveTrain", "CanShoot", canShoot());
     }
@@ -197,7 +203,7 @@ public class Shooter extends SubsystemBase {
         updateRPMSetpoint();
 //        updatePidRPM();
         updateShuffleboard();
-//        updatePIDValues();
+        updatePIDValues();
 
         if ((Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance()) && m_vision.hasTarget() && 
         		(Math.abs(m_vision.getTargetX()) < 1) && !timerStart) {

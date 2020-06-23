@@ -24,7 +24,7 @@ public class ResetOdometry extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param driveTrain The subsystem used by this command.
    */
   public ResetOdometry(DriveTrain driveTrain) {
     m_driveTrain = driveTrain;
