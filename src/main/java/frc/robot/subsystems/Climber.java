@@ -21,11 +21,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
+/*
+This class is the subsystem for the robot's climber
+ */
+
 public class Climber extends SubsystemBase {
 
   private double gearRatio = 1.0/18.0;
   public double pulleyDiameter = 2.0; // inches
 
+  // Climber motors and solenoid
   private TalonFX climbMotor = new TalonFX(Constants.climbMotorA);
 
   DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne, Constants.climbPistonForward, Constants.climbPistonReverse);
@@ -33,6 +38,7 @@ public class Climber extends SubsystemBase {
   private boolean climbState;
 
   public Climber() {
+    // Set up climber motor
     climbMotor.configFactoryDefault();
     climbMotor.setSelectedSensorPosition(0);
     climbMotor.setNeutralMode(NeutralMode.Brake);

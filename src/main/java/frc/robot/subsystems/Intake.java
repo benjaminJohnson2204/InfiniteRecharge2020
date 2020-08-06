@@ -13,10 +13,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.constants.Constants;
 
+/*
+Subsystem for interacting with the robot's intake
+ */
+
 public class Intake extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+  // PID and FeedForward loop terms
   private double kFF = 0.00068; //0.06; //0.122
   private double kP = 6e-5; //0.492
   private double kI = 0;
@@ -29,6 +34,7 @@ public class Intake extends SubsystemBase {
   private double gearRatio = 1.0 / 3.0;
   private boolean intaking = false;
 
+  // Intake motor setup
   private CANSparkMax intakeMotor =  new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
 //  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
 //  private CANPIDController canPidController = intakeMotor.getPIDController();

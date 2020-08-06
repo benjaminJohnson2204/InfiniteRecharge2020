@@ -19,6 +19,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.vitruvianlib.I2C.I2CLCD;
 
+/*
+Misc things that don't need their own subsystem
+ */
+
 public class Controls extends SubsystemBase {
     private PowerDistributionPanel m_pdp;
     private DriveTrain m_driveTrain;
@@ -41,6 +45,7 @@ public class Controls extends SubsystemBase {
         LCDDisplay.init();
     }
 
+    // Setup DriveTrain and Shooter logging
     public void initLogging() {
         BadLog.createTopic("DriveTrain/Left Front Input Current", "A",
                 () -> m_driveTrain.getMotorInputCurrent(0),

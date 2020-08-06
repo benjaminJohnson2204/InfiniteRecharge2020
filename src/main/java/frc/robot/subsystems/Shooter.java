@@ -21,12 +21,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
+/*
+Subsystem for controlling to robot's shooter
+ */
+
 public class Shooter extends SubsystemBase {
     /**
      * Creates a new ExampleSubsystem.
      *
      * @return
      */
+    // PID loop contants
     private double kF = 0.0523;  // 0.054      //  Gree: 0.0475;
     private double kP = 0.6;      //  0.4       //  0.00047
     private double kI = 0.0;                    //  0.0000287
@@ -68,6 +73,7 @@ public class Shooter extends SubsystemBase {
 //    public SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
     public Shooter(Vision vision, PowerDistributionPanel pdp) {
+        // Setup shooter motors (Falcons)
         for (TalonFX outtakeMotor : outtakeMotors) {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
@@ -186,6 +192,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void updatePIDValues() {
+        // Allow PID values to be set through SmartDashboard
         rpmOutput = SmartDashboardTab.getNumber("Shooter", "RPM Output", 0);
         rpmTolerance = SmartDashboardTab.getNumber("Shooter", "Flywheel RPM Tolerance", 0);
 

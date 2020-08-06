@@ -24,6 +24,10 @@ import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
 
+/*
+Subsystem for interacting with the Limelight and OpenSight vision systems
+ */
+
 public class Vision extends SubsystemBase {
 	// Variables for calculating distance
 	private final double TARGET_HEIGHT = 98.25; // Outer port height above carpet in inches
@@ -39,9 +43,11 @@ public class Vision extends SubsystemBase {
 	private final double VERTICAL_TARGET_PIXEL_WIDTH = 1;
 	private final double VERTICAL_TARGET_PIXEL_THRESHOLD = 1;
 
+	// NetworkTables for reading vision data
 	private NetworkTable limelight;
 	private NetworkTable openSight;
 
+	// Subsystems that will be controlled based on vision data
 	private final DriveTrain m_driveTrain;
 	private final Turret m_turret;
 
@@ -54,6 +60,7 @@ public class Vision extends SubsystemBase {
 	double[] counts = new double[5];
 	int index = 0;
 
+	// Filters to prevent target values from oscillating too much
 	SlewRateLimiter targetXFilter = new SlewRateLimiter(20);
 	SlewRateLimiter innerTargetXFilter = new SlewRateLimiter(20);
 
@@ -62,6 +69,8 @@ public class Vision extends SubsystemBase {
 	public Vision(DriveTrain driveTrain, Turret turret) {
 		m_driveTrain = driveTrain;
 		m_turret = turret;
+
+		// Driver cam setup
 //		camera = CameraServer.getInstance().startAutomaticCapture();
 		camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
 	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
@@ -77,6 +86,7 @@ public class Vision extends SubsystemBase {
 		PortForwarder.add(5801, "10.42.1.11", 5801);
 		PortForwarder.add(5805, "10.42.1.11", 5805);
 
+		// Init vision NetworkTables
 		limelight = NetworkTableInstance.getDefault().getTable("limelight");
 		openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
 		setPipeline(0);
@@ -85,6 +95,8 @@ public class Vision extends SubsystemBase {
 	}
 
 	private void updateValidTarget() {
+		// Determine whether the limelight has detected a valid target and not a random reflection
+		// If the target is seen for a specific amount of time it is marked as valid
 		if (hasTarget()) {
 			setLastValidTargetTime();
 		}
@@ -105,6 +117,7 @@ public class Vision extends SubsystemBase {
 		lastValidTargetTime = Timer.getFPGATimestamp();
 	}
 
+	// Limelight interaction functions
 	public double getTargetY() {
 		return limelight.getEntry("ty").getDouble(0);
 	}
@@ -150,6 +163,8 @@ public class Vision extends SubsystemBase {
 			resetPose = false;
 		}
 	}
+
+	// More Limelight interaction functions
 
 	public boolean hasTarget() {
 		return limelight.getEntry("tv").getDouble(0) == 1;
@@ -199,6 +214,7 @@ public class Vision extends SubsystemBase {
 		limelight.getEntry("pipeline").setNumber(pipeline);
 	}
 
+	// Calculate target distance based on field dimensions and the angle from the Limelight to the target
 	public double getTargetDistance() {
 		double angleToTarget = getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
 
@@ -208,6 +224,7 @@ public class Vision extends SubsystemBase {
 		return computeMode(distances);
 	}
 
+	// Used to find the most common value to provide accurate target data
 	private double computeMode(double[] data) {
 		// Compute mode
 		this.counts = new double[data.length];
@@ -231,6 +248,7 @@ public class Vision extends SubsystemBase {
 		return data[highestIndex]; // Final distance in feet
 	}
 
+	// Read ball position data from OpenSight (Raspberry Pi)
     public double getPowerCellX() {
         // TODO: Calculate degrees from pixels?
         // return openSight.getEntry("found-x").getDouble(0) * 5.839; // 5.839 pixels per degree

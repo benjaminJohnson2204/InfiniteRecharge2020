@@ -16,6 +16,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.constants.Constants;
 
+/*
+Subsystem for controlling robot LEDs
+ */
+
 public class LED extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
@@ -31,6 +35,7 @@ public class LED extends SubsystemBase {
   ColorSensor m_colorSensor;
 
   public LED(ColorSensor colorSensor) {
+    // Setup LED strip
     m_colorSensor = colorSensor;
     LEDStrip = new AddressableLED(Constants.ledPort);
     LEDBuffer = new AddressableLEDBuffer(111);

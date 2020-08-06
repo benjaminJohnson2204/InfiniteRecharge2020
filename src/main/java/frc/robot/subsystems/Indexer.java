@@ -23,21 +23,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
+/*
+Susbsystem for interacting with the robot's indexer (feeds balls from intake to shooter)
+ */
+
 public class Indexer extends SubsystemBase {
   /**
    * Creates a new ExampleSubsystem.
    */
+
+  // Setup indexer motor controller (SparkMax)
   CANSparkMax master = new CANSparkMax(Constants.indexerMotor, MotorType.kBrushless);
   CANEncoder encoder = master.getEncoder();
   CANPIDController pidController = master.getPIDController();
 
   VictorSPX kicker = new VictorSPX(Constants.kickerMotor);
 
+  // Indexer sensors setup
   DigitalInput intakeSensor = new DigitalInput(Constants.intakeSensor);
   DigitalInput indexerTopSensor = new DigitalInput(Constants.indexerTopSensor);
   DigitalInput indexerBottomSensor = new DigitalInput(Constants.indexerBottomSensor);
 
   private double targetSetpoint;
+
+  // PID terms/other constants
 //  private double kF = 1.67;
 //  private double kP = 2.36;
 //  private double kI = 0;
@@ -56,6 +65,7 @@ public class Indexer extends SubsystemBase {
   private int controlMode = 1;
 
   public Indexer() {
+    // Motor and PID controller setup
     master.restoreFactoryDefaults();
     master.setInverted(false);
 
@@ -111,8 +121,10 @@ public class Indexer extends SubsystemBase {
     master.set(output);
   }
 
+  // Detect whether a new ball has been picked up
+  // There is a new ball if the intake sensor is blocked and was not blocked before
   boolean pTripped = false;
-  public boolean newBall(){
+  public boolean newBall() {
     boolean returnVal;
     if(pTripped == false && getIntakeSensor()){
       returnVal = true;
@@ -173,6 +185,7 @@ public class Indexer extends SubsystemBase {
   }
 
   private void updatePIDValues() {
+    // Allow PID values to be set through SmartDashboard
     kF = SmartDashboard.getNumber("kF", 0);
     kP = SmartDashboard.getNumber("kP", 0);
     kI = SmartDashboard.getNumber("kI", 0);

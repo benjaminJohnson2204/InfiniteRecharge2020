@@ -22,10 +22,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
+/*
+Subsystem for controlling the turret
+ */
+
 public class Turret extends SubsystemBase {
     /**
      * Creates a new ExampleSubsystem.
      */
+    // Turret PID gains
     double kF = 0.07;     //0.05
     double kP = 0.2;    //0.155
     double kI = 0.0015;    //0.00075
@@ -59,6 +64,7 @@ public class Turret extends SubsystemBase {
     private boolean turretHomeSensorLatch = false;
 
     public Turret(DriveTrain driveTrain) {
+        // Setup turrent motors
         m_driveTrain = driveTrain;
         encoder.configFactoryDefault();
         encoder.setPositionToAbsolute();

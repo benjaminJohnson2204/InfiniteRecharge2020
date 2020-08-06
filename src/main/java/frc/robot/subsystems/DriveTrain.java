@@ -73,6 +73,7 @@ DriveTrain extends SubsystemBase {
     PowerDistributionPanel m_pdp;
 
     public DriveTrain(PowerDistributionPanel pdp) {
+        // Set up DriveTrain motors
         for (TalonFX motor : driveMotors) {
             motor.configFactoryDefault();
 //            motor.configVoltageCompSaturation(12);

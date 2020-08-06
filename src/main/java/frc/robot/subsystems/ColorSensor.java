@@ -21,6 +21,10 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
+/*
+Code to interact with the robot's color sensor for the wheel of fortune (WoF)
+ */
+
 public class ColorSensor extends SubsystemBase {
     /**
      * Creates a new ExampleSubsystem.
