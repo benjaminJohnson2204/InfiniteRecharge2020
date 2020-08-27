@@ -64,7 +64,7 @@ public class Intake extends SubsystemBase {
     intaking = state;
   }
   public boolean getIntakePistonExtendStatus(){
-    return intakePiston.get() == DoubleSolenoid.Value.kForward ? true : false;
+    return intakePiston.get() == DoubleSolenoid.Value.kForward;
   }
 
   public void setintakePiston(boolean state){

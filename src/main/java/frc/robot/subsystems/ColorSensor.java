@@ -105,10 +105,7 @@ public class ColorSensor extends SubsystemBase {
             colorID = panelColor();
             realIntervals++;
         }
-        if (realIntervals > 24)
-            return true;
-        else
-            return false;
+        return realIntervals > 24;
     }
 
     public void setOutput(double output) {
@@ -116,6 +113,7 @@ public class ColorSensor extends SubsystemBase {
     }
 
     public int getFMSColor() {
+        // Return integer representation of color
         String message = DriverStation.getInstance().getGameSpecificMessage();
         switch (message) {
             case "R":

@@ -46,13 +46,13 @@ public class SetArcadeDrive extends CommandBase {
   @Override
   public void execute() {
     double joystickY = (Math.abs(m_throttle.getAsDouble()) > 0.05) ? m_throttle.getAsDouble() : 0;
-    double joystickX = (Math.abs(m_turn.getAsDouble()) > 0.05) ? m_turn.getAsDouble() : 0;
+    double joystickX = (Math.abs(m_turn.getAsDouble()) > 0.05) ? m_turn.getAsDouble() : 0; // Joystick inputs of less than 5% are ignored
 
 //        double throttle = 0.5 * (joystickY + Math.pow(joystickY, 3));
 //        throttle = throttle < 0 ? Math.max( -0.7, throttle) : throttle;
 //        double turn = 0.25 *(joystickX + Math.pow(joystickX, 3));
     double throttle = joystickY;
-    throttle = throttle < 0 ? Math.max(-0.7, throttle) : throttle;
+    throttle = throttle < 0 ? Math.max(-0.7, throttle) : throttle; // Can't go backward at more than 70% speed
     double turn = (m_driveTrain.getDriveShifterStatus() ? 0.5 : 0.35) * joystickX;
 
 //    if(m_intake.getIntakingState())

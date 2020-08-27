@@ -42,10 +42,7 @@ public class DefaultFlywheelRPM extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_vision.getValidTarget())
-      m_shooter.setRPM(3000);
-    else
-      m_shooter.setRPM(0);
+    m_shooter.setRPM(m_vision.getValidTarget() ? 3000 : 0);
   }
 
   // Called once the command ends or is interrupted.

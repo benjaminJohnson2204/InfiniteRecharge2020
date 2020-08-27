@@ -64,6 +64,7 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
             if (m_turret.getControlMode() == 1) {
                 // TODO: Add fine adjustment mode when shooting?
                 if ((Math.pow(m_controller.getRawAxis(0), 2) + Math.pow(m_controller.getRawAxis(1), 2)) >= Math.pow(deadZone, 2)) {
+                    // This code executes if the controller is moved farther than the deadzone
                     m_vision.ledsOn();
                     m_vision.setLastValidTargetTime();
                     joystickMoved = true;

@@ -31,7 +31,7 @@ public class ResetRotationControl extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    colorSensor.resetRotationControlVars();
+    colorSensor.resetRotationControlVars(); // Reset the color sensor's count for how many rotations it has made
   }
 
   // Called every time the scheduler runs while the command is scheduled.

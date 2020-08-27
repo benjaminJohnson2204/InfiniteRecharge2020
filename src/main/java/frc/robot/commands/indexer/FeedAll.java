@@ -39,6 +39,7 @@ public class FeedAll extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Sets indexer to move forward
     m_indexer.setIndexerOutput(0.6);
     m_indexer.setKickerOutput(0.5);
   }
@@ -46,6 +47,7 @@ public class FeedAll extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(final boolean interrupted) {  
+    // Resets indexer to not moving
     m_indexer.setKickerOutput(0);
     m_indexer.setIndexerOutput(0);
   }
@@ -53,13 +55,11 @@ public class FeedAll extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // Command runs for 2 seconds
     double time = Timer.getFPGATimestamp();
     if(m_indexer.getIndexerTopSensor()){
       time = Timer.getFPGATimestamp();
     }
-    if(time >= 2)
-      return true;
-    else
-      return false;
+    return time >= 2;
   }
 }

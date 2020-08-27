@@ -49,14 +49,14 @@ public class GetSubsystemStates extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_led.setRGB(0, 125, 0);
+    m_led.setRGB(0, 125, 0); // Sets LED to dark green
     m_led.setSolidColor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_led.setRGB(75, 20, 150);
+    m_led.setRGB(75, 20, 150); // Sets LED to purple
     m_led.setSolidColor();
 
     // robot is initializing
@@ -64,10 +64,7 @@ public class GetSubsystemStates extends CommandBase {
       m_led.setState(-1);
     }  else {
       if(DriverStation.getInstance().isDisabled()) {
-        if(isRobotReady())
-          m_led.setState(8);
-        else
-          m_led.setState(7);
+        m_led.setState(isRobotReady() ? 8 : 7); // Green if ready, red otherwise
       } else {
         if (m_climber.getClimbState()) {
           m_led.setState(0);
@@ -97,10 +94,7 @@ public class GetSubsystemStates extends CommandBase {
   private boolean isRobotReady() {
     if(DriverStation.getInstance().isFMSAttached() && m_turret.getInitialHome() && m_controls.isPressureGood() == "Closed") // && PSI is high (?). Save for comp
       return true;
-    else if(m_turret.getInitialHome()) // && PSI is high (?). Save for comp
-      return true;
-    else
-      return false;
+    return m_turret.getInitialHome(); // && PSI is high (?). Save for comp
   }
 
   // Called once the command ends or is interrupted.

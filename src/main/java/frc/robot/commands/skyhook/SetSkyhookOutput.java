@@ -51,7 +51,7 @@ public class SetSkyhookOutput extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_skyhook.setSkyhook(0);
+    m_skyhook.setSkyhook(0); // Resets the skyhook to not move anymore
   }
 
   // Returns true when the command should end.

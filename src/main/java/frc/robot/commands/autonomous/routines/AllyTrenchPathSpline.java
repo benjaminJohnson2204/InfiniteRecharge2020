@@ -22,6 +22,7 @@ import frc.vitruvianlib.utils.TrajectoryUtils;
 
 public class AllyTrenchPathSpline extends SequentialCommandGroup {
     public AllyTrenchPathSpline(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision) {
+        // Gets a trajectory from beginning to the trench
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
         configA.setReversed(true);
         configA.setEndVelocity(0);
@@ -30,6 +31,7 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
         var startToTrenchPath = TrajectoryUtils.readCsvTrajectory("init1Ally2");
         var startToTrenchCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, startToTrenchPath, configA);
 
+        // Gets a trajectory from the trench to shoot
         var configB = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(4));
         configB.setReversed(false);
         configB.setEndVelocity(0);

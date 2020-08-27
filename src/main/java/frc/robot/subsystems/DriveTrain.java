@@ -216,7 +216,7 @@ DriveTrain extends SubsystemBase {
     }
 
     public boolean getDriveShifterStatus() {
-        return (driveTrainShifters.get() == DoubleSolenoid.Value.kForward) ? true : false;
+        return driveTrainShifters.get() == DoubleSolenoid.Value.kForward;
     }
 
     public void setDriveShifterStatus(boolean state) {

@@ -40,6 +40,7 @@ public class SetTurretManualOutput extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Any joystick input less than 0.05 is ignored
     double threshHold = 0.05;
     if(Math.abs(xValue)>threshHold)
       m_turret.setPercentOutput(xValue);

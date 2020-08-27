@@ -33,7 +33,7 @@ public class RotationControl extends CommandBase {
   public void initialize() {
     // Deploy?
     m_subsystem.working = true;
-    m_subsystem.resetRotationControlVars();
+    m_subsystem.resetRotationControlVars(); // Reset the color sensor's count for how many rotations it has made
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,6 +52,6 @@ public class RotationControl extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.rotationControlComplete();
+    return m_subsystem.rotationControlComplete(); // Determine if the color sensor has finished its sequence
   }
 }

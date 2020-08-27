@@ -44,8 +44,8 @@ public class SetClimberOutputOld extends CommandBase {
 
   @Override
   public void execute() {
-    double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
-    direction = input > 0 ? 1 : input < 0 ? -1 : 0;
+    double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0; // If the joystick is less than 1/5 of the way from the center, the input is set to 0
+    direction = input > 0 ? 1 : input < 0 ? -1 : 0; // Direction is set to the sign of the input
     if(m_climber.getClimbState()) {
 //      SmartDashboardTab.putNumber("Climber", "Direction", direction);
 //      SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
@@ -65,7 +65,7 @@ public class SetClimberOutputOld extends CommandBase {
 //        SmartDashboardTab.putString("Climber", "SetClimberOutput", "Manual Control");
 //        SmartDashboardTab.putNumber("Climber", "Input", input);
 
-        double output = (m_climber.getClimberPosition() < -512) && (input < 0) ? 0 : input;
+        double output = (m_climber.getClimberPosition() < -512) && (input < 0) ? 0 : input; // Doesn't allow the climber to go lower than -512
         m_climber.setClimberOutput(output);
       } else {
         if(switchDirection)

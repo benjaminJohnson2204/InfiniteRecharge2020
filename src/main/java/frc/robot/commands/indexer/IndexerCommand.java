@@ -41,6 +41,7 @@ public class IndexerCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Runs IncrementIndexer for 0.1 seconds at the press of a button
     if(m_indexer.getIntakeSensor() && tripped == 0){
       tripped = 1;
       startTime = Timer.getFPGATimestamp();

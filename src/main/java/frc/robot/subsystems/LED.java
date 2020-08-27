@@ -123,7 +123,7 @@ public class LED extends SubsystemBase {
     Timer.delay(0.25);
   }
 
-  public void colorToRGB(int color){
+  public void colorToRGB(int color){ // 1 = red, 2 = green, 3 = cyan, 4 = yellow
     switch(color){
       case 1:
         setRGB(255, 0, 0);

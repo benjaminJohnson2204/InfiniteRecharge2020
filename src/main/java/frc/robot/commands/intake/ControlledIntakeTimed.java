@@ -48,7 +48,7 @@ public class ControlledIntakeTimed extends CommandBase {
     startTime = Timer.getFPGATimestamp();
     m_intake.setIntakingState(true);
     timestamp = Timer.getFPGATimestamp();
-
+    // Determine how many balls to intake
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
     else if(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
@@ -111,10 +111,7 @@ public class ControlledIntakeTimed extends CommandBase {
     timestamp = Timer.getFPGATimestamp();
 
     if(fourBallTimestamp != 0)
-      if((timestamp - fourBallTimestamp) > 0.5)
-        haveFour = true;
-      else
-        haveFour = false;
+    haveFour = (timestamp - fourBallTimestamp) > 0.5;
 
     if(intakeState != IntakeStates.INTAKE_EMPTY)
       if(indexerTimestamp != 0)
@@ -141,6 +138,7 @@ public class ControlledIntakeTimed extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // Command is finished once it's been running for longer than the duration it was initialized with
     return Timer.getFPGATimestamp() > (startTime + m_duration);
   }
 }

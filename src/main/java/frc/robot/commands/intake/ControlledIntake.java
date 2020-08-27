@@ -49,7 +49,7 @@ public class ControlledIntake extends CommandBase {
   public void initialize() {
     m_intake.setIntakingState(true);
     timestamp = Timer.getFPGATimestamp();
-
+    // Determine how many balls to intake
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
     else if(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
@@ -109,10 +109,7 @@ public class ControlledIntake extends CommandBase {
     timestamp = Timer.getFPGATimestamp();
 
     if(fourBallTimestamp != 0)
-      if((timestamp - fourBallTimestamp) > 0.5)
-        haveFour = true;
-      else
-        haveFour = false;
+    haveFour = (timestamp - fourBallTimestamp) > 0.5;
 
     if(intakeState != IntakeStates.INTAKE_EMPTY)
       if(indexerTimestamp != 0)

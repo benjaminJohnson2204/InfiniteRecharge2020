@@ -34,15 +34,15 @@ public class RetractClimber extends CommandBase {
   }
   @Override
   public void execute() {
-    m_climber.setClimbPiston(false);
+    m_climber.setClimbPiston(false); // Set the climber piston to retracting
     if(!m_climber.getClimbPistonExtendStatus())
-      m_climber.setClimberOutput(0.5);
+      m_climber.setClimberOutput(0.5); // Make the climber go at half speed if it's not extending
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climber.setClimberOutput(0.0);
+    m_climber.setClimberOutput(0.0); // Stops the climber
   }
 
   // Returns true when the command should end.

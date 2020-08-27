@@ -29,7 +29,7 @@ public class BrakeWhileHeld extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveTrain.setDriveTrainNeutralMode(1);
+    m_driveTrain.setDriveTrainNeutralMode(1); // Sets each DriveTrain motor to neutral and braking
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -40,7 +40,7 @@ public class BrakeWhileHeld extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_driveTrain.setDriveTrainNeutralMode(0);
+    m_driveTrain.setDriveTrainNeutralMode(0); // Returns the motors to their original states of motion
   }
 
   // Returns true when the command should end.

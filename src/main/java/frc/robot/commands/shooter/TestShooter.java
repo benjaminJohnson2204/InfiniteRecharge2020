@@ -62,6 +62,7 @@ public class TestShooter extends CommandBase {
 
       if (timestamp != 0)
         if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1) {
+          // Starts the intake and indexer after waiting 0.1 seconds
           m_indexer.setIndexerOutput(1);
           m_indexer.setKickerOutput(1);
           m_intake.setIntakePercentOutput(1);

@@ -47,6 +47,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
     public void initialize() {
         super.initialize();
         autoStartTime = Timer.getFPGATimestamp();
+        // Determines total distance along path by adding up distances between consectuive points
         double distance = 0;
         for (int i = 0; i < m_path.size() - 1; i++) {
             var pointA = m_path.get(i);

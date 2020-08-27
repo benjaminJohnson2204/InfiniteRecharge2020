@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class DriveBackwards extends SequentialCommandGroup {
     public DriveBackwards(DriveTrain driveTrain) {
+        // Makes the robot drive backwards for 4 feet
         TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
         config.setReversed(false);
         ArrayList<Pose2d> path = new ArrayList<>();

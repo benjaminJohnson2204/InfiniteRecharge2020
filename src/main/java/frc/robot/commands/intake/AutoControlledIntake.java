@@ -54,7 +54,7 @@ public class AutoControlledIntake extends CommandBase {
   public void initialize() {
     m_intake.setIntakingState(true);
     timestamp = Timer.getFPGATimestamp();
-
+    // Determine how many balls to intake
     if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
       intakeState = IntakeStates.INTAKE_FIVE_BALLS;
     else if(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
@@ -117,10 +117,7 @@ public class AutoControlledIntake extends CommandBase {
     timestamp = Timer.getFPGATimestamp();
 
     if(fourBallTimestamp != 0)
-      if((timestamp - fourBallTimestamp) > 0.5)
-        haveFour = true;
-      else
-        haveFour = false;
+      haveFour = (timestamp - fourBallTimestamp) > 0.5;
 
     if(intakeState != IntakeStates.INTAKE_EMPTY)
       if(indexerTimestamp != 0)
@@ -136,6 +133,7 @@ public class AutoControlledIntake extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    // Reset intake and indexer motors to not moving
     m_intake.setIntakingState(false);
     m_intake.setIntakePercentOutput(0);
     m_indexer.setIndexerOutput(0);

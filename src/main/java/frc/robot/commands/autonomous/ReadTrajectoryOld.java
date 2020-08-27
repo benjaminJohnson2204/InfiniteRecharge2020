@@ -81,6 +81,7 @@ public class ReadTrajectoryOld extends CommandBase {
                 m_driveTrain.getRobotPose().getTranslation().getY(),
                 Rotation2d.fromDegrees(m_driveTrain.getAngle()));
 
+        // Get the trajectory from the file
         String filePath = Filesystem.getDeployDirectory().getAbsolutePath() + "/Trajectories/" + m_filename + ".csv";
         var fileTrajectory = TrajectoryUtils.readCsvTrajectory(filePath);
 

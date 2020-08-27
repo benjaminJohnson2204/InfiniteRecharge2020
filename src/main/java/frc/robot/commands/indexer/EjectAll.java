@@ -43,6 +43,7 @@ public class EjectAll extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    // Sets the indexer and intake to move backward
     m_indexer.setIndexerOutput(-0.6);
     m_indexer.setKickerOutput(-0.5);
     m_shooter.setIntakePercentOutput(-0.5);
@@ -50,7 +51,8 @@ public class EjectAll extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {  
+  public void end(final boolean interrupted) {
+    // Resets indexer and intake to not moving  
     m_indexer.setKickerOutput(0);
     m_indexer.setIndexerOutput(0);
     m_shooter.setIntakePercentOutput(0);

@@ -35,7 +35,7 @@ public class Climber extends SubsystemBase {
 
   DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne, Constants.climbPistonForward, Constants.climbPistonReverse);
 
-  private boolean climbState;
+  private boolean climbState; // true means extending, false means retracting
 
   public Climber() {
     // Set up climber motor
@@ -46,7 +46,8 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean getClimbPistonExtendStatus(){
-    return climbPiston.get() == DoubleSolenoid.Value.kForward ? true : false;
+    // Determine if Climber is extending
+    return climbPiston.get() == DoubleSolenoid.Value.kForward;
   }
 
   public void setClimbPiston(boolean state){

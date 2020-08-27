@@ -49,7 +49,7 @@ public class AlignToBall extends CommandBase {
 
             double leftVoltage = throttle.getAsDouble() * 12.0 + pid.calculate(driveTrain.getAngle(), setpoint);
             double rightVoltage = throttle.getAsDouble() * 12.0 - pid.calculate(driveTrain.getAngle(), setpoint);
-
+            // Make the robot move at the speeds of the joysticks, adjusted to turn the robot toward the power cell
             driveTrain.setVoltageOutput(leftVoltage, rightVoltage);
         }
     }

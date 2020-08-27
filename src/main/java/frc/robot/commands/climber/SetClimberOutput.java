@@ -47,8 +47,8 @@ public class SetClimberOutput extends CommandBase {
 
   @Override
   public void execute() {
-    double input = Math.abs(m_controller.getRawAxis(5)) > 0.2 ? m_controller.getRawAxis(5) : 0;
-    direction = input > 0 ? 1 : input < 0 ? -1 : 0;
+    double input = Math.abs(m_controller.getRawAxis(5)) > 0.2 ? m_controller.getRawAxis(5) : 0; // If the joystick is less than 1/5 of the way from the center, the input is set to 0
+    direction = input > 0 ? 1 : input < 0 ? -1 : 0; // Direction is set to the sign of the input
     if(m_climber.getClimbState()) {
       SmartDashboardTab.putNumber("Climber", "Direction", direction);
       SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
@@ -82,7 +82,7 @@ public class SetClimberOutput extends CommandBase {
 
   private void climberReleaseSequence() {
     SmartDashboardTab.putString("Climber", "SetClimberOutput", "Releasing");
-    m_climber.setClimbPiston(true);
+    m_climber.setClimbPiston(true); // Extends the climber
     m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
     m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
@@ -100,7 +100,7 @@ public class SetClimberOutput extends CommandBase {
 
   private void climberRetractSequence() {
     SmartDashboardTab.putString("Climber", "SetClimberOutput", "Retracting");
-    m_climber.setClimbPiston(false);
+    m_climber.setClimbPiston(false); // Retracts the climber
     m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.4);
     m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.4);
     if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)

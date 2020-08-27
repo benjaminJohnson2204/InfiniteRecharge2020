@@ -125,16 +125,8 @@ public class Indexer extends SubsystemBase {
   // There is a new ball if the intake sensor is blocked and was not blocked before
   boolean pTripped = false;
   public boolean newBall() {
-    boolean returnVal;
-    if(pTripped == false && getIntakeSensor()){
-      returnVal = true;
-    }
-    else 
-      returnVal = false;
-    if(getIntakeSensor())
-      pTripped = true;
-    else
-      pTripped = false;
+    boolean returnVal = !pTripped && getIntakeSensor();
+    pTripped = getIntakeSensor();
     return returnVal;
   }
 

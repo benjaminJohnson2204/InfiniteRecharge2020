@@ -42,8 +42,9 @@ public class SetRPM extends CommandBase {
   @Override
   public void execute() {
     m_shooter.setRPM(m_RPM);
-    if(m_shooter.encoderAtSetpoint(0) && printed == false){
-        SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp()-time);
+    if(m_shooter.encoderAtSetpoint(0) && !printed){
+        // Logs how long it takes to get the Shooter encoder to the setpoint
+        SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp() - time);
         printed = true;
     }
   }
