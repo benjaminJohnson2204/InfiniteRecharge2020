@@ -57,4 +57,11 @@ public final class Constants {
     public static final int intakePistonReverse = 3; // 3
     public static final int climbPistonForward = 4;
     public static final int climbPistonReverse = 5;
+
+    // Shoot on the Move
+    public static final double verticalTargetDistance = 1.7; // FIX THIS
+    public static final double verticalShooterAngle = 0.5; // FIX THIS
+    public static final double g = 9.8; // Absolute value, in meters per second squared
+    public static final double targetXPosition = 1.7; // FIX THIS
+    public static final double targetYPosition = 1.7; // FIX THIS
 }

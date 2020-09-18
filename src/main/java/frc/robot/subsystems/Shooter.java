@@ -221,8 +221,9 @@ public class Shooter extends SubsystemBase {
             timestamp = 0;
             timerStart = false;
         }
-
+        // canShoot = Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.6 & timestamp != 0;
         if (timestamp != 0) {
+            
             if (Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.6)
                 canShoot = true;
             else
