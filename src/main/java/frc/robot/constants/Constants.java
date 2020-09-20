@@ -59,9 +59,13 @@ public final class Constants {
     public static final int climbPistonReverse = 5;
 
     // Shoot on the Move
-    public static final double verticalTargetDistance = 1.7; // FIX THIS
-    public static final double verticalShooterAngle = 0.5; // FIX THIS
-    public static final double g = 9.8; // Absolute value, in meters per second squared
-    public static final double targetXPosition = 1.7; // FIX THIS
-    public static final double targetYPosition = 1.7; // FIX THIS
+    public static final double g = 9.81; // Absolute value, in meters per second squared
+    public static final double airResistanceCoefficient = 1.05; // Constant that shoot velocity is multiplied by to account for air resistance
+    // Use actual values for these
+    public static final double verticalTargetDistance = 1.7; // Distance between shooter and target heights from ground
+    public static final double verticalShooterAngle = 1.05; // Angle ball is shot from shooter relative to the ground 
+    public static final double targetXPosition = 1.7;
+    public static final double targetYPosition = 1.7;
+
+    public static final double maxShooterRPM = 10_000; // Highest RPM that shooter can launch balls at without breaking
 }

@@ -225,6 +225,9 @@ public class LED extends SubsystemBase {
       case 9:
         colorWheel();
         break;
+      case 10: // Error for Shoot on the Move
+        setRGB(255, 165, 0); // Orange
+        break;
       default:
         setRGB(106, 90, 205);
         setBlinkingColor(true);
