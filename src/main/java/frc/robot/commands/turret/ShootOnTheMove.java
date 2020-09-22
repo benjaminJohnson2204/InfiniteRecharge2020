@@ -46,6 +46,8 @@ public class ShootOnTheMove extends CommandBase {
   private boolean canShoot; // If we can shoot
 
   private ChassisSpeeds speeds; // contains initial straight and angular velocity of robot
+
+  // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
   private double timeToShoot = 2; // Time from when command is called to when ball leaves robot
   private double robotLinearVelocity, robotAngularVelocity, // Linear velocity is meters per second straight ahead, angular velocity is rotation per second calculated from differences between wheels
   robotInitialXPosition, robotInitialYPosition, initialHeading, // Current robot position and where it's facing on the field relative to x-axis
@@ -85,9 +87,9 @@ public class ShootOnTheMove extends CommandBase {
 
     Pose2d position = m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
 
-    // Separating position into x, y, and heading components
-    robotInitialXPosition = position.getTranslation().getX();
-    robotInitialYPosition = position.getTranslation().getY();
+    // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
+    robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle);
+    robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle);
     initialHeading = position.getRotation().getRadians();
 
     deltaTheta = robotAngularVelocity * timeToShoot; // Calculating how much robot's heading will change during time to shoot
@@ -134,7 +136,7 @@ public class ShootOnTheMove extends CommandBase {
     double robotPredictedYvel = robotLinearVelocity * Math.sin(values.getRotation().getRadians());
 
     // Calculating xy-magnitude of total velocity ball needs to hit target (including what it gets from robot)
-    double necessaryXYvel = Constants.airResistanceCoefficient * Math.sqrt( -Constants.g / (Constants.verticalTargetDistance - distanceToTargetXY * Math.tan(Constants.verticalShooterAngle)));
+    double necessaryXYvel = Constants.airResistanceCoefficient * Math.sqrt( (-Constants.g / 2) / (Constants.verticalTargetDistance - distanceToTargetXY * Math.tan(Constants.verticalShooterAngle)));
 
     double predictedAngle = findAngle(values.getTranslation().getX(), values.getTranslation().getY()); // xy Angle from robot to target
 

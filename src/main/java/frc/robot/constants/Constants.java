@@ -67,5 +67,11 @@ public final class Constants {
     public static final double targetXPosition = 1.7;
     public static final double targetYPosition = 1.7;
 
+    public static final double turretAcceleration = 1; // radians per second
+    public static final double shooterAcceleration = 1; // RPM per second
+
+    public static final double navXToShooterDistance = 0.5; // Meters
+    public static final double navXToShooterAngle = 0; // Radians; angle offset between navX and shooter
+
     public static final double maxShooterRPM = 10_000; // Highest RPM that shooter can launch balls at without breaking
 }
