@@ -53,14 +53,21 @@ public class ShootOnTheMove extends CommandBase {
   robotInitialXPosition, robotInitialYPosition, initialHeading, // Current robot position and where it's facing on the field relative to x-axis
     // TODO: Figure out how to convert robot position to shooter position
 
+  robotPredictedXvel, robotPredictedYvel, // Predicted x and y components of robot velocity after delay
   deltaTheta, // Angle in radians that robot rotates during time to shoot
-  distanceToTargetXY, // distance in meters from robot to target on xy-plane (field)
+  distanceToInnerTargetXY, // distance in meters from robot to target on xy-plane (field)
   targetTurretAngle, // Angle turret needs to rotate to in order for ball to hit target
-  shooterBallMagnitude; // Magnitude of velocity shooter needs to shoot at in order for ball to hit target
+  shooterBallMagnitude, // Magnitude of velocity shooter needs to shoot at in order for ball to hit target
+  necessaryXYvel, // xy-velocity needed to hit target
+  xDistanceToInnerTarget, yDistanceToInnerTarget, // X and y distances to inner target
+  distanceToOuterTargetXY;
 
   private Translation2d shooterBallVector; // xy components of shooter ball magnitude
   private Pose2d predictedPosition; // Where robot will be after time to shoot, including heading
   private double startTime; // Timestamp when command is called
+
+  private double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
+  private double maxRatioWithWall = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum ratio/angle for ball to go through outer target
 
   /**
    * Creates a new ExampleCommand.
@@ -88,16 +95,27 @@ public class ShootOnTheMove extends CommandBase {
     Pose2d position = m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
 
     // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
-    robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle);
-    robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle);
     initialHeading = position.getRotation().getRadians();
-
+    robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle + initialHeading);
+    robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading);
+    
     deltaTheta = robotAngularVelocity * timeToShoot; // Calculating how much robot's heading will change during time to shoot
     predictedPosition = predictPosition(); // Storing robot's predicted position and heading in a variable
-    distanceToTargetXY = findDistance(Constants.targetXPosition - predictedPosition.getTranslation().getX(), 
-    Constants.targetYPosition - predictedPosition.getTranslation().getY()); // Find out how far away target is from robot || later implement with vision's function
-    shooterBallVector = calculateShootXYVelocityComponents(predictedPosition); // Calculating xy velocity components ball needs to be shot at
-    
+    xDistanceToInnerTarget = Constants.targetXPosition - predictedPosition.getTranslation().getX();
+    yDistanceToInnerTarget = Constants.targetYPosition - predictedPosition.getTranslation().getY();
+    distanceToInnerTargetXY = findDistance(xDistanceToInnerTarget, yDistanceToInnerTarget); // Find out how far away inner target is from robot || later implement with vision's function
+    distanceToOuterTargetXY = findDistance(xDistanceToInnerTarget, yDistanceToInnerTarget - Constants.targetOffset); // Find out how far away outer target is from robot
+
+    // Calculating x and y components of velocity robot will have after time to shoot
+    robotPredictedXvel = robotLinearVelocity * Math.cos(predictedPosition.getRotation().getRadians());
+    robotPredictedYvel = robotLinearVelocity * Math.sin(predictedPosition.getRotation().getRadians());
+
+    shooterBallVector = calculateShootXYVelocityComponents(predictedPosition, true); // Calculating xy velocity components ball needs to be shot at
+    if (!canGoThroughInnerTarget()) { // If ball can't go through inner target, aim for outer target
+      shooterBallVector = calculateShootXYVelocityComponents(predictedPosition, false); // Re-calculating xy velocity based on aiming for outer target
+      canShoot = canGoThroughOuterTarget(); // Checking if ball can go through outer target
+    }
+
     targetTurretAngle = findAngle(shooterBallVector.getY(), shooterBallVector.getX()); // Calculates angle turret needs to rotate to
     shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
      / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions
@@ -130,15 +148,14 @@ public class ShootOnTheMove extends CommandBase {
     return new Pose2d(predictedX, predictedY, new Rotation2d(robotPredictedHeading)); // Returning x, y, and heading
   }
 
-  private Translation2d calculateShootXYVelocityComponents(Pose2d values) { // Calculating xy velocity the shooter needs to give the ball
-    // Calculating x and y components of velocity robot will have after time to shoot
-    double robotPredictedXvel = robotLinearVelocity * Math.cos(values.getRotation().getRadians());
-    double robotPredictedYvel = robotLinearVelocity * Math.sin(values.getRotation().getRadians());
-
+  private Translation2d calculateShootXYVelocityComponents(Pose2d predictedPositionValues, boolean aimingForInner) { // Calculating xy velocity the shooter needs to give the ball
+    
     // Calculating xy-magnitude of total velocity ball needs to hit target (including what it gets from robot)
-    double necessaryXYvel = Constants.airResistanceCoefficient * Math.sqrt( (-Constants.g / 2) / (Constants.verticalTargetDistance - distanceToTargetXY * Math.tan(Constants.verticalShooterAngle)));
+    necessaryXYvel = Constants.airResistanceCoefficient * Math.sqrt( (-Constants.g / 2) / (Constants.verticalTargetDistance - 
+    (aimingForInner ? distanceToInnerTargetXY : distanceToOuterTargetXY) * Math.tan(Constants.verticalShooterAngle)));
 
-    double predictedAngle = findAngle(values.getTranslation().getX(), values.getTranslation().getY()); // xy Angle from robot to target
+    double predictedAngle = findAngle(xDistanceToInnerTarget - predictedPositionValues.getTranslation().getX(), 
+    yDistanceToInnerTarget - (aimingForInner ? 0 : Constants.targetOffset) - predictedPositionValues.getTranslation().getY()); // xy Angle from robot to target
 
     return new Translation2d(
         necessaryXYvel * Math.cos(predictedAngle) - robotPredictedXvel,
@@ -150,6 +167,20 @@ public class ShootOnTheMove extends CommandBase {
     double RPM = velocity * 60 / (flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
     canShoot = RPM <= Constants.maxShooterRPM;
     return RPM;
+  }
+
+  private boolean canGoThroughInnerTarget() {
+    double hitsTargetAt = Math.abs(((-Constants.g * distanceToInnerTargetXY) / necessaryXYvel + necessaryXYvel * Math.tan(Constants.verticalShooterAngle)) / necessaryXYvel); // How high up ball hits outer target
+    boolean withinHeight = hitsTargetAt <= hexagonCenterCanHitHeight / 2 / Constants.targetOffset; // Vertical angle is within acceptable range
+
+    // Vertical angle as a function of horizontal angle is acceptable
+    boolean withinHexagonSlope = hitsTargetAt <= -Math.sqrt(3) * Constants.targetOffset * Math.abs(xDistanceToInnerTarget / yDistanceToInnerTarget) + hexagonCenterCanHitHeight;
+    return withinHeight && withinHexagonSlope; // Both angles must be accpetable
+  }
+
+  private boolean canGoThroughOuterTarget() {
+    return (yDistanceToInnerTarget - Constants.targetOffset) / xDistanceToInnerTarget >= // Tangent of angle to target
+    maxRatioWithWall; // Maximum angle tangent without ball hitting outer wall
   }
 
   // Called when the command is initially scheduled.

@@ -7,6 +7,8 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.wpilibj.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -61,6 +63,13 @@ public final class Constants {
     // Shoot on the Move
     public static final double g = 9.81; // Absolute value, in meters per second squared
     public static final double airResistanceCoefficient = 1.05; // Constant that shoot velocity is multiplied by to account for air resistance
+
+    // Target measurements
+    public static final double ballRadius = Units.inchesToMeters(3.5);
+    public static final double ballTolerance = Units.inchesToMeters(1);
+    public static final double outerTargetHeight = Units.inchesToMeters(30);
+    public static final double targetOffset = Units.inchesToMeters(29.25);
+
     // Use actual values for these
     public static final double verticalTargetDistance = 1.7; // Distance between shooter and target heights from ground
     public static final double verticalShooterAngle = 1.05; // Angle ball is shot from shooter relative to the ground 
