@@ -71,15 +71,15 @@ public final class Constants {
     public static final double targetOffset = Units.inchesToMeters(29.25);
 
     // Use actual values for these
-    public static final double verticalTargetDistance = 1.7; // Distance between shooter and target heights from ground
+    public static final double verticalTargetDistance = Units.inchesToMeters(98.25 - 38); // Distance between shooter and target heights from ground
     public static final double verticalShooterAngle = 1.05; // Angle ball is shot from shooter relative to the ground 
-    public static final double targetXPosition = 1.7;
-    public static final double targetYPosition = 1.7;
+    public static final double targetXPosition = 0;
+    public static final double targetYPosition = Units.inchesToMeters(629.25);
 
-    public static final double turretAcceleration = 1; // radians per second
-    public static final double shooterAcceleration = 1; // RPM per second
+    public static final double turretAcceleration = .75; // radians per second
+    public static final double shooterAcceleration = 1000; // RPM per second
 
-    public static final double navXToShooterDistance = 0.5; // Meters
+    public static final double navXToShooterDistance = Units.inchesToMeters(1.4); // Meters
     public static final double navXToShooterAngle = 0; // Radians; angle offset between navX and shooter
 
     public static final double maxShooterRPM = 10_000; // Highest RPM that shooter can launch balls at without breaking

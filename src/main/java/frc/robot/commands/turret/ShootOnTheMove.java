@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.*;
 import frc.robot.constants.Constants;
@@ -51,7 +52,6 @@ public class ShootOnTheMove extends CommandBase {
   private double timeToShoot = 2; // Time from when command is called to when ball leaves robot
   private double robotLinearVelocity, robotAngularVelocity, // Linear velocity is meters per second straight ahead, angular velocity is rotation per second calculated from differences between wheels
   robotInitialXPosition, robotInitialYPosition, initialHeading, // Current robot position and where it's facing on the field relative to x-axis
-    // TODO: Figure out how to convert robot position to shooter position
 
   robotPredictedXvel, robotPredictedYvel, // Predicted x and y components of robot velocity after delay
   deltaTheta, // Angle in radians that robot rotates during time to shoot
@@ -86,13 +86,13 @@ public class ShootOnTheMove extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(turret, shooter, drivetrain);
 
-    speeds = m_drivetrain.getDriveTrainKinematics().toChassisSpeeds(m_drivetrain.getSpeeds()); // Getting straight and angular velocity of drivetrain
+    speeds = new ChassisSpeeds(3, 0, Math.PI / 12);// m_drivetrain.getDriveTrainKinematics().toChassisSpeeds(m_drivetrain.getSpeeds()); // Getting straight and angular velocity of drivetrain
 
     // Separating into linear and angular components
     robotLinearVelocity = speeds.vxMetersPerSecond;
     robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
-    Pose2d position = m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
+    Pose2d position = new Pose2d(new Translation2d(3, 10), new Rotation2d(Math.PI / 6))// m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
 
     // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
     initialHeading = position.getRotation().getRadians();
@@ -100,10 +100,12 @@ public class ShootOnTheMove extends CommandBase {
     robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading);
     
     deltaTheta = robotAngularVelocity * timeToShoot; // Calculating how much robot's heading will change during time to shoot
+    SmartDashboard.putNumber("Change in angle", deltaTheta);
     predictedPosition = predictPosition(); // Storing robot's predicted position and heading in a variable
     xDistanceToInnerTarget = Constants.targetXPosition - predictedPosition.getTranslation().getX();
     yDistanceToInnerTarget = Constants.targetYPosition - predictedPosition.getTranslation().getY();
     distanceToInnerTargetXY = findDistance(xDistanceToInnerTarget, yDistanceToInnerTarget); // Find out how far away inner target is from robot || later implement with vision's function
+    SmartDashboard.putNumber("XY Distance to inner target", distanceToInnerTargetXY);
     distanceToOuterTargetXY = findDistance(xDistanceToInnerTarget, yDistanceToInnerTarget - Constants.targetOffset); // Find out how far away outer target is from robot
 
     // Calculating x and y components of velocity robot will have after time to shoot
@@ -112,11 +114,12 @@ public class ShootOnTheMove extends CommandBase {
 
     shooterBallVector = calculateShootXYVelocityComponents(predictedPosition, true); // Calculating xy velocity components ball needs to be shot at
     if (!canGoThroughInnerTarget()) { // If ball can't go through inner target, aim for outer target
+      SmartDashboard.putBoolean("Able to hit inner target", false);
       shooterBallVector = calculateShootXYVelocityComponents(predictedPosition, false); // Re-calculating xy velocity based on aiming for outer target
       canShoot = canGoThroughOuterTarget(); // Checking if ball can go through outer target
     }
 
-    targetTurretAngle = findAngle(shooterBallVector.getY(), shooterBallVector.getX()); // Calculates angle turret needs to rotate to
+    targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
     shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
      / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions
   }
@@ -141,21 +144,23 @@ public class ShootOnTheMove extends CommandBase {
     double radius = robotLinearVelocity / robotAngularVelocity; // Calculating distance from robot's position and center of robot's rotation
 
     // Calculating x and y position after delay using linear and angular velocities over time to shoot using trigonometry from center of rotation
-    double predictedX = robotInitialXPosition + radius * (Math.sin(initialHeading - deltaTheta) - Math.sin(initialHeading));
-    double predictedY = robotInitialYPosition + radius * (Math.cos(initialHeading - deltaTheta) - Math.cos(initialHeading));
-
-    double robotPredictedHeading = Math.PI / 2 - (initialHeading + deltaTheta); // Heading of robot after time delay
+    double robotPredictedHeading = initialHeading  + deltaTheta; // Heading of robot after time delay
+    SmartDashboard.putNumber("Predicted heading", robotPredictedHeading);
+    double predictedX = robotInitialXPosition + radius * (Math.sin(initialHeading + deltaTheta) - Math.sin(initialHeading));
+    double predictedY = robotInitialYPosition - radius * (Math.cos(initialHeading + deltaTheta) - Math.cos(initialHeading));
+    SmartDashboard.putNumber("Predicted x position", predictedX);
+    SmartDashboard.putNumber("Predicted y position", predictedY);
     return new Pose2d(predictedX, predictedY, new Rotation2d(robotPredictedHeading)); // Returning x, y, and heading
   }
 
   private Translation2d calculateShootXYVelocityComponents(Pose2d predictedPositionValues, boolean aimingForInner) { // Calculating xy velocity the shooter needs to give the ball
     
     // Calculating xy-magnitude of total velocity ball needs to hit target (including what it gets from robot)
-    necessaryXYvel = Constants.airResistanceCoefficient * Math.sqrt( (-Constants.g / 2) / (Constants.verticalTargetDistance - 
+    necessaryXYvel = (aimingForInner ? distanceToInnerTargetXY : distanceToOuterTargetXY) * Constants.airResistanceCoefficient * Math.sqrt( (-Constants.g / 2) / (Constants.verticalTargetDistance - 
     (aimingForInner ? distanceToInnerTargetXY : distanceToOuterTargetXY) * Math.tan(Constants.verticalShooterAngle)));
 
-    double predictedAngle = findAngle(xDistanceToInnerTarget - predictedPositionValues.getTranslation().getX(), 
-    yDistanceToInnerTarget - (aimingForInner ? 0 : Constants.targetOffset) - predictedPositionValues.getTranslation().getY()); // xy Angle from robot to target
+    double predictedAngle = findAngle(xDistanceToInnerTarget, yDistanceToInnerTarget - (aimingForInner ? 0 : Constants.targetOffset)); // xy Angle from robot to target
+    SmartDashboard.putNumber("XY angle to target", predictedAngle);
 
     return new Translation2d(
         necessaryXYvel * Math.cos(predictedAngle) - robotPredictedXvel,
@@ -166,6 +171,7 @@ public class ShootOnTheMove extends CommandBase {
     double flywheelRadius = 0.1; // Meters
     double RPM = velocity * 60 / (flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
     canShoot = RPM <= Constants.maxShooterRPM;
+    SmartDashboard.putBoolean("Able to shoot", canShoot);
     return RPM;
   }
 
@@ -187,7 +193,8 @@ public class ShootOnTheMove extends CommandBase {
   @Override
   public void initialize() {
     startTime = Timer.getFPGATimestamp(); // Starting timer to run command
-    
+    SmartDashboard.putNumber("Velocity", shooterBallMagnitude);
+    SmartDashboard.putNumber("RPM", velocityToRPM(shooterBallMagnitude));
     m_turret.setRobotCentricSetpoint(targetTurretAngle); // Setting turret to turn to angle
     m_turret.setControlMode(1); // Enabling turret to turn to setpoint
     m_shooter.setRPM(velocityToRPM(shooterBallMagnitude)); // Spin the shooter to shoot the ball
