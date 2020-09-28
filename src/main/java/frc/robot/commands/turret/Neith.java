@@ -31,7 +31,7 @@ static double robotInitialXPosition = 1.7;
 /**
  * An example command that uses an example subsystem.
  */
-public class ShootOnTheMove extends CommandBase {
+public class Neith extends CommandBase {
 
   /*
   Project Doc:
@@ -75,7 +75,7 @@ public class ShootOnTheMove extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
 
-  public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led) {
+  public Neith(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led) {
     m_turret = turret;
     m_shooter = shooter;
     m_drivetrain = drivetrain;
