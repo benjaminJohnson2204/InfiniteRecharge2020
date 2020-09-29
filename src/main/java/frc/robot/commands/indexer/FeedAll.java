@@ -57,9 +57,6 @@ public class FeedAll extends CommandBase {
     if(m_indexer.getIndexerTopSensor()){
       time = Timer.getFPGATimestamp();
     }
-    if(time >= 2)
-      return true;
-    else
-      return false;
+    return time >= 2;
   }
 }

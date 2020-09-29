@@ -29,7 +29,7 @@ import frc.robot.commands.turret.*;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
-import frc.robot.commands.indexer.EjectAll;
+import frc.robot.commands.indexer.*;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.constants.Constants;
 import frc.vitruvianlib.utils.JoystickWrapper;
@@ -170,6 +170,7 @@ public class RobotContainer {
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
 
         xBoxButtons[3].whileHeld(new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led));       // Y - Shoot on the Move
+        xBoxButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
 
         // xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
         // xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
