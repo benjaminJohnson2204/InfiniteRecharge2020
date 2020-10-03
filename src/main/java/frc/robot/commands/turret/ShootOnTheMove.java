@@ -44,7 +44,8 @@ public class ShootOnTheMove extends CommandBase {
   private final DriveTrain m_drivetrain;
   private final LED m_led;
 
-  private boolean canShoot; // If we can shoot
+  private boolean canHitOuter, // If we can hit outer
+  canHitInner; // If we can hit inner
 
   private ChassisSpeeds speeds; // contains initial straight and angular velocity of robot
 
@@ -81,8 +82,6 @@ public class ShootOnTheMove extends CommandBase {
     m_drivetrain = drivetrain;
     m_led = led;
 
-    canShoot = true;
-
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(turret, shooter, drivetrain);
 
@@ -117,6 +116,8 @@ public class ShootOnTheMove extends CommandBase {
       SmartDashboard.putBoolean("Able to hit inner target", false);
       shooterBallVector = calculateShootXYVelocityComponents(predictedPosition, false); // Re-calculating xy velocity based on aiming for outer target
       canShoot = canGoThroughOuterTarget(); // Checking if ball can go through outer target
+    } else {
+      canShoot = true;
     }
 
     targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
@@ -167,10 +168,14 @@ public class ShootOnTheMove extends CommandBase {
         necessaryXYvel * Math.sin(predictedAngle) - robotPredictedYvel);
   } // return the velocity components that the shooter has to give to the ball in form (xVel, yVel)
 
-  private double velocityToRPM(double velocity){ // Converts velocity ball needs to be shot at to RPM of shooter
+  private double velocityToRPM(double velocity, boolean outer){ // Converts velocity ball needs to be shot at to RPM of shooter
     double flywheelRadius = 0.1; // Meters
     double RPM = velocity * 60 / (flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
-    canShoot = RPM <= Constants.maxShooterRPM;
+    if (outer) {
+      canHitOuter = canHitOuter && RPM <= Constants.maxShooterRPM;
+    } else {
+      canHitInner = canHitInner && RPM <= Constants.maxShooterRPM;
+    }
     SmartDashboard.putBoolean("Able to shoot", canShoot);
     return RPM;
   }
@@ -185,8 +190,24 @@ public class ShootOnTheMove extends CommandBase {
   }
 
   private boolean canGoThroughOuterTarget() {
+      // TODO: Calculate whether vertical angle is acceptable
     return (yDistanceToInnerTarget - Constants.targetOffset) / xDistanceToInnerTarget >= // Tangent of angle to target
     maxRatioWithWall; // Maximum angle tangent without ball hitting outer wall
+  }
+
+  private void calculateEverything() {
+    speeds = m_drivetrain.getDriveTrainKinematics().toChassisSpeeds(m_drivetrain.getSpeeds()); // Getting straight and angular velocity of drivetrain
+
+    // Separating into linear and angular components
+    robotLinearVelocity = speeds.vxMetersPerSecond;
+    robotAngularVelocity = speeds.omegaRadiansPerSecond;
+
+    Pose2d position = m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
+
+    // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
+    initialHeading = position.getRotation().getRadians();
+    robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle + initialHeading);
+    robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading);
   }
 
   // Called when the command is initially scheduled.
@@ -203,6 +224,9 @@ public class ShootOnTheMove extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (!canShoot) {
+      m_led.setState(2); // Can't shoot at all, solid red
+    } else if 
   }
 
   // Called once the command ends or is interrupted.

@@ -191,45 +191,50 @@ public class LED extends SubsystemBase {
         setRainbow(3, 8);
         break;
       case 1:
-        setRGB(255, 200, 0);
+        setRGB(255, 200, 0); // Blinking dirty-yellow
         setBlinkingColor(true);
         break;
       case 2:
-        setRGB(255, 0, 0);
+        setRGB(255, 0, 0); // Solid red
         setSolidColor();
         break;
       case 3:
-        setRGB(255, 255, 255);
+        setRGB(255, 255, 255); // Flashing white
         flash();
         break;
       case 4:
-        setRGB(66, 194, 23);
+        setRGB(66, 194, 23); // Trailing vitruvian green
         trail(5);
         break;
       case 5:
-        setRGB(0, 110, 255);
+        setRGB(0, 110, 255); // Blinking dark blue
         setBlinkingColor(true);
         break;
       case 6:
-        setRGB(255, 110, 0);
+        setRGB(255, 110, 0); // Trailing reddish-orange
         trail(8);
         break;
       case 7:
-        setRGB(255, 0, 0);
+        setRGB(255, 0, 0); // Blinking red
         setBlinkingColor(true);
         break;
       case 8:
-        setRGB(0, 255, 0);
+        setRGB(0, 255, 0); // Blinking green
         setBlinkingColor(true);
         break;
       case 9:
         colorWheel();
         break;
-      case 10: // Error for Shoot on the Move
+      case 10: // Shoot on the Move: able to shoot and hit inner
+        setRGB(0, 255, 0); // Solid green
+        setSolidColor();
+        break;
+      case 11: // Shoot on the Move: able to shoot and only hit outer
         setRGB(255, 165, 0); // Orange
+        setSolidColor();
         break;
       default:
-        setRGB(106, 90, 205);
+        setRGB(106, 90, 205); // Blinking purple
         setBlinkingColor(true);
     }
     LEDStrip.setData(LEDBuffer);
