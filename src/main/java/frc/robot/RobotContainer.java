@@ -168,8 +168,8 @@ public class RobotContainer {
 
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
-
-        xBoxButtons[3].whileHeld(new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led));       // Y - Shoot on the Move
+        xBoxButtons[3].toggleWhenPressed(new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led)); // Y - Shoot on the Move
+            // Look up and make sure that toggle when pressed works like this
         xBoxButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
 
         // xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close

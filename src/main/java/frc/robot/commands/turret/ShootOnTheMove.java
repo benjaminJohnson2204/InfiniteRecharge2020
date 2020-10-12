@@ -18,16 +18,7 @@ import frc.robot.subsystems.*;
 import frc.robot.constants.Constants;
 import java.lang.Math;
 
-import java.util.function.DoubleSupplier;
 
-/*
-static double robotInitialXPosition = 1.7;
-    static double robotInitialYPosition = 1.7;
-    static double intialHeading = 1.7;
-    static double targetXPosition = 1.7;
-    static double targetYPosition = 1.7;
-
-  */
 /**
  * An example command that uses an example subsystem.
  */
@@ -108,7 +99,7 @@ public class ShootOnTheMove extends CommandBase {
     robotLinearVelocity = speeds.vxMetersPerSecond;
     robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
-    Pose2d position = new Pose2d(new Translation2d(3, 10), new Rotation2d(Math.PI / 6)); // m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
+    Pose2d position = m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
 
     // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
     initialHeading = position.getRotation().getRadians();
@@ -223,7 +214,7 @@ public class ShootOnTheMove extends CommandBase {
   }
 
   private boolean canGoThroughInnerTarget() {
-    double tangentOfFinalAngle = Math.abs(2 * Constants.verticalTargetDistance / distanceToInnerTargetXY - Math.tan(Constants.verticalShooterAngle)) 
+    double tangentOfFinalAngle = Math.abs(2 * Constants.verticalTargetDistance / distanceToInnerTargetXY - Math.tan(Constants.verticalShooterAngle)); 
     return tangentOfFinalAngle <= hexagonCenterCanHitHeight / Constants.targetOffset / 2 && // Vertical angle alone is fine
     tangentOfFinalAngle <= - Math.sqrt(3) * Constants.targetOffset / Math.abs(yDistanceToInnerTarget / xDistanceToInnerTarget) + hexagonCenterCanHitHeight; // Within sloped hexagon lines
   }
