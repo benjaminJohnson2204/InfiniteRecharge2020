@@ -73,7 +73,7 @@ public class ShootOnTheMove extends CommandBase {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param turret The subsystem used by this command.
    */
 
   public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led) {
@@ -91,7 +91,7 @@ public class ShootOnTheMove extends CommandBase {
     robotLinearVelocity = speeds.vxMetersPerSecond;
     robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
-    Pose2d position = new Pose2d(new Translation2d(3, 10), new Rotation2d(Math.PI / 6))// m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
+    Pose2d position = new Pose2d(new Translation2d(3, 10), new Rotation2d(Math.PI / 6)); // m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
 
     // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
     initialHeading = position.getRotation().getRadians();
