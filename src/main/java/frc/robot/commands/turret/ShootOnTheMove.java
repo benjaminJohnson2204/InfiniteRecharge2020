@@ -220,8 +220,9 @@ public class ShootOnTheMove extends CommandBase {
   }
 
   private boolean canGoThroughOuterTarget() {
-  return Math.abs(yDistanceToOuterTarget / xDistanceToOuterTarget) >= maxVerticalRatioOuter &&  // Horizontal angle is fine
-  Math.abs(2 * Constants.verticalTargetDistance / distanceToOuterTargetXY - Math.tan(Constants.verticalShooterAngle)) >= maxHorizontalRatioOuter; // Vertical angle is fine
+  double verticalTargetIntersection = Math.abs(2 * Constants.verticalTargetDistance / distanceToOuterTargetXY - Math.tan(Constants.verticalShooterAngle)) * Constants.ballRadius;
+  return verticalTargetIntersection <= hexagonCenterCanHitHeight / 2 && 
+  verticalTargetIntersection <= -Math.sqrt(3) * Math.abs(Constants.ballRadius * xDistanceToOuterTarget / xDistanceToOuterTarget) + hexagonCenterCanHitHeight;
 }
 
   // Called once the command ends or is interrupted.
