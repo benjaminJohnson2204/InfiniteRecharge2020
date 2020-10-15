@@ -142,22 +142,22 @@ public class ShootOnTheMove extends CommandBase {
       ledState = 0;
     }
 
-    targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
-    shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
-     / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions
-    RPM = shooterBallMagnitude * 60 / (Constants.flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
-    if (RPM > Constants.maxShooterRPM) {
-      ledState = 0;
-    }
-
-    if (ledState == 0) {
-      m_led.setState(2); // Solid red, unable to shoot
+    if (ledState != 0) {
+      targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
+      shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
+      / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions
+      RPM = shooterBallMagnitude * 60 / (Constants.flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
+      if (RPM > Constants.maxShooterRPM) {
+        ledState = 0;
+      } else {
+        m_turret.setRobotCentricSetpoint(targetTurretAngle); // Setting turret to turn to angle
+        m_turret.setControlMode(1); // Enabling turret to turn to setpoint
+        m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
+        m_led.setState(ledState == 2 ? 10 : 11);
+      }
     } else {
-      m_turret.setRobotCentricSetpoint(targetTurretAngle); // Setting turret to turn to angle
-      m_turret.setControlMode(1); // Enabling turret to turn to setpoint
-      m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
-      m_led.setState(ledState == 2 ? 10 : 11);
-    }
+      m_led.setState(2); // Solid red, unable to shoot
+    } 
     updateSmartDashboard();
   }
 
@@ -191,6 +191,9 @@ public class ShootOnTheMove extends CommandBase {
   } 
 
   private double findAngle(double deltaX, double deltaY){ // Uses arctangent but uses signs to determine quadrant
+    if (Math.abs(deltaX) <= 0.01) {
+      return deltaY >= 0 ? Math.PI / 2 : - Math.PI / 2;
+    }
     double tangent = Math.atan(deltaY / deltaX); // Raw value in radians
       // 0 degrees is on the right (positive x-axis)
     if (deltaX >= 0) {
@@ -222,7 +225,7 @@ public class ShootOnTheMove extends CommandBase {
   private boolean canGoThroughOuterTarget() {
   double verticalTargetIntersection = Math.abs(2 * Constants.verticalTargetDistance / distanceToOuterTargetXY - Math.tan(Constants.verticalShooterAngle)) * Constants.ballRadius;
   return verticalTargetIntersection <= hexagonCenterCanHitHeight / 2 && 
-  verticalTargetIntersection <= -Math.sqrt(3) * Math.abs(Constants.ballRadius * xDistanceToOuterTarget / xDistanceToOuterTarget) + hexagonCenterCanHitHeight;
+  verticalTargetIntersection <= -Math.sqrt(3) * Math.abs(Constants.ballRadius * xDistanceToOuterTarget / yDistanceToOuterTarget) + hexagonCenterCanHitHeight;
 }
 
   // Called once the command ends or is interrupted.
