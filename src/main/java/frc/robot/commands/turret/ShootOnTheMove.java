@@ -27,6 +27,9 @@ public class ShootOnTheMove extends CommandBase {
   /*
   Project Doc:
     https://docs.google.com/document/d/1ksk5DAHCi1Ag2KrfKTEo95SJ_jbmWwSPbHlM2ZlTe-o/edit?usp=sharing
+
+  Slides:
+    https://docs.google.com/presentation/d/1hh_Wb-yfTFJWq16qWlhEl8ExGFHcJ4ZX2CQzLz0vmVg/edit?usp=sharing 
   */
 
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
