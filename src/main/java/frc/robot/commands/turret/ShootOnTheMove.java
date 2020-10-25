@@ -23,6 +23,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 
 
+
 /**
  * An example command that uses an example subsystem.
  */
@@ -41,10 +42,8 @@ public class ShootOnTheMove extends CommandBase {
     private final Shooter m_shooter;
     private final DriveTrain m_drivetrain;
     private final LED m_led;
-
-    private boolean isRunning; // Whether to run code
-
     private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
+    private boolean isRunning; // Whether to run code
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
     private double robotLinearVelocity;
@@ -127,7 +126,7 @@ public class ShootOnTheMove extends CommandBase {
             robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading);
 
             // seconds between calls to command (time delay)
-            final double timeStep = 0.1;
+            final double timeStep = 0.2;
             deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             predictedPosition = predictPosition(); // Storing robot's predicted position and heading in a variable
 

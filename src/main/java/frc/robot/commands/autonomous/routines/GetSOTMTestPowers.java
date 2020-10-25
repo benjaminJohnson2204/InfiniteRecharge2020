@@ -1,7 +1,6 @@
 package frc.robot.commands.autonomous.routines;
 
 import java.util.function.DoubleSupplier;
-
 public class GetSOTMTestPowers{
 
     private double maxPower, h, aValue;
