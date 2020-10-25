@@ -114,7 +114,7 @@ public class RobotContainer {
                         entry(CommandSelector.SOTM_LINE_VARIABLE, new SOTMWhileMovingVariable(m_driveTrain, m_ShootOnTheMove, m_indexer, 
                         () -> variableTestPowers.getVariablePower(Timer.getFPGATimestamp() - startTimestamp), 
                         () -> variableTestPowers.getVariablePower(Timer.getFPGATimestamp() - startTimestamp))),
-                        entry(CommandSelector.SOTM_ARC_CONSTANT, new SOTMWhileMovingConstant(m_driveTrain, m_ShootOnTheMove, m_indexer, 0.21, 0.15)),// Replace these values w/ something smart
+                        entry(CommandSelector.SOTM_ARC_CONSTANT, new SOTMWhileMovingConstant(m_driveTrain, m_ShootOnTheMove, m_indexer, 0.21, 0.15)), // Replace these values w/ something smart
 
                         entry(CommandSelector.SHOOT_AND_DRIVE_BACK, new ShootAndDriveBack(m_driveTrain,m_intake,m_indexer,m_turret,m_shooter,m_vision)),
                         entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),

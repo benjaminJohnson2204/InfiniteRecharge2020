@@ -21,7 +21,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
-
+import frc.robot.subsystems.Vision;
 
 
 /**
@@ -42,8 +42,11 @@ public class ShootOnTheMove extends CommandBase {
     private final Shooter m_shooter;
     private final DriveTrain m_drivetrain;
     private final LED m_led;
-    private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
+    private final Vision m_vision;
+
     private boolean isRunning; // Whether to run code
+
+    private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
     private double robotLinearVelocity;
@@ -70,6 +73,8 @@ public class ShootOnTheMove extends CommandBase {
     private Translation2d shooterBallVector; // xy components of shooter ball magnitude
     private Pose2d predictedPosition; // Where robot will be after time to shoot, including heading
 
+    private Translation2d m_xyOffset;
+
 //  private final double maxHorizontalRatioOuter = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum horizontal for ball to go through outer target
 //  private double maxVerticalRatioOuter = hexagonCenterCanHitHeight / 2 / (Constants.ballRadius + Constants.ballTolerance);
 
@@ -79,14 +84,17 @@ public class ShootOnTheMove extends CommandBase {
      * @param turret The subsystem used by this command.
      */
 
-    public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led) {
+    public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led, Vision vision, Translation2d xyOffset) {
         m_turret = turret;
         m_shooter = shooter;
         m_drivetrain = drivetrain;
         m_led = led;
+        m_vision = vision;
+
+        m_xyOffset = xyOffset;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(turret, shooter, drivetrain);
+        addRequirements(turret, shooter, vision);
     }
 
     public void start() {
@@ -122,11 +130,11 @@ public class ShootOnTheMove extends CommandBase {
 
             // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
             initialHeading = position.getRotation().getRadians();
-            robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle + initialHeading);
-            robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading);
+            robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle + initialHeading) + m_xyOffset.getX();
+            robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading) + m_xyOffset.getY();
 
             // seconds between calls to command (time delay)
-            final double timeStep = 0.2;
+            final double timeStep = 0.1;
             deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             predictedPosition = predictPosition(); // Storing robot's predicted position and heading in a variable
 
