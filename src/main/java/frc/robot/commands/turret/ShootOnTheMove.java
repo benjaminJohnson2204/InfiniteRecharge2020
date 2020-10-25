@@ -41,6 +41,9 @@ public class ShootOnTheMove extends CommandBase {
     private final Shooter m_shooter;
     private final DriveTrain m_drivetrain;
     private final LED m_led;
+
+    private boolean isRunning; // Whether to run code
+
     private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
@@ -61,7 +64,10 @@ public class ShootOnTheMove extends CommandBase {
     private double xDistanceToOuterTarget;
     private double yDistanceToOuterTarget; // X and y distances to outer target
     private double distanceToOuterTargetXY; // distance in meters from robot to outer target on xy-plane (field)
+
     private double startTime; // the time it took to get to initialize
+    private double currentTime; // Stores current timestamp
+
     private Translation2d shooterBallVector; // xy components of shooter ball magnitude
     private Pose2d predictedPosition; // Where robot will be after time to shoot, including heading
 
@@ -84,19 +90,27 @@ public class ShootOnTheMove extends CommandBase {
         addRequirements(turret, shooter, drivetrain);
     }
 
+    public void start() {
+        isRunning = true;
+    }
+
+    public void stop() {
+        isRunning = false;
+    }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         // Timestamp when command is called
         startTime = Timer.getFPGATimestamp(); // Starting timer to run command
+        isRunning = true;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-
-        if ((Timer.getFPGATimestamp() - startTime) % 0.2 < 0.02) {
+        currentTime = Timer.getFPGATimestamp();
+        if ((currentTime - startTime) % 0.2 < 0.02 && isRunning) {
 
             // contains initial straight and angular velocity of robot
             ChassisSpeeds speeds = m_drivetrain.getDriveTrainKinematics().toChassisSpeeds(m_drivetrain.getSpeeds()); // Getting straight and angular velocity of drivetrain

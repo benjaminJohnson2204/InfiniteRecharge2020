@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -70,6 +71,8 @@ public class RobotContainer {
     public Button[] xBoxPOVButtons = new Button[8];
     public Button xBoxLeftTrigger, xBoxRightTrigger;
 
+    private ShootOnTheMove m_ShootOnTheMove = new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led);
+
     private static boolean init = false;
 
     private enum CommandSelector {
@@ -79,7 +82,11 @@ public class RobotContainer {
         ENEMY_TRENCH,
         SHOOT_AND_DRIVE_BACK,
         SHOOT_AND_DRIVE_FORWARD,
-        DO_NOTHING
+        DO_NOTHING,
+        SOTM_STILL,
+        SOTM_LINE_CONSTANT,
+        SOTM_LINE_VARIABLE,
+        SOTM_ARC_CONSTANT
     }
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
@@ -97,8 +104,18 @@ public class RobotContainer {
 
         SmartDashboard.putData(m_autoChooser);
 
+        GetSOTMTestPowers variableTestPowers = new GetSOTMTestPowers(0.22, 7);
+        double startTimestamp = Timer.getFPGATimestamp();
+
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
+                        entry(CommandSelector.SOTM_STILL, new SOTMWhileStill(m_driveTrain, m_ShootOnTheMove, m_indexer)),
+                        entry(CommandSelector.SOTM_LINE_CONSTANT, new SOTMWhileMovingConstant(m_driveTrain, m_ShootOnTheMove, m_indexer, 0.2, 0.2)), // Replace these values w/ something smart
+                        entry(CommandSelector.SOTM_LINE_VARIABLE, new SOTMWhileMovingVariable(m_driveTrain, m_ShootOnTheMove, m_indexer, 
+                        () -> variableTestPowers.getVariablePower(Timer.getFPGATimestamp() - startTimestamp), 
+                        () -> variableTestPowers.getVariablePower(Timer.getFPGATimestamp() - startTimestamp))),
+                        entry(CommandSelector.SOTM_ARC_CONSTANT, new SOTMWhileMovingConstant(m_driveTrain, m_ShootOnTheMove, m_indexer, 0.21, 0.15)),// Replace these values w/ something smart
+
                         entry(CommandSelector.SHOOT_AND_DRIVE_BACK, new ShootAndDriveBack(m_driveTrain,m_intake,m_indexer,m_turret,m_shooter,m_vision)),
                         entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
                         entry(CommandSelector.DO_NOTHING, new DoNothing()),
@@ -168,7 +185,7 @@ public class RobotContainer {
 
         xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
         xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
-        xBoxButtons[3].toggleWhenPressed(new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led)); // Y - Shoot on the Move
+        xBoxButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
             // Look up and make sure that toggle when pressed works like this
         xBoxButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
 
