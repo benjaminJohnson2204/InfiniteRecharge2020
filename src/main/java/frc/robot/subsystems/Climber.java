@@ -10,11 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
@@ -27,76 +23,75 @@ This class is the subsystem for the robot's climber
 
 public class Climber extends SubsystemBase {
 
-  private double gearRatio = 1.0/18.0;
-  public double pulleyDiameter = 2.0; // inches
+    private final double gearRatio = 1.0 / 18.0;
+    // Climber motors and solenoid
+    private final TalonFX climbMotor = new TalonFX(Constants.climbMotorA);
+    public double pulleyDiameter = 2.0; // inches
+    DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne, Constants.climbPistonForward, Constants.climbPistonReverse);
 
-  // Climber motors and solenoid
-  private TalonFX climbMotor = new TalonFX(Constants.climbMotorA);
+    private boolean climbState;
 
-  DoubleSolenoid climbPiston = new DoubleSolenoid(Constants.pcmOne, Constants.climbPistonForward, Constants.climbPistonReverse);
+    public Climber() {
+        // Set up climber motor
+        climbMotor.configFactoryDefault();
+        climbMotor.setSelectedSensorPosition(0);
+        climbMotor.setNeutralMode(NeutralMode.Brake);
+        climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    }
 
-  private boolean climbState;
+    public boolean getClimbPistonExtendStatus() {
+        return climbPiston.get() == DoubleSolenoid.Value.kForward;
+    }
 
-  public Climber() {
-    // Set up climber motor
-    climbMotor.configFactoryDefault();
-    climbMotor.setSelectedSensorPosition(0);
-    climbMotor.setNeutralMode(NeutralMode.Brake);
-    climbMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-  }
+    public void setClimbPiston(boolean state) {
+        climbPiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+    }
 
-  public boolean getClimbPistonExtendStatus(){
-    return climbPiston.get() == DoubleSolenoid.Value.kForward ? true : false;
-  }
+    public boolean getClimbState() {
+        return climbState;
+    }
 
-  public void setClimbPiston(boolean state){
-    climbPiston.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
-  }
+    public void setClimbState(boolean climbState) {
+        this.climbState = climbState;
+    }
 
-  public boolean getClimbState() {
-    return climbState;
-  }
+    public void setClimberOutput(double value) {
+        // Prevent backdrive
+        climbMotor.set(ControlMode.PercentOutput, value);
+    }
 
-  public void setClimbState(boolean climbState) {
-    this.climbState = climbState;
-  }
+    public int getClimberPosition() {
+        return climbMotor.getSelectedSensorPosition();
+    }
 
-  public void setClimberOutput(double value) {
-    // Prevent backdrive
-    climbMotor.set(ControlMode.PercentOutput, value);
-  }
-  
-  public int getClimberPosition() {
-	  return climbMotor.getSelectedSensorPosition();
-  }
+    public void setClimberPosition(double position) {
+        double setpoint = inchesToEncoderUnits(position);
+        climbMotor.set(ControlMode.Position, setpoint);
+    }
 
-  public void setClimberPosition(double position) {
-    double setpoint = inchesToEncoderUnits(position);
-    climbMotor.set(ControlMode.Position, setpoint);
-  }
+    private double inchesToEncoderUnits(double inches) {
+        return inches * gearRatio * (2048.0 / (Math.PI * pulleyDiameter));
+    }
 
-  private double inchesToEncoderUnits(double inches) {
-    return inches * gearRatio * (2048.0 / (Math.PI * pulleyDiameter));
-  }
+    private double encoderUnitsToInches(double encoderUnits) {
+        return encoderUnits * (1 / gearRatio) * ((Math.PI * pulleyDiameter) / 2048.0);
+    }
 
-  private double encoderUnitsToInches(double encoderUnits) {
-    return encoderUnits * (1/gearRatio) * ((Math.PI * pulleyDiameter) / 2048.0);
-  }
+    private void updateShuffleboard() {
+        SmartDashboard.putBoolean("Climb Mode", getClimbState());
 
-  private void updateShuffleboard(){
-    SmartDashboard.putBoolean("Climb Mode", getClimbState());
-
-    SmartDashboardTab.putNumber("Climber", "Position", encoderUnitsToInches(climbMotor.getSelectedSensorPosition()));
-    SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
-    SmartDashboardTab.putBoolean("Climber", "Climb Pistons", getClimbPistonExtendStatus());
+        SmartDashboardTab.putNumber("Climber", "Position", encoderUnitsToInches(climbMotor.getSelectedSensorPosition()));
+        SmartDashboardTab.putBoolean("Climber", "Climb Mode", climbState);
+        SmartDashboardTab.putBoolean("Climber", "Climb Pistons", getClimbPistonExtendStatus());
 //    try {
 //      SmartDashboardTab.putString("Climber", "Current Command", this.getCurrentCommand().getName());
 //    }  catch(Exception e) {
 //
 //    }
-  }
-  @Override
-  public void periodic() {
-    //updateShuffleboard();
-  }
+    }
+
+    @Override
+    public void periodic() {
+        //updateShuffleboard();
+    }
 }

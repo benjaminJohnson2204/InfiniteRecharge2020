@@ -1,9 +1,10 @@
 package frc.robot.commands.autonomous.routines;
 
-import java.util.function.DoubleSupplier;
-public class GetSOTMTestPowers{
+public class GetSOTMTestPowers {
 
-    private double maxPower, h, aValue;
+    private final double maxPower;
+    private final double h;
+    private final double aValue;
 
     // Uses a parabola to accelerate left and right motor powers
     // Max powers are height of vertex, time is width
@@ -16,7 +17,6 @@ public class GetSOTMTestPowers{
     public double getVariablePower(double timePassed) {
         return this.aValue * Math.pow(timePassed - h, 2) + this.maxPower;
     }
-
 
 
 }

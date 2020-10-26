@@ -11,10 +11,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.ColorSensorV3;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Color;
@@ -34,9 +32,9 @@ public class ColorSensor extends SubsystemBase {
     public boolean working = false;
     public int semiRotations = 0;
     public int realIntervals = 0;
-    private int colorID;
     public ColorSensorV3 sensor = new ColorSensorV3(I2C.Port.kOnboard);
     public TalonSRX motor = new TalonSRX(Constants.colorWheelMotor);
+    private int colorID;
 
     public ColorSensor() {
         motor.setNeutralMode(NeutralMode.Brake);
@@ -105,10 +103,7 @@ public class ColorSensor extends SubsystemBase {
             colorID = panelColor();
             realIntervals++;
         }
-        if (realIntervals > 24)
-            return true;
-        else
-            return false;
+        return realIntervals > 24;
     }
 
     public void setOutput(double output) {

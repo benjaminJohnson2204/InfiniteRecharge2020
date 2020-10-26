@@ -9,8 +9,6 @@ package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.*;
 
@@ -24,11 +22,12 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
     private final Vision m_vision;
     private final Shooter m_shooter;
     private final Climber m_climber;
-    private Joystick m_controller;
-    double setpoint;
+    private final Joystick m_controller;
     private final double deadZone = 0.5;
+    double setpoint;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
+    private boolean direction, directionTripped, joystickMoved;
 
     /**
      * Creates a new ExampleCommand.
@@ -44,8 +43,6 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(turretSubsystem);
     }
-
-    private boolean direction, directionTripped, joystickMoved;
 
     // Called when the command is initially scheduled.
     @Override
@@ -73,10 +70,10 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                     else
                         setpoint = Math.toDegrees(Math.atan2(m_controller.getRawAxis(0), m_controller.getRawAxis(1)));
 
-                    if(setpoint > m_turret.getMaxAngle())
+                    if (setpoint > m_turret.getMaxAngle())
                         setpoint = m_turret.getMaxAngle();
 
-                    if(setpoint < m_turret.getMinAngle())
+                    if (setpoint < m_turret.getMinAngle())
                         setpoint = m_turret.getMinAngle();
 //                    if (!directionTripped) {
 //                        direction = m_controller.getRawAxis(1) < 0;
@@ -147,8 +144,8 @@ public class SetTurretSetpointFieldAbsolute extends CommandBase {
                     m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
                     m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0);
                 }
-                
-                if(m_shooter.canShoot()) {
+
+                if (m_shooter.canShoot()) {
                     m_controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.8);
                     m_controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.8);
                 } else {

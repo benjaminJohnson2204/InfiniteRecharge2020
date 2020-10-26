@@ -27,7 +27,7 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
         configA.setReversed(true);
         configA.setEndVelocity(0);
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
-        configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
+        configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(), 10));
 
         var startToTrenchPath = TrajectoryUtils.readCsvTrajectory("init1Ally2");
         var startToTrenchCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, startToTrenchPath, configA);
@@ -36,21 +36,21 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
         configB.setReversed(false);
         configB.setEndVelocity(0);
         configB.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configB.getMaxVelocity()));
-        configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
+        configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(), 10));
         var trenchToShootPath = TrajectoryUtils.readCsvTrajectory("ally2init2");
         var trenchToShootCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, trenchToShootPath, configB);
 
         addCommands(
                 new ResetOdometry(driveTrain),
-                new SetDriveNeutralMode(driveTrain,0),
+                new SetDriveNeutralMode(driveTrain, 0),
                 new SetDriveShifters(driveTrain, false),
                 new SetAndHoldRpmSetpoint(shooter, vision, 3800),
                 new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.25),
                 new AutoUseVisionCorrection(turret, vision).withTimeout(0.25),
                 new ConditionalCommand(new WaitCommand(0),
-                                       new WaitCommand(0.5),
-                                       shooter::canShoot),
-                new AutoRapidFireSetpoint(shooter, indexer, intake,1).withTimeout(1.5),
+                        new WaitCommand(0.5),
+                        shooter::canShoot),
+                new AutoRapidFireSetpoint(shooter, indexer, intake, 1).withTimeout(1.5),
                 new SetIntakePiston(intake, true),
                 new SetDriveShifters(driveTrain, false),
                 new ParallelDeadlineGroup(
@@ -63,15 +63,15 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
                         trenchToShootCommand,
                         new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.25),
                         new SetAndHoldRpmSetpoint(shooter, vision, 3800)
-                ).andThen(()->driveTrain.setMotorTankDrive(0,0)),
+                ).andThen(() -> driveTrain.setMotorTankDrive(0, 0)),
                 new AutoUseVisionCorrection(turret, vision).withTimeout(0.75),
                 new ConditionalCommand(new WaitCommand(0),
-                                       new WaitCommand(0.5),
-                                       shooter::canShoot),
+                        new WaitCommand(0.5),
+                        shooter::canShoot),
 //                new ConditionalCommand(new AutoRapidFireSetpoint(shooter, indexer, intake,6),
 //                                       new WaitCommand(0),
 //                                       vision::hasTarget)
-                 new AutoRapidFireSetpoint2(shooter, indexer, intake,6)
+                new AutoRapidFireSetpoint2(shooter, indexer, intake, 6)
         );
     }
 }

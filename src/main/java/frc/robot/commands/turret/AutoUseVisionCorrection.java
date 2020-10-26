@@ -7,12 +7,8 @@
 
 package frc.robot.commands.turret;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
 
@@ -26,6 +22,7 @@ public class AutoUseVisionCorrection extends CommandBase {
     boolean turning, usingVisionSetpoint;
     private double setpoint;
     private double startTime;
+
     /**
      * Creates a new ExampleCommand.
      */

@@ -12,9 +12,6 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.vitruvianlib.I2C.I2CLCD;
@@ -24,18 +21,17 @@ Misc things that don't need their own subsystem
  */
 
 public class Controls extends SubsystemBase {
-    private PowerDistributionPanel m_pdp;
-    private DriveTrain m_driveTrain;
-    private Shooter m_shooter;
-    private Turret m_turret;
-    private boolean init = false;
+    private final PowerDistributionPanel m_pdp;
+    private final DriveTrain m_driveTrain;
+    private final Shooter m_shooter;
+    private final Turret m_turret;
+    private final boolean init = false;
     /**
      * Creates a new ExampleSubsystem.
      */
     I2CLCD LCDDisplay = new I2CLCD(I2C.Port.kMXP, 0x27);
-    private boolean lcdOn = true;
-
     AnalogInput PressureSensor = new AnalogInput(0);
+    private boolean lcdOn = true;
 
     public Controls(DriveTrain driveTrain, Shooter shooter, Turret turret, PowerDistributionPanel pdp) {
         m_driveTrain = driveTrain;
@@ -113,7 +109,7 @@ public class Controls extends SubsystemBase {
             LCDDisplay.display_string("Odometry:" + isPoseGood(), 3);
             //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
             //bad, the function allows the error to be within 1 unit of 0
-            LCDDisplay.display_string("Battery Voltage: " + Math.floor(getBatteryVoltage()*100)/100, 4);
+            LCDDisplay.display_string("Battery Voltage: " + Math.floor(getBatteryVoltage() * 100) / 100, 4);
             if (!lcdOn) {
                 LCDDisplay.backlight(true);
                 lcdOn = true;

@@ -17,11 +17,7 @@ import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.LED;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.*;
 
 
 /**
@@ -42,11 +38,10 @@ public class ShootOnTheMove extends CommandBase {
     private final Shooter m_shooter;
     private final DriveTrain m_drivetrain;
     private final LED m_led;
-    private final Vision m_vision;
-
-    private boolean isRunning; // Whether to run code
-
+    //    private final Vision m_vision;
     private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
+    private final Translation2d m_xyOffset;
+    private boolean isRunning; // Whether to run code
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
     private double robotLinearVelocity;
@@ -66,14 +61,9 @@ public class ShootOnTheMove extends CommandBase {
     private double xDistanceToOuterTarget;
     private double yDistanceToOuterTarget; // X and y distances to outer target
     private double distanceToOuterTargetXY; // distance in meters from robot to outer target on xy-plane (field)
-
     private double startTime; // the time it took to get to initialize
-    private double currentTime; // Stores current timestamp
-
     private Translation2d shooterBallVector; // xy components of shooter ball magnitude
     private Pose2d predictedPosition; // Where robot will be after time to shoot, including heading
-
-    private Translation2d m_xyOffset;
 
 //  private final double maxHorizontalRatioOuter = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum horizontal for ball to go through outer target
 //  private double maxVerticalRatioOuter = hexagonCenterCanHitHeight / 2 / (Constants.ballRadius + Constants.ballTolerance);
@@ -89,7 +79,7 @@ public class ShootOnTheMove extends CommandBase {
         m_shooter = shooter;
         m_drivetrain = drivetrain;
         m_led = led;
-        m_vision = vision;
+//        m_vision = vision;
 
         m_xyOffset = xyOffset;
 
@@ -116,7 +106,7 @@ public class ShootOnTheMove extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        currentTime = Timer.getFPGATimestamp();
+        double currentTime = Timer.getFPGATimestamp();
         if ((currentTime - startTime) % 0.2 < 0.02 && isRunning) {
 
             // contains initial straight and angular velocity of robot

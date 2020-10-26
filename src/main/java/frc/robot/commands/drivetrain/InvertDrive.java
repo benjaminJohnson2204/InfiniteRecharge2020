@@ -8,10 +8,8 @@
 
 package frc.robot.commands.drivetrain;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Vision;
 
 import java.util.function.DoubleSupplier;
 
@@ -20,7 +18,8 @@ public class InvertDrive extends CommandBase {
     private final double PID_SETPOINT = 10; // 10 pixels of room for error?
 
     private final DriveTrain driveTrain;
-    private DoubleSupplier m_throttleInput, m_turnInput;
+    private final DoubleSupplier m_throttleInput;
+    private final DoubleSupplier m_turnInput;
 
     public InvertDrive(DriveTrain driveTrain, DoubleSupplier throttleInput, DoubleSupplier turnInput) {
         // Use addRequirements() here to declare subsystem dependencies.

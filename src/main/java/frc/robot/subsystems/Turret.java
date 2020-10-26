@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -27,6 +26,12 @@ Subsystem for controlling the turret
  */
 
 public class Turret extends SubsystemBase {
+    private final int encoderUnitsPerRotation = 4096;
+    private final DriveTrain m_driveTrain;
+    private final Timer timeout = new Timer();
+    private final CANCoder encoder = new CANCoder(Constants.turretEncoder);
+    private final VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
+    private final DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
     /**
      * Creates a new ExampleSubsystem.
      */
@@ -35,32 +40,17 @@ public class Turret extends SubsystemBase {
     double kP = 0.2;    //0.155
     double kI = 0.0015;    //0.00075
     double kD = 0.0;  //0.00766
-
     int kI_Zone = 900;    //900 // 254: 1/kP?
     int kMaxIAccum = 1000000;//kI_Zone *3; //500000;    //900
     int kErrorBand = 50;//degreesToEncoderUnits(0.5);
-
     int kCruiseVelocity = 14000;
     int kMotionAcceleration = kCruiseVelocity * 10;
-
     double minAngle = -90;  // -135;
     double maxAngle = 90;   // 195;
     double gearRatio = 18.0 / 120.0;
     private double setpoint = 0; //angle
-
-    private int encoderUnitsPerRotation = 4096;
     private int controlMode = 1;
     private boolean initialHome;
-
-    private final DriveTrain m_driveTrain;
-
-    private Timer timeout = new Timer();
-
-    private CANCoder encoder = new CANCoder(Constants.turretEncoder);
-
-    private VictorSPX turretMotor = new VictorSPX(Constants.turretMotor);
-
-    private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
     private boolean turretHomeSensorLatch = false;
 
     public Turret(DriveTrain driveTrain) {
@@ -95,12 +85,12 @@ public class Turret extends SubsystemBase {
         encoder.setPosition(0);
     }
 
-    public void setControlMode(int mode) {
-        controlMode = mode;
-    }
-
     public int getControlMode() {
         return controlMode;
+    }
+
+    public void setControlMode(int mode) {
+        controlMode = mode;
     }
 
     public double getTurretAngle() {
@@ -174,12 +164,12 @@ public class Turret extends SubsystemBase {
         turretMotor.setIntegralAccumulator(0);
     }
 
-    private void setTurretLatch(boolean state) {
-        turretHomeSensorLatch = state;
-    }
-
     private boolean getTurretLatch() {
         return turretHomeSensorLatch;
+    }
+
+    private void setTurretLatch(boolean state) {
+        turretHomeSensorLatch = state;
     }
 
     private void initShuffleboard() {

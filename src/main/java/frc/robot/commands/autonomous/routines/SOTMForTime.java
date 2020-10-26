@@ -19,9 +19,10 @@ public class SOTMForTime extends CommandBase {
 
 
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    
+
     private final ShootOnTheMove m_shootOnTheMove;
-    private double m_duration, startTime;
+    private final double m_duration;
+    private double startTime;
 
     public SOTMForTime(ShootOnTheMove shootOnTheMove, double duration) {
         m_shootOnTheMove = shootOnTheMove;
@@ -39,7 +40,7 @@ public class SOTMForTime extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        
+
 
     }
 

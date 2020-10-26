@@ -7,9 +7,7 @@
 
 package frc.robot.commands.autonomous;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -32,11 +30,11 @@ import java.util.ArrayList;
 public class ReadTrajectoryOld extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final DriveTrain m_driveTrain;
+    private final String m_filename;
+    ArrayList<Pose2d> trajectoryWaypoints = new ArrayList<Pose2d>();
     private Trajectory trajectory;
-    private String m_filename;
     private boolean m_isInverted = false;
     private DifferentialDriveKinematicsConstraint m_kinematicsConstraint;
-    ArrayList<Pose2d> trajectoryWaypoints = new ArrayList<Pose2d>();
 
     /**
      * Creates a new ExampleCommand.

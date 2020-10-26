@@ -21,9 +21,9 @@ public class RapidFire extends CommandBase {
     private final Shooter m_shooter;
     private final Indexer m_indexer;
     private final Intake m_intake;
+    private final double m_rpm;
     private double startTime, timestamp;
     private boolean timerStart;
-    private double m_rpm;
 
     /**
      * Creates a new ExampleCommand.

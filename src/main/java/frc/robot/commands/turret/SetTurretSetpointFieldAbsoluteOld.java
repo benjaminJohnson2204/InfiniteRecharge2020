@@ -24,12 +24,13 @@ public class SetTurretSetpointFieldAbsoluteOld extends CommandBase {
     private final DriveTrain m_driveTrain;
     private final Vision m_vision;
     private final Climber m_climber;
-    private DoubleSupplier m_xInput;
-    private DoubleSupplier m_yInput;
-    double setpoint;
+    private final DoubleSupplier m_xInput;
+    private final DoubleSupplier m_yInput;
     private final double deadZone = 0.2;
+    double setpoint;
     boolean timeout = false;
     boolean turning, usingVisionSetpoint;
+    private boolean direction, directionTripped, joystickMoved;
 
     /**
      * Creates a new ExampleCommand.
@@ -45,8 +46,6 @@ public class SetTurretSetpointFieldAbsoluteOld extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(turretSubsystem);
     }
-
-    private boolean direction, directionTripped, joystickMoved;
 
     // Called when the command is initially scheduled.
     @Override
