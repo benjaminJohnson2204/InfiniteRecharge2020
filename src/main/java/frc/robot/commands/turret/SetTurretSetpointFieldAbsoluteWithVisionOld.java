@@ -57,50 +57,50 @@ public class SetTurretSetpointFieldAbsoluteWithVisionOld extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (m_turret.getControlMode() == 1) {
-            if (limelightDisabled)
+        if(m_turret.getControlMode() == 1) {
+            if(limelightDisabled)
                 m_vision.ledsOff(); //TODO: make this automatically go towards where it thinks the target is.
             else
                 m_vision.ledsOn();
 
-            if ((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
+            if((Math.pow(m_xInput.getAsDouble(), 2) + Math.pow(m_yInput.getAsDouble(), 2)) >= Math.pow(deadZone, 2)) {
 
-                if (!directionTripped) {
+                if(! directionTripped) {
                     direction = m_yInput.getAsDouble() < 0;
                     directionTripped = true;
                 }
 
-                if (direction) {
-                    if (m_xInput.getAsDouble() >= 0)
-                        setpoint = -Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+                if(direction) {
+                    if(m_xInput.getAsDouble() >= 0)
+                        setpoint = - Math.toDegrees(Math.atan2(- m_xInput.getAsDouble(), m_yInput.getAsDouble()));
                     else
-                        setpoint = 360 - Math.toDegrees(Math.atan2(-m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+                        setpoint = 360 - Math.toDegrees(Math.atan2(- m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
-                    if (setpoint > m_turret.getMaxAngle()) {
+                    if(setpoint > m_turret.getMaxAngle()) {
                         setpoint -= 360;
                         direction = false;
                     }
                 } else {
-                    if (m_xInput.getAsDouble() < 0)
+                    if(m_xInput.getAsDouble() < 0)
                         setpoint = Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
                     else
-                        setpoint = -360 + Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
+                        setpoint = - 360 + Math.toDegrees(Math.atan2(m_xInput.getAsDouble(), m_yInput.getAsDouble()));
 
-                    if (setpoint < m_turret.getMinAngle()) {
+                    if(setpoint < m_turret.getMinAngle()) {
                         direction = true;
                         setpoint += 360;
                     }
                 }
                 movedJoystick = true;
-            } else if (m_vision.hasTarget()) {
+            } else if(m_vision.hasTarget()) {
                 setpoint = m_turret.getTurretAngle() + m_vision.getTargetX();
 
-                if (setpoint > m_turret.getMaxAngle())
+                if(setpoint > m_turret.getMaxAngle())
                     setpoint -= 360;
-                else if (setpoint < m_turret.getMinAngle())
+                else if(setpoint < m_turret.getMinAngle())
                     setpoint += 360;
 
-                if (timeout) {
+                if(timeout) {
                     timer.stop();
                     timer.reset();
                     timeout = false;
@@ -108,7 +108,7 @@ public class SetTurretSetpointFieldAbsoluteWithVisionOld extends CommandBase {
             } else { //if you can't see the target for x seconds, then disable the limelight
                 timer.start();
                 timeout = true;
-                if (timer.get() > 1) { //change value if needed
+                if(timer.get() > 1) { //change value if needed
                     timer.stop();
                     timer.reset();
                     timeout = false;
@@ -116,7 +116,7 @@ public class SetTurretSetpointFieldAbsoluteWithVisionOld extends CommandBase {
                 }
             }
 
-            if (movedJoystick) {
+            if(movedJoystick) {
                 movedJoystick = false;
                 limelightDisabled = false;
             }

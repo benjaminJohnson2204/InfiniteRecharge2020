@@ -85,8 +85,8 @@ public class RobotContainer {
      */
     public RobotContainer() {
         m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-        for (Enum commandEnum : CommandSelector.values())
-            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+        for(Enum commandEnum : CommandSelector.values())
+            if(commandEnum != CommandSelector.DRIVE_STRAIGHT)
                 m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
 
         SmartDashboard.putData(m_autoChooser);
@@ -118,7 +118,7 @@ public class RobotContainer {
 //                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
 //                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
                 ),
-                this::selectCommand
+                this :: selectCommand
         );
 
         initializeSubsystems();
@@ -160,13 +160,13 @@ public class RobotContainer {
         rightJoystick.invertRawAxis(0, true);
         xBoxController.invertRawAxis(1, true);
         xBoxController.invertRawAxis(5, true);
-        for (int i = 0; i < leftButtons.length; i++)
+        for(int i = 0; i < leftButtons.length; i++)
             leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
-        for (int i = 0; i < rightButtons.length; i++)
+        for(int i = 0; i < rightButtons.length; i++)
             rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
-        for (int i = 0; i < xBoxButtons.length; i++)
+        for(int i = 0; i < xBoxButtons.length; i++)
             xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
-        for (int i = 0; i < xBoxPOVButtons.length; i++)
+        for(int i = 0; i < xBoxPOVButtons.length; i++)
             xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
         xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
         xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);

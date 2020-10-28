@@ -46,30 +46,30 @@ public class SetClimberOutputOld extends CommandBase {
     @Override
     public void execute() {
         double input = Math.abs(m_input.getAsDouble()) > 0.2 ? m_input.getAsDouble() : 0;
-        direction = input > 0 ? 1 : input < 0 ? -1 : 0;
-        if (m_climber.getClimbState()) {
+        direction = input > 0 ? 1 : input < 0 ? - 1 : 0;
+        if(m_climber.getClimbState()) {
 //      SmartDashboardTab.putNumber("Climber", "Direction", direction);
 //      SmartDashboardTab.putBoolean("Climber", "currentDirection", currentDirection);
 
-            if (direction != 0) {
+            if(direction != 0) {
                 timestamp = Timer.getFPGATimestamp();
-                if (direction == 1 && !currentDirection) {
+                if(direction == 1 && ! currentDirection) {
                     movable = false;
                     switchDirection = true;
-                } else if (direction <= 0 && currentDirection) {
+                } else if(direction <= 0 && currentDirection) {
                     movable = false;
                     switchDirection = false;
                 }
             }
 
-            if (movable) {
+            if(movable) {
 //        SmartDashboardTab.putString("Climber", "SetClimberOutput", "Manual Control");
 //        SmartDashboardTab.putNumber("Climber", "Input", input);
 
-                double output = (m_climber.getClimberPosition() < -512) && (input < 0) ? 0 : input;
+                double output = (m_climber.getClimberPosition() < - 512) && (input < 0) ? 0 : input;
                 m_climber.setClimberOutput(output);
             } else {
-                if (switchDirection)
+                if(switchDirection)
                     climberReleaseSequence();
                 else
                     climberRetractSequence();
@@ -81,9 +81,9 @@ public class SetClimberOutputOld extends CommandBase {
 //    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Releasing");
         m_climber.setClimbPiston(true);
 
-        if (Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
-            m_climber.setClimberOutput(-0.25);
-        else if (Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.4)
+        if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
+            m_climber.setClimberOutput(- 0.25);
+        else if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.4)
             m_climber.setClimberOutput(0.25);
         else {
             m_climber.setClimberOutput(0);
@@ -95,8 +95,8 @@ public class SetClimberOutputOld extends CommandBase {
     private void climberRetractSequence() {
 //    SmartDashboardTab.putString("Climber", "SetClimberOutput", "Retracting");
         m_climber.setClimbPiston(false);
-        if (Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
-            m_climber.setClimberOutput(-0.25);
+        if(Math.abs(Timer.getFPGATimestamp() - timestamp) < 0.2)
+            m_climber.setClimberOutput(- 0.25);
         else {
             m_climber.setClimberOutput(0);
             movable = true;

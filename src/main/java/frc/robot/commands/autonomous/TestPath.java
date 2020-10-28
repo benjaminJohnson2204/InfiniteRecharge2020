@@ -65,14 +65,14 @@ public class TestPath extends CommandBase {
 
         RamseteCommand followTrajectory = new RamseteCommand(
                 trajectory,
-                m_driveTrain::getRobotPose,
+                m_driveTrain :: getRobotPose,
                 new RamseteController(),
                 m_driveTrain.getFeedforward(),
                 m_driveTrain.getDriveTrainKinematics(),
-                m_driveTrain::getSpeeds,
+                m_driveTrain :: getSpeeds,
                 m_driveTrain.getLeftPIDController(),
                 m_driveTrain.getRightPIDController(),
-                m_driveTrain::setVoltageOutput,
+                m_driveTrain :: setVoltageOutput,
                 m_driveTrain
         );
         CommandScheduler.getInstance().schedule(followTrajectory);

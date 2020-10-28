@@ -73,14 +73,14 @@ public class Controls extends SubsystemBase {
     }
 
     public String isPressureGood() {
-        if (getPressure() > 40)
+        if(getPressure() > 40)
             return "Closed";
         else
             return "Open";
     }
 
     public String isPoseGood() {
-        if (Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 && Math.abs(m_driveTrain.getHeading()) < 1)
+        if(Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 && Math.abs(m_driveTrain.getHeading()) < 1)
             return "Good";
         else
             return "Not Good";
@@ -99,7 +99,7 @@ public class Controls extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // TODO: Turn off LCD backlight if robot is enabled
-        if (DriverStation.getInstance().isDisabled()) {
+        if(DriverStation.getInstance().isDisabled()) {
             LCDDisplay.display_string("Angle:" + Math.floor(m_turret.getTurretAngle() * 10) / 10, 1);
             //angle of the robot's turret in degrees. returned as exp. "angle:169.8"
             // the angle value should be maximum 6 characters including the decimal point and maybe a negitive sign
@@ -110,14 +110,14 @@ public class Controls extends SubsystemBase {
             //if both the position of the robot and the angle it's facing are 0 then it will return "good". alse it will return
             //bad, the function allows the error to be within 1 unit of 0
             LCDDisplay.display_string("Battery Voltage: " + Math.floor(getBatteryVoltage() * 100) / 100, 4);
-            if (!lcdOn) {
+            if(! lcdOn) {
                 LCDDisplay.backlight(true);
                 lcdOn = true;
             }
             //silly stuff
             updateSmartDashboard();
         } else {
-            if (lcdOn) {
+            if(lcdOn) {
                 LCDDisplay.backlight(false);
             }
         }

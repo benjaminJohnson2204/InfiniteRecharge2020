@@ -42,7 +42,7 @@ public class SetRPM extends CommandBase {
     @Override
     public void execute() {
         m_shooter.setRPM(m_RPM);
-        if (m_shooter.encoderAtSetpoint(0) && printed == false) {
+        if(m_shooter.encoderAtSetpoint(0) && printed == false) {
             SmartDashboard.putNumber("Time to Setpoint", Timer.getFPGATimestamp() - time);
             printed = true;
         }

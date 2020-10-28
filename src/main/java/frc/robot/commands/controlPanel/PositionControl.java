@@ -59,7 +59,7 @@ public class PositionControl extends CommandBase {
     @Override
     public boolean isFinished() {
         boolean isColor = ((m_subsystem.getFMSColor() + 2) % 4 + 1 == m_subsystem.panelColor());
-        if (isColor) {
+        if(isColor) {
             Timer.delay(0.3);
             return isColor;
         }

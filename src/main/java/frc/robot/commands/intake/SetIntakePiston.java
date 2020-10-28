@@ -33,7 +33,7 @@ public class SetIntakePiston extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (intake.getIntakePistonExtendStatus() != extend)
+        if(intake.getIntakePistonExtendStatus() != extend)
             intake.setintakePiston(extend);
     }
 

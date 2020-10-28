@@ -60,31 +60,31 @@ public class GetSubsystemStates extends CommandBase {
         m_led.setSolidColor();
 
         // robot is initializing
-        if (!RobotContainer.getInitializationState()) {
-            m_led.setState(-1);
+        if(! RobotContainer.getInitializationState()) {
+            m_led.setState(- 1);
         } else {
-            if (DriverStation.getInstance().isDisabled()) {
-                if (isRobotReady())
+            if(DriverStation.getInstance().isDisabled()) {
+                if(isRobotReady())
                     m_led.setState(8);
                 else
                     m_led.setState(7);
             } else {
-                if (m_climber.getClimbState()) {
+                if(m_climber.getClimbState()) {
                     m_led.setState(0);
-                } else if (m_colorSensor.working) {
+                } else if(m_colorSensor.working) {
                     m_led.setState(9);
-                } else if (m_intake.getIntakingState()) {
-                    if (m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIntakeSensor()) {
+                } else if(m_intake.getIntakingState()) {
+                    if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIntakeSensor()) {
                         m_led.setState(2);
-                    } else if (m_indexer.newBall()) {
+                    } else if(m_indexer.newBall()) {
                         m_led.setState(3);
                     } else {
                         m_led.setState(4);
                     }
                 } else {
-                    if (m_vision.hasTarget()) {
+                    if(m_vision.hasTarget()) {
                         m_led.setState(5);
-                    } else if (!m_vision.hasTarget()) {
+                    } else if(! m_vision.hasTarget()) {
                         m_led.setState(6);
                     }
                 }
@@ -94,7 +94,7 @@ public class GetSubsystemStates extends CommandBase {
 
     private boolean isRobotReady() {
         // && PSI is high (?). Save for comp
-        if (DriverStation.getInstance().isFMSAttached() && m_turret.getInitialHome() && m_controls.isPressureGood() == "Closed") // && PSI is high (?). Save for comp
+        if(DriverStation.getInstance().isFMSAttached() && m_turret.getInitialHome() && m_controls.isPressureGood() == "Closed") // && PSI is high (?). Save for comp
             return true;
         else return m_turret.getInitialHome();
     }

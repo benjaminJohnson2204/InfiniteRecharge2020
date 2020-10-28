@@ -42,7 +42,7 @@ public class SetIntakeManual extends CommandBase {
     @Override
     public void execute() {
         m_indexer.setIndexerOutput(1);
-        m_indexer.setKickerOutput(-0.25);
+        m_indexer.setKickerOutput(- 0.25);
         m_intake.setIntakePercentOutput(0.5);
     }
 

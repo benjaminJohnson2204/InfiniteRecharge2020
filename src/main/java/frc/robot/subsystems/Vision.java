@@ -92,10 +92,10 @@ public class Vision extends SubsystemBase {
     private void updateValidTarget() {
         // Determine whether the limelight has detected a valid target and not a random reflection
         // If the target is seen for a specific amount of time it is marked as valid
-        if (hasTarget()) {
+        if(hasTarget()) {
             setLastValidTargetTime();
         }
-        if ((Timer.getFPGATimestamp() - lastValidTargetTime) < 3) {
+        if((Timer.getFPGATimestamp() - lastValidTargetTime) < 3) {
             ledsOn();
             validTarget = true;
         } else {
@@ -126,13 +126,13 @@ public class Vision extends SubsystemBase {
     }
 
     public double getSmartTargetX() {
-        if (getTargetDistance() > MIN_TARGET_DISTANCE) {
+        if(getTargetDistance() > MIN_TARGET_DISTANCE) {
             double xDistance = Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getX());
             double yDistance = Math.abs(Units.metersToFeet(m_driveTrain.getRobotPose().getTranslation().getY()));
 
             double maxYDistance = INNER_PORT_SLOPE * xDistance + INNER_PORT_OFFSET;
 
-            if (yDistance < maxYDistance) {
+            if(yDistance < maxYDistance) {
                 xDistance += 29.25 / 12.0;
                 return innerTargetXFilter.calculate(Math.signum(getFilteredTargetX()) * Units.radiansToDegrees(Math.atan(xDistance / yDistance)));
             }
@@ -142,19 +142,19 @@ public class Vision extends SubsystemBase {
     }
 
     private void resetPoseByVision() {
-        if (!resetPose) {
-            if ((Math.abs(getHorizontalSidelength() - HORIZONTAL_TARGET_PIXEL_WIDTH) < HORIZONTAL_TARGET_PIXEL_THRESHOLD) &&
+        if(! resetPose) {
+            if((Math.abs(getHorizontalSidelength() - HORIZONTAL_TARGET_PIXEL_WIDTH) < HORIZONTAL_TARGET_PIXEL_THRESHOLD) &&
                     (Math.abs(getVerticalSidelength() - VERTICAL_TARGET_PIXEL_WIDTH) < VERTICAL_TARGET_PIXEL_THRESHOLD)) {
                 double targetRadians = Units.degreesToRadians(m_turret.getFieldRelativeAngle());
                 double xDistance = Math.abs(Math.cos(targetRadians)) * getTargetDistance();
-                double yDistance = -Math.signum(getFilteredTargetX()) * Math.abs(Math.sin(targetRadians)) * getTargetDistance();
+                double yDistance = - Math.signum(getFilteredTargetX()) * Math.abs(Math.sin(targetRadians)) * getTargetDistance();
 
                 m_driveTrain.resetOdometry(new Pose2d(xDistance, yDistance, new Rotation2d()),
                         Rotation2d.fromDegrees(m_driveTrain.getHeading()));
 
                 resetPose = true;
             }
-        } else if (resetPose && !hasTarget()) {
+        } else if(resetPose && ! hasTarget()) {
             resetPose = false;
         }
     }
@@ -227,9 +227,9 @@ public class Vision extends SubsystemBase {
     private double computeMode(double[] data) {
         // Compute mode
         this.counts = new double[data.length];
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data.length; j++) {
-                if (data[i] == data[j]) {
+        for(int i = 0; i < data.length; i++) {
+            for(double datum : data) {
+                if(data[i] == datum) {
                     this.counts[i]++;
                 }
             }
@@ -237,8 +237,8 @@ public class Vision extends SubsystemBase {
 
         int highestIndex = 0;
         double previousHigh = 0;
-        for (int i = 0; i < this.counts.length; i++) {
-            if (this.counts[i] > previousHigh) {
+        for(int i = 0; i < this.counts.length; i++) {
+            if(this.counts[i] > previousHigh) {
                 highestIndex = i;
                 previousHigh = this.counts[i];
             }
@@ -260,8 +260,8 @@ public class Vision extends SubsystemBase {
 
     private void initShuffleboard() {
         // Unstable. Don''t use until WPILib fixes this
-        Shuffleboard.getTab("Turret").addBoolean("Vision Valid Output", this::getValidTarget);
-        Shuffleboard.getTab("Turret").addNumber("Vision Target X", this::getFilteredTargetX);
+        Shuffleboard.getTab("Turret").addBoolean("Vision Valid Output", this :: getValidTarget);
+        Shuffleboard.getTab("Turret").addNumber("Vision Target X", this :: getFilteredTargetX);
 
     }
 

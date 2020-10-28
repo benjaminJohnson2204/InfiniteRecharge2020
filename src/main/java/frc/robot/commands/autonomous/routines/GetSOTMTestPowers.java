@@ -11,7 +11,7 @@ public class GetSOTMTestPowers {
     public GetSOTMTestPowers(double maxPower, double timeToFinish) {
         this.maxPower = maxPower;
         this.h = timeToFinish / 2;
-        this.aValue = -maxPower / Math.pow(h, 2);
+        this.aValue = - maxPower / Math.pow(h, 2);
     }
 
     public double getVariablePower(double timePassed) {

@@ -23,8 +23,8 @@ public class TestSequentialForward extends SequentialCommandGroup {
         var secondPathConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
         ArrayList<Pose2d> pathB = new ArrayList<>();
         pathB.add(new Pose2d(0, 0, new Rotation2d()));
-        pathB.add(new Pose2d(Units.feetToMeters(5), Units.feetToMeters(-5), new Rotation2d(Units.degreesToRadians(-90))));
-        pathB.add(new Pose2d(Units.feetToMeters(0), Units.feetToMeters(-10), new Rotation2d(Units.degreesToRadians(-180))));
+        pathB.add(new Pose2d(Units.feetToMeters(5), Units.feetToMeters(- 5), new Rotation2d(Units.degreesToRadians(- 90))));
+        pathB.add(new Pose2d(Units.feetToMeters(0), Units.feetToMeters(- 10), new Rotation2d(Units.degreesToRadians(- 180))));
 
         var trajectoryCommandA = new GenerateRamseteCommand(driveTrain, pathA, startConfig);
         var trajectoryCommandB = new GenerateRamseteCommand(driveTrain, pathB, secondPathConfig);

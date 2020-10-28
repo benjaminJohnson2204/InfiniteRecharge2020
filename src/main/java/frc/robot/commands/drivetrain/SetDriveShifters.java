@@ -34,7 +34,7 @@ public class SetDriveShifters extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (m_driveTrain.getDriveShifterStatus() != m_shifterState)
+        if(m_driveTrain.getDriveShifterStatus() != m_shifterState)
             m_driveTrain.setDriveShifterStatus(m_shifterState);
     }
 

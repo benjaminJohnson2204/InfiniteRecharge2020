@@ -44,7 +44,7 @@ public class IncrementIndexer extends CommandBase {
     @Override
     public void execute() {
 //    m_indexer.incrementIndexer(m_setpoint);
-        m_indexer.setKickerOutput(-0.2);
+        m_indexer.setKickerOutput(- 0.2);
     }
 
     // Called once the command ends or is interrupted.

@@ -50,14 +50,14 @@ public class TestShooterDelayed extends CommandBase {
     public void execute() {
         m_shooter.setTestRPM();
 
-        if (m_shooter.getTestRPM() != 0)
-            if (Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) < m_shooter.getRPMTolerance()) {
+        if(m_shooter.getTestRPM() != 0)
+            if(Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) < m_shooter.getRPMTolerance()) {
                 m_indexer.setIndexerOutput(0.95);
                 m_indexer.setKickerOutput(0.95);
                 m_intake.setIntakePercentOutput(0.95);
-            } else if (!m_indexer.getIndexerTopSensor()) {
+            } else if(! m_indexer.getIndexerTopSensor()) {
                 m_indexer.setIndexerOutput(1);
-                m_indexer.setKickerOutput(-0.25);
+                m_indexer.setKickerOutput(- 0.25);
             } else {
                 m_indexer.setIndexerOutput(0);
                 m_indexer.setKickerOutput(0);

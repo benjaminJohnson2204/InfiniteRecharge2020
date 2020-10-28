@@ -36,7 +36,7 @@ public class LED extends SubsystemBase {
     int cGreen = 0;
     int cBlue = 0;
     int realPanelColor = 0;
-    int state = -1;
+    int state = - 1;
     private int red, green, blue;
 
     public LED(ColorSensor colorSensor) {
@@ -67,22 +67,22 @@ public class LED extends SubsystemBase {
     }
 
     public void setSolidColor() {
-        for (int i = 0; i < LEDBuffer.getLength(); i++) {
+        for(int i = 0; i < LEDBuffer.getLength(); i++) {
             LEDBuffer.setRGB(i, red, green, blue);
         }
     }
 
     public void resetLED() {
-        for (int i = 0; i < LEDBuffer.getLength(); i++) {
+        for(int i = 0; i < LEDBuffer.getLength(); i++) {
             LEDBuffer.setRGB(i, 0, 0, 0);
         }
     }
 
     public void setBlinkingColor(boolean blinkType) {
         double time = (int) (5 * Timer.getFPGATimestamp());
-        if (!blinkType) {
-            if (time / 2 == Math.floor(time / 2)) {
-                for (int i = 0; i < stripLength; i++) {
+        if(! blinkType) {
+            if(time / 2 == Math.floor(time / 2)) {
+                for(int i = 0; i < stripLength; i++) {
                     LEDBuffer.setRGB(i, red, green, blue);
                     LEDBuffer.setRGB(stripLength + i, red, green, blue);
                 }
@@ -90,16 +90,16 @@ public class LED extends SubsystemBase {
                 resetLED();
         } else {
             resetLED();
-            for (int i = head; i < LEDBuffer.getLength(); i += 2) {
+            for(int i = head; i < LEDBuffer.getLength(); i += 2) {
                 LEDBuffer.setRGB(i % LEDBuffer.getLength(), red, green, blue);
             }
             Timer.delay(0.2);
-            head = ++head % 2;
+            head = ++ head % 2;
         }
     }
 
     public void setRainbow(double iterations, double speed) {
-        for (int i = 0; i < stripLength; i++) {
+        for(int i = 0; i < stripLength; i++) {
             LEDBuffer.setHSV(i, (int) (180 * iterations * i / stripLength + hueOffset) % 180, 255, 255);
             LEDBuffer.setHSV(stripLength + i, (int) (180 * iterations * i / stripLength + hueOffset) % 180, 255, 255);
         }
@@ -109,11 +109,11 @@ public class LED extends SubsystemBase {
 
     public void trail(int interval) {
         resetLED();
-        for (int i = head; i < LEDBuffer.getLength(); i += interval) {
+        for(int i = head; i < LEDBuffer.getLength(); i += interval) {
             LEDBuffer.setRGB(i % LEDBuffer.getLength(), red, green, blue);
         }
         Timer.delay(0.03);
-        head = ++head % interval;
+        head = ++ head % interval;
     }
 
     public void flash() {
@@ -126,7 +126,7 @@ public class LED extends SubsystemBase {
     }
 
     public void colorToRGB(int color) {
-        switch (color) {
+        switch(color) {
             case 1:
                 setRGB(255, 0, 0);
                 break;
@@ -149,10 +149,10 @@ public class LED extends SubsystemBase {
         LEDBuffer.setRGB(ii, red, green, blue);
     }*/
 
-        if (m_colorSensor.panelColor() != 0)
+        if(m_colorSensor.panelColor() != 0)
             realPanelColor = m_colorSensor.panelColor();
-        for (int i = 0; i < 7; i++) {
-            switch ((realPanelColor + i) % 4 + 1) {
+        for(int i = 0; i < 7; i++) {
+            switch((realPanelColor + i) % 4 + 1) {
                 case 1:
                     cRed = 255;
                     cGreen = 0;
@@ -174,14 +174,14 @@ public class LED extends SubsystemBase {
                     cBlue = 0;
                     break;
             }
-            for (int ii = (int) Math.floor(i * LEDBuffer.getLength() / 7); ii < (int) Math.floor((i + 1) * LEDBuffer.getLength() / 7); ii++) {
+            for(int ii = (int) Math.floor(i * LEDBuffer.getLength() / 7); ii < (int) Math.floor((i + 1) * LEDBuffer.getLength() / 7); ii++) {
                 LEDBuffer.setRGB(ii, cRed, cGreen, cBlue);
             }
         }
     }
 
     public void setLED() {
-        switch (state) {
+        switch(state) {
             case 0:
                 setRainbow(3, 8);
                 break;

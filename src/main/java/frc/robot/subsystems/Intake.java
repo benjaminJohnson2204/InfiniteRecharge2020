@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
     // Intake motor setup
     private final CANSparkMax intakeMotor = new CANSparkMax(Constants.intakeMotor, MotorType.kBrushless);
     DoubleSolenoid intakePiston = new DoubleSolenoid(Constants.pcmOne, Constants.intakePistonForward, Constants.intakePistonReverse);
-//  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
+    //  private CANEncoder intakeEncoder = intakeMotor.getEncoder();
 //  private CANPIDController canPidController = intakeMotor.getPIDController();
     private boolean intaking = false;
 

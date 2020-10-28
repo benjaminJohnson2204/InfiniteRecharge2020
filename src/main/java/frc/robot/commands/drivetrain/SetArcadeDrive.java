@@ -52,7 +52,7 @@ public class SetArcadeDrive extends CommandBase {
 //        throttle = throttle < 0 ? Math.max( -0.7, throttle) : throttle;
 //        double turn = 0.25 *(joystickX + Math.pow(joystickX, 3));
         double throttle = joystickY;
-        throttle = throttle < 0 ? Math.max(-0.7, throttle) : throttle;
+        throttle = throttle < 0 ? Math.max(- 0.7, throttle) : throttle;
         double turn = (m_driveTrain.getDriveShifterStatus() ? 0.5 : 0.35) * joystickX;
 
 //    if(m_intake.getIntakingState())

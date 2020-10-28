@@ -39,7 +39,7 @@ public class ShootAndDriveForward extends SequentialCommandGroup {
 //                new WaitCommand(0.5),
                 new ConditionalCommand(new WaitCommand(0),
                         new WaitCommand(0.5),
-                        shooter::canShoot),
+                        shooter :: canShoot),
                 new AutoRapidFireSetpoint(shooter, indexer, intake, 1).withTimeout(3),
                 driveBackwards.andThen(() -> driveTrain.setMotorTankDrive(0, 0))
         );

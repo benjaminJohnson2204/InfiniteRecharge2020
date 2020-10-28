@@ -46,7 +46,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
         super.initialize();
         autoStartTime = Timer.getFPGATimestamp();
         double distance = 0;
-        for (int i = 0; i < m_path.size() - 1; i++) {
+        for(int i = 0; i < m_path.size() - 1; i++) {
             var pointA = m_path.get(i);
             var pointB = m_path.get(i + 1);
 

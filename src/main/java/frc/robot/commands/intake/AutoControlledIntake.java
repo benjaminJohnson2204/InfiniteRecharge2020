@@ -47,9 +47,9 @@ public class AutoControlledIntake extends CommandBase {
         m_intake.setIntakingState(true);
         timestamp = Timer.getFPGATimestamp();
 
-        if (m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
+        if(m_indexer.getIntakeSensor() && m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
             intakeState = IntakeStates.INTAKE_FIVE_BALLS;
-        else if (m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
+        else if(m_indexer.getIndexerBottomSensor() && m_indexer.getIndexerTopSensor())
             intakeState = IntakeStates.INTAKE_FOUR_BALLS;
         else
             intakeState = IntakeStates.INTAKE_ONE_BALL;
@@ -59,7 +59,7 @@ public class AutoControlledIntake extends CommandBase {
     @Override
     public void execute() {
 
-        switch (intakeState) {
+        switch(intakeState) {
             case INTAKE_FIVE_BALLS:
                 m_intake.setIntakePercentOutput(0);
                 m_indexer.setKickerOutput(0);
@@ -68,14 +68,14 @@ public class AutoControlledIntake extends CommandBase {
             case INTAKE_FOUR_BALLS:
                 m_intake.setIntakePercentOutput(0.9);
                 m_indexer.setKickerOutput(0);
-                if (m_indexer.getIntakeSensor())
+                if(m_indexer.getIntakeSensor())
                     intakeState = IntakeStates.INTAKE_FIVE_BALLS;
                 break;
             case INTAKE_ONE_BALL:
             default:
                 m_intake.setIntakePercentOutput(0.9);
-                m_indexer.setKickerOutput(-0.4);
-                if (m_indexer.getIndexerBottomSensor() && !intaking) {
+                m_indexer.setKickerOutput(- 0.4);
+                if(m_indexer.getIndexerBottomSensor() && ! intaking) {
                     //indexerTimestamp = Timer.getFPGATimestamp();
                     intaking = true;
                     m_indexer.setIndexerOutput(0.95);
@@ -95,7 +95,7 @@ public class AutoControlledIntake extends CommandBase {
 //          haveFour = false;
 //        }
 
-                if (m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor()) {
+                if(m_indexer.getIndexerTopSensor() && m_indexer.getIndexerBottomSensor()) {
                     m_indexer.setRPM(0);
                     intakeState = IntakeStates.INTAKE_FOUR_BALLS;
                 }
@@ -108,12 +108,12 @@ public class AutoControlledIntake extends CommandBase {
     private void updateTimedRollers() {
         timestamp = Timer.getFPGATimestamp();
 
-        if (fourBallTimestamp != 0)
+        if(fourBallTimestamp != 0)
             haveFour = (timestamp - fourBallTimestamp) > 0.5;
 
-        if (intakeState != IntakeStates.INTAKE_EMPTY)
-            if (indexerTimestamp != 0)
-                if (timestamp - indexerTimestamp < 0.1)
+        if(intakeState != IntakeStates.INTAKE_EMPTY)
+            if(indexerTimestamp != 0)
+                if(timestamp - indexerTimestamp < 0.1)
                     m_indexer.setRPM(indexRPM);
                 else {
                     m_indexer.setRPM(0);
@@ -129,7 +129,7 @@ public class AutoControlledIntake extends CommandBase {
         m_intake.setIntakePercentOutput(0);
         m_indexer.setIndexerOutput(0);
         m_indexer.setKickerOutput(0);
-        if (intakeState == IntakeStates.INTAKE_FIVE_BALLS)
+        if(intakeState == IntakeStates.INTAKE_FIVE_BALLS)
             m_intake.setintakePiston(false);
     }
 

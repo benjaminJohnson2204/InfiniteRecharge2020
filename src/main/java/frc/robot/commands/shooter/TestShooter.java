@@ -49,19 +49,19 @@ public class TestShooter extends CommandBase {
     public void execute() {
         m_shooter.setTestRPM();
 
-        if (m_shooter.getTestRPM() != 0) {
+        if(m_shooter.getTestRPM() != 0) {
 
 
-            if (Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) < m_shooter.getRPMTolerance() && !timerStart) {
+            if(Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) < m_shooter.getRPMTolerance() && ! timerStart) {
                 timerStart = true;
                 timestamp = Timer.getFPGATimestamp();
-            } else if (Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) > m_shooter.getRPMTolerance() && timerStart) {
+            } else if(Math.abs(m_shooter.getRPM(0) - m_shooter.getTestRPM()) > m_shooter.getRPMTolerance() && timerStart) {
                 timestamp = 0;
                 timerStart = false;
             }
 
-            if (timestamp != 0)
-                if (timerStart && Timer.getFPGATimestamp() - timestamp > 0.1) {
+            if(timestamp != 0)
+                if(timerStart && Timer.getFPGATimestamp() - timestamp > 0.1) {
                     m_indexer.setIndexerOutput(1);
                     m_indexer.setKickerOutput(1);
                     m_intake.setIntakePercentOutput(1);

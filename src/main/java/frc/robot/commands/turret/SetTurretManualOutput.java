@@ -41,7 +41,7 @@ public class SetTurretManualOutput extends CommandBase {
     @Override
     public void execute() {
         double threshHold = 0.05;
-        if (Math.abs(xValue) > threshHold)
+        if(Math.abs(xValue) > threshHold)
             m_turret.setPercentOutput(xValue);
     }
 

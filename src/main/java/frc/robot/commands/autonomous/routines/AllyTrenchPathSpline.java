@@ -43,11 +43,11 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
                 new SetDriveNeutralMode(driveTrain, 0),
                 new SetDriveShifters(driveTrain, false),
                 new SetAndHoldRpmSetpoint(shooter, vision, 3800),
-                new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
+                new SetTurretRobotRelativeAngle(turret, - 25).withTimeout(0.5),
                 new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
                 new ConditionalCommand(new WaitCommand(0),
                         new WaitCommand(0.5),
-                        shooter::canShoot),
+                        shooter :: canShoot),
                 new AutoRapidFireSetpoint(shooter, indexer, intake, 1).withTimeout(1),
                 new SetIntakePiston(intake, true),
                 new SetDriveShifters(driveTrain, false),
@@ -65,10 +65,10 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
                 new AutoUseVisionCorrection(turret, vision).withTimeout(0.75),
                 new ConditionalCommand(new WaitCommand(0),
                         new WaitCommand(0.5),
-                        shooter::canShoot),
+                        shooter :: canShoot),
                 new ConditionalCommand(new AutoRapidFireSetpoint(shooter, indexer, intake, 6),
                         new WaitCommand(0),
-                        vision::hasTarget)
+                        vision :: hasTarget)
         );
     }
 }

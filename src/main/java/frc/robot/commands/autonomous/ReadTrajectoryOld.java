@@ -83,9 +83,9 @@ public class ReadTrajectoryOld extends CommandBase {
         var fileTrajectory = TrajectoryUtils.readCsvTrajectory(filePath);
 
         // All points we generate assume we start from (0,0). Take those points and shift it based on your starting position
-        for (Pose2d point : fileTrajectory) {
+        for(Pose2d point : fileTrajectory) {
 //      System.out.printf("X: %.2f\tY: %.2f\n", point.getTranslation().getX(), point.getTranslation().getY());
-            if (point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0)
+            if(point.getTranslation().getX() == 0 && point.getTranslation().getY() == 0)
                 continue;
 
             trajectoryWaypoints.add(new Pose2d(startPosition.getTranslation().getX() + startPosition.getTranslation().getX(),
@@ -95,7 +95,7 @@ public class ReadTrajectoryOld extends CommandBase {
 
         var trajectoryConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
 
-        if (m_kinematicsConstraint != null)
+        if(m_kinematicsConstraint != null)
             trajectoryConfig.addConstraint(m_kinematicsConstraint);
 
         trajectoryConfig.setReversed(m_isInverted);
@@ -104,14 +104,14 @@ public class ReadTrajectoryOld extends CommandBase {
 
         RamseteCommand followTrajectory = new RamseteCommand(
                 trajectory,
-                m_driveTrain::getRobotPose,
+                m_driveTrain :: getRobotPose,
                 new RamseteController(),
                 m_driveTrain.getFeedforward(),
                 m_driveTrain.getDriveTrainKinematics(),
-                m_driveTrain::getSpeeds,
+                m_driveTrain :: getSpeeds,
                 m_driveTrain.getLeftPIDController(),
                 m_driveTrain.getRightPIDController(),
-                m_driveTrain::setVoltageOutput,
+                m_driveTrain :: setVoltageOutput,
                 m_driveTrain
         );
         CommandScheduler.getInstance().schedule(followTrajectory);

@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
     private final double kV = 0.111;
     private final double kA = 0.02;
 
-//    private double kP = 1.91;
+    //    private double kP = 1.91;
 //    private double kI = 0.0;
 //    private double kD = 0.0;
     private final TalonFX[] outtakeMotors = {
@@ -67,7 +67,7 @@ public class Shooter extends SubsystemBase {
 
     public Shooter(Vision vision, PowerDistributionPanel pdp) {
         // Setup shooter motors (Falcons)
-        for (TalonFX outtakeMotor : outtakeMotors) {
+        for(TalonFX outtakeMotor : outtakeMotors) {
             outtakeMotor.configFactoryDefault();
             outtakeMotor.setNeutralMode(NeutralMode.Coast);
             outtakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
@@ -122,7 +122,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void updateRPMSetpoint() {
-        if (setpoint >= 0)
+        if(setpoint >= 0)
             outtakeMotors[0].set(ControlMode.Velocity, RPMtoFalconUnits(setpoint));
         else
             setPower(0);
@@ -205,17 +205,17 @@ public class Shooter extends SubsystemBase {
         updateShuffleboard();
         updatePIDValues();
 
-        if ((Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance()) && m_vision.hasTarget() &&
-                (Math.abs(m_vision.getTargetX()) < 1) && !timerStart) {
+        if((Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance()) && m_vision.hasTarget() &&
+                (Math.abs(m_vision.getTargetX()) < 1) && ! timerStart) {
             timerStart = true;
             timestamp = Timer.getFPGATimestamp();
-        } else if (((Math.abs(getSetpoint() - getRPM(0)) > getRPMTolerance()) || !m_vision.hasTarget() ||
+        } else if(((Math.abs(getSetpoint() - getRPM(0)) > getRPMTolerance()) || ! m_vision.hasTarget() ||
                 (Math.abs(m_vision.getTargetX()) > 1)) && timerStart) {
             timestamp = 0;
             timerStart = false;
         }
         // canShoot = Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.6 & timestamp != 0;
-        if (timestamp != 0) {
+        if(timestamp != 0) {
 
             canShoot = Math.abs(Timer.getFPGATimestamp() - timestamp) > 0.6;
 

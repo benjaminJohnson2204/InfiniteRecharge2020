@@ -49,7 +49,7 @@ public class RapidFireSetpoint extends CommandBase {
     @Override
     public void execute() {
 
-        if (Math.abs(m_shooter.getRPM(0) - m_shooter.getSetpoint()) <= 100 || Timer.getFPGATimestamp() - startTime > 0.5) {
+        if(Math.abs(m_shooter.getRPM(0) - m_shooter.getSetpoint()) <= 100 || Timer.getFPGATimestamp() - startTime > 0.5) {
             m_indexer.setIndexerOutput(1);
             m_indexer.setKickerOutput(1);
             m_intake.setIntakePercentOutput(1);

@@ -68,7 +68,7 @@ DriveTrain extends SubsystemBase {
 
     public DriveTrain(PowerDistributionPanel pdp) {
         // Set up DriveTrain motors
-        for (TalonFX motor : driveMotors) {
+        for(TalonFX motor : driveMotors) {
             motor.configFactoryDefault();
 //            motor.configVoltageCompSaturation(12);
 //            motor.enableVoltageCompensation(true);
@@ -116,7 +116,7 @@ DriveTrain extends SubsystemBase {
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(-navX.getAngle(), 360);
+        return Math.IEEEremainder(- navX.getAngle(), 360);
     }
 
     public void resetAngle() {
@@ -158,7 +158,7 @@ DriveTrain extends SubsystemBase {
 
         // Normalization
         double magnitude = Math.max(Math.abs(leftPWM), Math.abs(rightPWM));
-        if (magnitude > 1.0) {
+        if(magnitude > 1.0) {
             leftPWM *= 1.0 / magnitude;
             rightPWM *= 1.0 / magnitude;
         }
@@ -182,17 +182,17 @@ DriveTrain extends SubsystemBase {
     }
 
     public void setDriveTrainNeutralMode(int mode) {
-        switch (mode) {
+        switch(mode) {
             case 2:
-                for (var motor : driveMotors)
+                for(var motor : driveMotors)
                     motor.setNeutralMode(NeutralMode.Coast);
-                for (var brakeMode : brakeMode)
+                for(var brakeMode : brakeMode)
                     brakeMode = false;
                 break;
             case 1:
-                for (var motor : driveMotors)
+                for(var motor : driveMotors)
                     motor.setNeutralMode(NeutralMode.Brake);
-                for (var brakeMode : brakeMode)
+                for(var brakeMode : brakeMode)
                     brakeMode = true;
                 break;
             case 0:
@@ -266,7 +266,7 @@ DriveTrain extends SubsystemBase {
         Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
                 Units.metersToFeet(getSpeeds().rightMetersPerSecond));
 
-        Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX::getAngle);
+        Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX :: getAngle);
     }
 
     private void updateSmartDashboard() {

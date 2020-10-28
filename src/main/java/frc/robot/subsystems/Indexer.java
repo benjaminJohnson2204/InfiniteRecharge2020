@@ -86,7 +86,7 @@ public class Indexer extends SubsystemBase {
     }
 
     public void toggleControlMode() {
-        if (controlMode == 0)
+        if(controlMode == 0)
             controlMode = 1;
         else
             controlMode = 0;
@@ -97,15 +97,15 @@ public class Indexer extends SubsystemBase {
     }
 
     public boolean getIntakeSensor() {
-        return (!intakeSensor.get());
+        return (! intakeSensor.get());
     }
 
     public boolean getIndexerBottomSensor() {
-        return !indexerBottomSensor.get();
+        return ! indexerBottomSensor.get();
     }
 
     public boolean getIndexerTopSensor() {
-        return !indexerTopSensor.get();
+        return ! indexerTopSensor.get();
     }
 
     public void setKickerOutput(double output) {
@@ -155,9 +155,9 @@ public class Indexer extends SubsystemBase {
 
     private void initShuffleboard() {
         // Unstable. Don''t use until WPILib fixes this
-        Shuffleboard.getTab("Indexer").addBoolean("Intake Sensor", this::getIntakeSensor);
-        Shuffleboard.getTab("Indexer").addBoolean("Indexer Bottom Sensor", this::getIndexerBottomSensor);
-        Shuffleboard.getTab("Indexer").addBoolean("Indexer Top Sensor", this::getIndexerTopSensor);
+        Shuffleboard.getTab("Indexer").addBoolean("Intake Sensor", this :: getIntakeSensor);
+        Shuffleboard.getTab("Indexer").addBoolean("Indexer Bottom Sensor", this :: getIndexerBottomSensor);
+        Shuffleboard.getTab("Indexer").addBoolean("Indexer Top Sensor", this :: getIndexerTopSensor);
     }
 
     private void updateSmartDashboard() {

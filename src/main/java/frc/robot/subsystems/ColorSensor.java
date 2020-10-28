@@ -53,28 +53,28 @@ public class ColorSensor extends SubsystemBase {
     }
 
     public int panelColor() { // none = 0; red = 1; green = 2; blue = 3; yellow = 4
-        if (practiceField) {
-            if (getColor().red > getColor().green && getColor().green * 1.8 > getColor().red) {
+        if(practiceField) {
+            if(getColor().red > getColor().green && getColor().green * 1.8 > getColor().red) {
                 return 1;
             }
-            if (getColor().red * 2.26 < getColor().green && getColor().blue * 2.16 < getColor().green) {
+            if(getColor().red * 2.26 < getColor().green && getColor().blue * 2.16 < getColor().green) {
                 return 2;
             }
-            if (getColor().blue * 1.25 > getColor().green && getColor().blue * 1.02 < getColor().green && getColor().blue > getColor().red * 1.89) {
+            if(getColor().blue * 1.25 > getColor().green && getColor().blue * 1.02 < getColor().green && getColor().blue > getColor().red * 1.89) {
                 return 3;
             }
-            if (getColor().red * 1.83 > getColor().green && getColor().red * 1.1 < getColor().green && getColor().red > getColor().blue * 1.86) {
+            if(getColor().red * 1.83 > getColor().green && getColor().red * 1.1 < getColor().green && getColor().red > getColor().blue * 1.86) {
                 return 4;
             } else
                 return 0;
         } else {
-            if (getColor().red > getColor().blue * 3 && getColor().red > getColor().green * 1.33) {
+            if(getColor().red > getColor().blue * 3 && getColor().red > getColor().green * 1.33) {
                 return 1;
-            } else if (getColor().green > getColor().red * 2.75 && getColor().green > getColor().blue * 1.8) {
+            } else if(getColor().green > getColor().red * 2.75 && getColor().green > getColor().blue * 1.8) {
                 return 2;
-            } else if (getColor().blue < getColor().green * 1.15 && getColor().green < getColor().blue * 1.15 && getColor().blue > getColor().red * 2.5) {
+            } else if(getColor().blue < getColor().green * 1.15 && getColor().green < getColor().blue * 1.15 && getColor().blue > getColor().red * 2.5) {
                 return 3;
-            } else if (getColor().green < getColor().red * 1.8 && getColor().green > getColor().red * 1.65) {
+            } else if(getColor().green < getColor().red * 1.8 && getColor().green > getColor().red * 1.65) {
                 return 4;
             } else
                 return 0;
@@ -99,7 +99,7 @@ public class ColorSensor extends SubsystemBase {
       return true;
     } else
       return false;*/
-        if (panelColor() != colorID && panelColor() != 0) {
+        if(panelColor() != colorID && panelColor() != 0) {
             colorID = panelColor();
             realIntervals++;
         }
@@ -112,7 +112,7 @@ public class ColorSensor extends SubsystemBase {
 
     public int getFMSColor() {
         String message = DriverStation.getInstance().getGameSpecificMessage();
-        switch (message) {
+        switch(message) {
             case "R":
                 return 1;
             case "G":
@@ -122,7 +122,7 @@ public class ColorSensor extends SubsystemBase {
             case "Y":
                 return 4;
             default:
-                return -1;
+                return - 1;
         }
     }
 
@@ -133,7 +133,7 @@ public class ColorSensor extends SubsystemBase {
         SmartDashboard.putNumber("Blue", getColor().blue);
         SmartDashboard.putNumber("IR", getIR());
         SmartDashboard.putNumber("Proximity", getProximity());
-        switch (panelColor()) {
+        switch(panelColor()) {
             case 1:
                 colorName = "Red";
                 break;
