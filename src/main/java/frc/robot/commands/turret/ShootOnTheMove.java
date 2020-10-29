@@ -40,7 +40,6 @@ public class ShootOnTheMove extends CommandBase {
     private final LED m_led;
     private final Vision m_vision;
     private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
-    private final Translation2d m_xyOffset;
     private boolean isRunning; // Whether to run code
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
@@ -81,8 +80,6 @@ public class ShootOnTheMove extends CommandBase {
         m_led = led;
         m_vision = vision;
 
-        m_xyOffset = xyOffset;
-
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(turret, shooter, vision);
     }
@@ -116,16 +113,12 @@ public class ShootOnTheMove extends CommandBase {
             robotLinearVelocity = speeds.vxMetersPerSecond;
             robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
-//            Pose2d position = m_drivetrain.getRobotPose(); // Getting robot's position and heading through odometry || later implement vision calibration
             initialHeading = m_drivetrain.getHeading();
             distanceToOuterTargetXY = m_vision.getTargetDistance();
             Pose2d position = new Pose2d(- distanceToOuterTargetXY * Math.cos(initialHeading),
                     - distanceToOuterTargetXY * Math.sin(initialHeading),
                     new Rotation2d(initialHeading));
             // Separating position into x, y, and heading components, then adjusting based on offset and distance between navX and shooter
-//            initialHeading = position.getRotation().getRadians();
-//            robotInitialXPosition = position.getTranslation().getX() + Constants.navXToShooterDistance * Math.cos(Constants.navXToShooterAngle + initialHeading) + m_xyOffset.getX();
-//            robotInitialYPosition = position.getTranslation().getY() + Constants.navXToShooterDistance * Math.sin(Constants.navXToShooterAngle + initialHeading) + m_xyOffset.getY();
 
             robotInitialXPosition = position.getTranslation().getX();
             robotInitialYPosition = position.getTranslation().getY();
@@ -140,13 +133,6 @@ public class ShootOnTheMove extends CommandBase {
             yDistanceToOuterTarget = Math.max(- predictedPosition.getTranslation().getY(), 0.01);
             yDistanceToInnerTarget = yDistanceToOuterTarget + Constants.targetOffset;
             distanceToInnerTargetXY = findDistance(xDistanceToInnerTarget, yDistanceToInnerTarget);
-
-//            xDistanceToInnerTarget = xDistanceToOuterTarget = predictedPosition.getTranslation().getX();Constants.targetXPosition - predictedPosition.getTranslation().getX()) == 0 ? 0.01 : Constants.targetXPosition - predictedPosition.getTranslation().getX();
-//            yDistanceToInnerTarget = (Constants.targetYPosition - predictedPosition.getTranslation().getY()) == 0 ? 0.01 : Constants.targetYPosition - predictedPosition.getTranslation().getY();
-//            xDistanceToOuterTarget = xDistanceToInnerTarget;
-//            yDistanceToOuterTarget = yDistanceToInnerTarget - Constants.targetOffset;
-//            distanceToInnerTargetXY = findDistance(xDistanceToInnerTarget, yDistanceToInnerTarget); // Find out how far away inner target is from robot || later implement with vision's function
-//            distanceToOuterTargetXY = findDistance(xDistanceToOuterTarget, yDistanceToOuterTarget); // Find out how far away outer target is from robot
 
             // Angles to inner & outer targets
             angleToInner = findAngle(xDistanceToInnerTarget, yDistanceToInnerTarget);
@@ -288,9 +274,4 @@ public class ShootOnTheMove extends CommandBase {
     }
 }
 
-//TODO:shoot while still
-//TODO:width-wise in a straight line near-constant velocity
-//TODO:width-wise in a straight line varying velocity
-//TODO:curved line/arc constant velocity
-//TODO:curved line/arc varying velocity
-//TODO:then teleop
+//TODO: make it all work
