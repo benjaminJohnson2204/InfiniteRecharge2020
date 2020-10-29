@@ -219,9 +219,9 @@ public class Vision extends SubsystemBase {
         return computeMode(distances);
     }
 
-	/*public double getAngleToTarget() {
+	public double getAngleToTarget() {
 		return getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
-	}*/
+	}
 
     // Used to find the most common value to provide accurate target data
     private double computeMode(double[] data) {

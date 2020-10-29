@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,7 +70,7 @@ public class RobotContainer {
     private final ColorSensor m_colorSensor = new ColorSensor();
     private final LED m_led = new LED(m_colorSensor);
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
-    private final ShootOnTheMove m_ShootOnTheMove = new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led, m_vision, new Translation2d());
+    private final ShootOnTheMove m_ShootOnTheMove = new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led, m_vision);
     private final SelectCommand m_autoCommand;
     public Button[] leftButtons = new Button[2];
     public Button[] rightButtons = new Button[2];
@@ -243,7 +242,7 @@ public class RobotContainer {
     public void autonomousPeriodic() {
     }
 
-    public void initalizeLogTopics() {
+    public void initializeLogTopics() {
         m_controls.initLogging();
     }
 
