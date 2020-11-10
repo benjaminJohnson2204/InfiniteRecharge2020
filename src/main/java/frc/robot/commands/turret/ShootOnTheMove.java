@@ -136,26 +136,38 @@ public class ShootOnTheMove extends CommandBase {
             double necessaryXYvel;
             if(canGoThroughInnerTarget()) {
                 ledState = 2;
-                necessaryXYvel = distanceToInnerTargetXY * Constants.airResistanceCoefficient * Math.sqrt((- Constants.g / 2) / (Constants.verticalTargetDistance -
+                double x = solveCubicEquation(
+                    distanceToInnerTargetXY, -Constants.verticalTargetDistance, Math.pow(distanceToInnerTargetXY, 2) * Constants.g / 2);
+                shooterBallMagnitude = Math.sqrt(
+                    x * x - 2 * x * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner + Math.pow(robotLinearVelocity, 2))
+                    ) / Math.cos(Constants.verticalShooterAngle);
+                targetTurretAngle = angleToInner + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToInner) / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
+                /*necessaryXYvel = distanceToInnerTargetXY * Constants.airResistanceCoefficient * Math.sqrt((- Constants.g / 2) / (Constants.verticalTargetDistance -
                         (distanceToInnerTargetXY == 0 ? 0.01 : distanceToInnerTargetXY) * Math.tan(Constants.verticalShooterAngle)));
                 shooterBallVector = new Translation2d( // velocity components that the shooter has to give to the ball in form (xVel, yVel)
                         necessaryXYvel * Math.cos(angleToInner) - robotPredictedXvel,
-                        necessaryXYvel * Math.sin(angleToInner) - robotPredictedYvel);
+                        necessaryXYvel * Math.sin(angleToInner) - robotPredictedYvel);*/
             } else if(canGoThroughOuterTarget()) {
                 ledState = 1;
-                necessaryXYvel = distanceToOuterTargetXY * Constants.airResistanceCoefficient * Math.sqrt((- Constants.g / 2) / (Constants.verticalTargetDistance -
+                double x = solveCubicEquation(
+                    distanceToOuterTargetXY, -Constants.verticalTargetDistance, Math.pow(distanceToOuterTargetXY, 2) * Constants.g / 2);
+                shooterBallMagnitude = Math.sqrt(
+                    x * x - 2 * x * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter + Math.pow(robotLinearVelocity, 2))
+                    ) / Math.cos(Constants.verticalShooterAngle);
+                targetTurretAngle = angleToOuter + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToOuter) / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
+                /*necessaryXYvel = distanceToOuterTargetXY * Constants.airResistanceCoefficient * Math.sqrt((- Constants.g / 2) / (Constants.verticalTargetDistance -
                         (distanceToOuterTargetXY == 0 ? 0.01 : distanceToOuterTargetXY) * Math.tan(Constants.verticalShooterAngle)));
                 shooterBallVector = new Translation2d( // velocity components that the shooter has to give to the ball in form (xVel, yVel)
                         necessaryXYvel * Math.cos(angleToOuter) - robotPredictedXvel,
-                        necessaryXYvel * Math.sin(angleToOuter) - robotPredictedYvel);
+                        necessaryXYvel * Math.sin(angleToOuter) - robotPredictedYvel);*/
             } else {
                 ledState = 0;
             }
 
             if(ledState != 0) {
-                targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
+                /*targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
                 shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
-                        / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions
+                        / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions*/
                 RPM = shooterBallMagnitude * 60 / (Constants.flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
                 if(RPM > Constants.maxShooterRPM) {
                     ledState = 0;
@@ -227,6 +239,13 @@ public class ShootOnTheMove extends CommandBase {
         double verticalTargetIntersection = Math.abs(2 * Constants.verticalTargetDistance / distanceToOuterTargetXY - Math.tan(Constants.verticalShooterAngle)) * Constants.ballRadius;
         return verticalTargetIntersection <= hexagonCenterCanHitHeight / 2 &&
                 verticalTargetIntersection <= - Math.sqrt(3) * Math.abs(Constants.ballRadius / Math.tan(angleToOuter)) + hexagonCenterCanHitHeight;
+    }
+
+    private double solveCubicEquation(double a, double b, double d) { // Solves a cubic with x-coefficient 0
+        double discriminant = Math.sqrt(Math.pow(Math.pow(b, 3) / 27 / Math.pow(a, 3) + d / 2 / a, 2) - Math.pow(b, 6) / 9 / Math.pow(a, 6));
+        return Math.cbrt(-Math.pow(b, 3) / 27 / Math.pow(a, 3) - d / 2 / a + discriminant) 
+        + Math.cbrt(-Math.pow(b, 3) / 27 / Math.pow(a, 3) - d / 2 / a - discriminant)
+        - b / 3 / a;
     }
 
     // Called once the command ends or is interrupted.
