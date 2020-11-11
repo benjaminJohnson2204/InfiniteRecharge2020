@@ -137,7 +137,7 @@ public class ShootOnTheMove extends CommandBase {
             if(canGoThroughInnerTarget()) {
                 ledState = 2;
                 double x = solveCubicEquation(
-                    distanceToInnerTargetXY, -Constants.verticalTargetDistance, Math.pow(distanceToInnerTargetXY, 2) * Constants.g / 2);
+                    distanceToInnerTargetXY, -Constants.verticalTargetDistance, -Math.pow(distanceToInnerTargetXY, 2) * Constants.g / 2);
                 shooterBallMagnitude = Math.sqrt(
                     x * x - 2 * x * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner + Math.pow(robotLinearVelocity, 2))
                     ) / Math.cos(Constants.verticalShooterAngle);
@@ -150,7 +150,7 @@ public class ShootOnTheMove extends CommandBase {
             } else if(canGoThroughOuterTarget()) {
                 ledState = 1;
                 double x = solveCubicEquation(
-                    distanceToOuterTargetXY, -Constants.verticalTargetDistance, Math.pow(distanceToOuterTargetXY, 2) * Constants.g / 2);
+                    distanceToOuterTargetXY, -Constants.verticalTargetDistance, -Math.pow(distanceToOuterTargetXY, 2) * Constants.g / 2);
                 shooterBallMagnitude = Math.sqrt(
                     x * x - 2 * x * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter + Math.pow(robotLinearVelocity, 2))
                     ) / Math.cos(Constants.verticalShooterAngle);
@@ -242,7 +242,7 @@ public class ShootOnTheMove extends CommandBase {
     }
 
     private double solveCubicEquation(double a, double b, double d) { // Solves a cubic with x-coefficient 0
-        double discriminant = Math.sqrt(Math.pow(Math.pow(b, 3) / 27 / Math.pow(a, 3) + d / 2 / a, 2) - Math.pow(b, 6) / 9 / Math.pow(a, 6));
+        double discriminant = Math.sqrt(Math.pow(Math.pow(b, 3) / 27 / Math.pow(a, 3) + d / 2 / a, 2) - Math.pow(b, 6) / 729 / Math.pow(a, 6));
         return Math.cbrt(-Math.pow(b, 3) / 27 / Math.pow(a, 3) - d / 2 / a + discriminant) 
         + Math.cbrt(-Math.pow(b, 3) / 27 / Math.pow(a, 3) - d / 2 / a - discriminant)
         - b / 3 / a;
