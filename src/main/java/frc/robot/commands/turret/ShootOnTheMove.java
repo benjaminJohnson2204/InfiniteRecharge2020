@@ -40,6 +40,8 @@ public class ShootOnTheMove extends CommandBase {
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     private double initialHeading; // Current robot position and where it's facing on the field relative to x-axis
     private double deltaTheta; // Angle in radians that robot rotates during time to shoot
+
+    private double horizontalBallSpeed; // The xy velocity the ball will leave the robot with
     private double targetTurretAngle; // Angle turret needs to rotate to in order for ball to hit target
     private double shooterBallMagnitude; // Magnitude of velocity shooter needs to shoot at in order for ball to hit target
     private double RPM; // Needed RPM to shoot
@@ -47,9 +49,9 @@ public class ShootOnTheMove extends CommandBase {
     private double angleToInner; // x-y angles to inner & outer targets
     private double currentDistanceToOuterTargetXY;
     private double currentAngleToOuter;
-    private double distanceToOuterTargetXY; // predicted distance in meters from robot to outer target
-    private double distanceToInnerTargetXY; // predicted distance in meters from robot to inner target on xy-plane (field)ot to outer target on xy-plane (field)
-    private double startTime; // the time it took to get to initialize
+    private double predictedDistanceToOuterTargetXY; // predicted distance in meters from robot to outer target
+    private double predictedDistanceToInnerTargetXY; // predicted distance in meters from robot to inner target on xy-plane (field)ot to outer target on xy-plane (field)
+    private double startTime; // the time it took to initialize
     private Translation2d shooterBallVector; // xy components of shooter ball magnitude
 
 //  private final double maxHorizontalRatioOuter = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum horizontal for ball to go through outer target
@@ -111,57 +113,62 @@ public class ShootOnTheMove extends CommandBase {
             deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             double radius = robotLinearVelocity / (robotAngularVelocity == 0 ? 0.01 : robotAngularVelocity); // Calculating distance from robot's position and center of robot's rotation
 
-            distanceToOuterTargetXY = Math.sqrt(
+            predictedDistanceToOuterTargetXY = Math.sqrt(
                 Math.pow(currentDistanceToOuterTargetXY, 2)
                 + (4 * radius * radius * Math.pow(Math.sin(deltaTheta / 2), 2))
                 - (4 * currentDistanceToOuterTargetXY * radius * Math.sin(deltaTheta / 2) * Math.cos(initialHeading - currentAngleToOuter + (deltaTheta / 2))));
 
             angleToOuter = Math.asin(
-                currentDistanceToOuterTargetXY / distanceToOuterTargetXY
+                currentDistanceToOuterTargetXY / predictedDistanceToOuterTargetXY
                 * Math.sin(initialHeading - currentAngleToOuter + deltaTheta / 2))
                 + Math.PI + initialHeading + deltaTheta / 2;
 
-            distanceToInnerTargetXY = Math.sqrt(
-                Math.pow(distanceToOuterTargetXY, 2) + Math.pow(Constants.targetOffset, 2)
-                + 2 * distanceToOuterTargetXY * Constants.targetOffset * Math.sin(angleToOuter));
+            predictedDistanceToInnerTargetXY = Math.sqrt(
+                Math.pow(predictedDistanceToOuterTargetXY, 2) + Math.pow(Constants.targetOffset, 2)
+                + 2 * predictedDistanceToOuterTargetXY * Constants.targetOffset * Math.sin(angleToOuter));
 
-            angleToInner = angleToOuter - Math.asin(-Constants.targetOffset / distanceToInnerTargetXY * Math.cos(angleToOuter));
+            angleToInner = angleToOuter - Math.asin(-Constants.targetOffset / predictedDistanceToInnerTargetXY * Math.cos(angleToOuter));
 
             // Calculating x and y components of velocity robot will have after time to shoot
             double robotPredictedXvel = robotLinearVelocity * Math.cos(initialHeading + deltaTheta);
             // Predicted x and y components of robot velocity after delay
             double robotPredictedYvel = robotLinearVelocity * Math.sin(initialHeading + deltaTheta);
 
-            // xy-velocity needed to hit target
-            double necessaryXYvel;
+            // Calculations for inner
+            horizontalBallSpeed = solveQuarticEquation(
+                Math.pow(Constants.verticalTargetDistance / predictedDistanceToInnerTargetXY, 2) - Constants.tanSquaredVerticalShooterAngle,
+                2 * Constants.tanSquaredVerticalShooterAngle * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner),
+                Constants.verticalTargetDistance * Constants.g - robotLinearVelocity * robotLinearVelocity * Constants.tanSquaredVerticalShooterAngle,
+                Math.pow(predictedDistanceToInnerTargetXY * Constants.g, 2) / 4
+            );
+            shooterBallMagnitude = Math.sqrt(
+                Math.pow(horizontalBallSpeed, 2) + Math.pow(robotLinearVelocity, 2)
+                 - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner)
+            ) / Math.cos(Constants.verticalShooterAngle);
             if(canGoThroughInnerTarget()) {
                 ledState = 2;
-                double x = solveCubicEquation(
-                    distanceToInnerTargetXY, -Constants.verticalTargetDistance, -Math.pow(distanceToInnerTargetXY, 2) * Constants.g / 2);
-                shooterBallMagnitude = Math.sqrt(
-                    x * x - 2 * x * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner + Math.pow(robotLinearVelocity, 2))
-                    ) / Math.cos(Constants.verticalShooterAngle);
-                targetTurretAngle = angleToInner + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToInner) / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
-                /*necessaryXYvel = distanceToInnerTargetXY * Constants.airResistanceCoefficient * Math.sqrt((- Constants.g / 2) / (Constants.verticalTargetDistance -
-                        (distanceToInnerTargetXY == 0 ? 0.01 : distanceToInnerTargetXY) * Math.tan(Constants.verticalShooterAngle)));
-                shooterBallVector = new Translation2d( // velocity components that the shooter has to give to the ball in form (xVel, yVel)
-                        necessaryXYvel * Math.cos(angleToInner) - robotPredictedXvel,
-                        necessaryXYvel * Math.sin(angleToInner) - robotPredictedYvel);*/
-            } else if(canGoThroughOuterTarget()) {
-                ledState = 1;
-                double x = solveCubicEquation(
-                    distanceToOuterTargetXY, -Constants.verticalTargetDistance, -Math.pow(distanceToOuterTargetXY, 2) * Constants.g / 2);
-                shooterBallMagnitude = Math.sqrt(
-                    x * x - 2 * x * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter + Math.pow(robotLinearVelocity, 2))
-                    ) / Math.cos(Constants.verticalShooterAngle);
-                targetTurretAngle = angleToOuter + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToOuter) / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
-                /*necessaryXYvel = distanceToOuterTargetXY * Constants.airResistanceCoefficient * Math.sqrt((- Constants.g / 2) / (Constants.verticalTargetDistance -
-                        (distanceToOuterTargetXY == 0 ? 0.01 : distanceToOuterTargetXY) * Math.tan(Constants.verticalShooterAngle)));
-                shooterBallVector = new Translation2d( // velocity components that the shooter has to give to the ball in form (xVel, yVel)
-                        necessaryXYvel * Math.cos(angleToOuter) - robotPredictedXvel,
-                        necessaryXYvel * Math.sin(angleToOuter) - robotPredictedYvel);*/
+                targetTurretAngle = angleToInner + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToInner)
+                / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
             } else {
-                ledState = 0;
+                // Calculations for outer
+                horizontalBallSpeed = solveQuarticEquation(
+                    Math.pow(Constants.verticalTargetDistance / predictedDistanceToOuterTargetXY, 2) - Constants.tanSquaredVerticalShooterAngle,
+                    2 * Constants.tanSquaredVerticalShooterAngle * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter),
+                    Constants.verticalTargetDistance * Constants.g - robotLinearVelocity * robotLinearVelocity * Constants.tanSquaredVerticalShooterAngle,
+                    Math.pow(predictedDistanceToOuterTargetXY * Constants.g, 2) / 4
+                );
+                shooterBallMagnitude = Math.sqrt(
+                    Math.pow(horizontalBallSpeed, 2) + Math.pow(robotLinearVelocity, 2)
+                    - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter)
+                ) / Math.cos(Constants.verticalShooterAngle);
+                
+                if(canGoThroughOuterTarget()) {
+                    ledState = 1;
+                    targetTurretAngle = angleToOuter + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToOuter)
+                    / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
+                } else {
+                    ledState = 0;
+                }
             }
 
             if(ledState != 0) {
@@ -175,7 +182,7 @@ public class ShootOnTheMove extends CommandBase {
                     m_turret.setRobotCentricSetpoint(targetTurretAngle); // Setting turret to turn to angle
                     m_turret.setControlMode(1); // Enabling turret to turn to setpoint
                     m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
-                    m_led.setState(ledState == 2 ? 10 : 11);
+                    m_led.setState(ledState == 2 ? 10 : 11); // Green for inner, orange for outer
                 }
             } else {
                 m_led.setState(2); // Solid red, unable to shoot
@@ -193,12 +200,12 @@ public class ShootOnTheMove extends CommandBase {
         if(ledState == 2) {
             SmartDashboard.putBoolean("Can shoot", true);
             SmartDashboard.putString("Target", "Inner");
-            SmartDashboard.putNumber("xy Distance to inner target", distanceToInnerTargetXY);
+            SmartDashboard.putNumber("xy Distance to inner target", predictedDistanceToInnerTargetXY);
             SmartDashboard.putNumber("xy Angle to inner target", angleToInner);
         } else if(ledState == 1) {
             SmartDashboard.putBoolean("Can shoot", true);
             SmartDashboard.putString("Target", "Outer");
-            SmartDashboard.putNumber("xy Distance to outer target", distanceToOuterTargetXY);
+            SmartDashboard.putNumber("xy Distance to outer target", predictedDistanceToOuterTargetXY);
             SmartDashboard.putNumber("xy Angle to outer target", angleToOuter);
         } else {
             SmartDashboard.putBoolean("Can shoot", false);
@@ -214,38 +221,40 @@ public class ShootOnTheMove extends CommandBase {
         return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
     }
 
-    private double findAngle(double deltaX, double deltaY) { // Uses arctangent but uses signs to determine quadrant
-        if(Math.abs(deltaX) <= 0.01) {
-            return deltaY >= 0 ? Math.PI / 2 : - Math.PI / 2;
-        }
-        double tangent = Math.atan(deltaY / deltaX); // Raw value in radians
-        // 0 degrees is on the right (positive x-axis)
-        if(deltaX >= 0) {
-            return tangent; // Positive x; between -90 and 90
-        } else if(deltaY < 0) {
-            return tangent - Math.PI; // Negative x, negative y; between -180 and -90
-        } else {
-            return tangent + Math.PI; // Negative x, positive y; between 90 and 180
-        }
-    }
+    // Turns out java has Math.atan2(), which does exactly what findAngle() did.
 
     private boolean canGoThroughInnerTarget() {
-        double tangentOfFinalAngle = Math.abs(2 * Constants.verticalTargetDistance / (distanceToInnerTargetXY == 0 ? 0.01 : distanceToInnerTargetXY) - Math.tan(Constants.verticalShooterAngle));
+        double tangentOfFinalAngle = Math.abs(2 * Constants.verticalTargetDistance / (predictedDistanceToInnerTargetXY == 0 ? 0.01 : predictedDistanceToInnerTargetXY)
+         - shooterBallMagnitude * Math.sin(Constants.verticalShooterAngle) / horizontalBallSpeed);
         return tangentOfFinalAngle <= hexagonCenterCanHitHeight / Constants.targetOffset / 2 && // Vertical angle alone is fine
                 tangentOfFinalAngle <= - Math.sqrt(3) * Constants.targetOffset / Math.abs(Math.tan(angleToInner)) + hexagonCenterCanHitHeight; // Within sloped hexagon lines
     }
 
     private boolean canGoThroughOuterTarget() {
-        double verticalTargetIntersection = Math.abs(2 * Constants.verticalTargetDistance / distanceToOuterTargetXY - Math.tan(Constants.verticalShooterAngle)) * Constants.ballRadius;
+        double verticalTargetIntersection = Math.abs(2 * Constants.verticalTargetDistance / predictedDistanceToOuterTargetXY
+         - shooterBallMagnitude * Math.sin(Constants.verticalShooterAngle) / horizontalBallSpeed) * Constants.ballRadius;
         return verticalTargetIntersection <= hexagonCenterCanHitHeight / 2 &&
                 verticalTargetIntersection <= - Math.sqrt(3) * Math.abs(Constants.ballRadius / Math.tan(angleToOuter)) + hexagonCenterCanHitHeight;
     }
 
-    private double solveCubicEquation(double a, double b, double d) { // Solves a cubic with x-coefficient 0
+    /*private double solveCubicEquation(double a, double b, double d) { // Solves a cubic with x-coefficient 0
         double discriminant = Math.sqrt(Math.pow(Math.pow(b, 3) / 27 / Math.pow(a, 3) + d / 2 / a, 2) - Math.pow(b, 6) / 729 / Math.pow(a, 6));
         return Math.cbrt(-Math.pow(b, 3) / 27 / Math.pow(a, 3) - d / 2 / a + discriminant) 
         + Math.cbrt(-Math.pow(b, 3) / 27 / Math.pow(a, 3) - d / 2 / a - discriminant)
         - b / 3 / a;
+    }*/
+    
+    private double solveQuarticEquation(double a, double b, double c, double e) { // Coefficient of X term is 0)
+        // Rather than using a formula, makes a guess then uses how far off that guess is to get closer to the x-intercept
+        // Looking for a positive root since it's a speed
+        double answer = 5;
+        double error, derivative;
+        do {
+            error = a * Math.pow(answer, 4) + b * Math.pow(answer, 3) + c * Math.pow(answer, 2) + e;
+            derivative = 4 * a * Math.pow(answer, 3) + 3 * b * Math.pow(answer, 2) + c * answer;
+            answer -= error / derivative;
+        } while (Math.abs(error / derivative) > 0.1);
+        return answer;
     }
 
     // Called once the command ends or is interrupted.
