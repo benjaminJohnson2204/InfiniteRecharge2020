@@ -112,27 +112,23 @@ public class ShootOnTheMove extends CommandBase {
 
             deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             double radius = robotLinearVelocity / (robotAngularVelocity == 0 ? 0.01 : robotAngularVelocity); // Calculating distance from robot's position and center of robot's rotation
+            double a = 2 * Math.abs(radius * Math.sin(deltaTheta / 2));
 
-            predictedDistanceToOuterTargetXY = Math.sqrt(
-                Math.pow(currentDistanceToOuterTargetXY, 2)
-                + (4 * radius * radius * Math.pow(Math.sin(deltaTheta / 2), 2))
-                - (4 * currentDistanceToOuterTargetXY * radius * Math.sin(deltaTheta / 2) * Math.cos(initialHeading - currentAngleToOuter + (deltaTheta / 2))));
-
-            angleToOuter = Math.asin(
-                currentDistanceToOuterTargetXY / predictedDistanceToOuterTargetXY
-                * Math.sin(initialHeading - currentAngleToOuter + deltaTheta / 2))
-                + Math.PI + initialHeading + deltaTheta / 2;
+        predictedDistanceToOuterTargetXY = Math.sqrt(
+            Math.pow(currentDistanceToOuterTargetXY, 2)
+            + a * a
+            - 2 * currentDistanceToOuterTargetXY * a * Math.cos(initialHeading - currentAngleToOuter + deltaTheta / 2)
+        );
+        angleToOuter = currentAngleToOuter + (Math.acos(Math.min(
+            (Math.pow(currentDistanceToOuterTargetXY, 2) + Math.pow(predictedDistanceToOuterTargetXY, 2) - a * a) / 2 / currentDistanceToOuterTargetXY / predictedDistanceToOuterTargetXY, 
+            1))) // Make sure we don't take inverse cosine of 1.000000002
+             * (currentAngleToOuter > initialHeading ? 1 : -1); // Have to either add or subtract depending on which way we're going relative to target
 
             predictedDistanceToInnerTargetXY = Math.sqrt(
                 Math.pow(predictedDistanceToOuterTargetXY, 2) + Math.pow(Constants.targetOffset, 2)
                 + 2 * predictedDistanceToOuterTargetXY * Constants.targetOffset * Math.sin(angleToOuter));
 
             angleToInner = angleToOuter - Math.asin(-Constants.targetOffset / predictedDistanceToInnerTargetXY * Math.cos(angleToOuter));
-
-            // Calculating x and y components of velocity robot will have after time to shoot
-            double robotPredictedXvel = robotLinearVelocity * Math.cos(initialHeading + deltaTheta);
-            // Predicted x and y components of robot velocity after delay
-            double robotPredictedYvel = robotLinearVelocity * Math.sin(initialHeading + deltaTheta);
 
             // Calculations for inner
             horizontalBallSpeed = solveQuarticEquation(
@@ -247,13 +243,14 @@ public class ShootOnTheMove extends CommandBase {
     private double solveQuarticEquation(double a, double b, double c, double e) { // Coefficient of X term is 0)
         // Rather than using a formula, makes a guess then uses how far off that guess is to get closer to the x-intercept
         // Looking for a positive root since it's a speed
-        double answer = 5;
+        double answer = 5, attempts = 0;
         double error, derivative;
         do {
             error = a * Math.pow(answer, 4) + b * Math.pow(answer, 3) + c * Math.pow(answer, 2) + e;
             derivative = 4 * a * Math.pow(answer, 3) + 3 * b * Math.pow(answer, 2) + c * answer;
             answer -= error / derivative;
-        } while (Math.abs(error / derivative) > 0.1);
+            attempts++; // Wouldn't want to do this forever if there's no roots
+        } while (Math.abs(error / derivative) > 0.1 && attempts < 10);
         return answer;
     }
 
