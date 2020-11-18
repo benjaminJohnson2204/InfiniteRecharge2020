@@ -108,7 +108,7 @@ public class ShootOnTheMove extends CommandBase {
 
             initialHeading = m_drivetrain.getHeading();
             currentDistanceToOuterTargetXY = m_vision.getTargetDistance();
-            currentAngleToOuter = m_vision.getAngleToTarget();
+            currentAngleToOuter = Math.toRadians(m_vision.getAngleToTarget());
 
             deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             double radius = robotLinearVelocity / (robotAngularVelocity == 0 ? 0.01 : robotAngularVelocity); // Calculating distance from robot's position and center of robot's rotation
@@ -175,7 +175,7 @@ public class ShootOnTheMove extends CommandBase {
                 if(RPM > Constants.maxShooterRPM) {
                     ledState = 0;
                 } else {
-                    m_turret.setRobotCentricSetpoint(targetTurretAngle); // Setting turret to turn to angle
+                    m_turret.setRobotCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
                     m_turret.setControlMode(1); // Enabling turret to turn to setpoint
                     m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
                     m_led.setState(ledState == 2 ? 10 : 11); // Green for inner, orange for outer
