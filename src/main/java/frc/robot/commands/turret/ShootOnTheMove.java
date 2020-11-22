@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.*;
@@ -106,8 +107,8 @@ public class ShootOnTheMove extends CommandBase {
             // Linear velocity is meters per second straight ahead, angular velocity is rotation per second calculated from differences between wheels
             double robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
-            initialHeading = m_drivetrain.getHeading();
-            currentDistanceToOuterTargetXY = m_vision.getTargetDistance();
+            initialHeading = Math.toRadians(m_drivetrain.getHeading());
+            currentDistanceToOuterTargetXY = Units.feetToMeters(m_vision.getTargetDistance());
             currentAngleToOuter = Math.toRadians(m_vision.getAngleToTarget());
 
             deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
@@ -171,7 +172,7 @@ public class ShootOnTheMove extends CommandBase {
                 /*targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
                 shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
                         / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions*/
-                RPM = shooterBallMagnitude * 60 / (Constants.flywheelRadius * 2 * Math.PI); // Kind of works, probably a better way
+                RPM = shooterBallMagnitude * 60 / (Constants.flywheelDiameter * Math.PI); // Kind of works, probably a better way
                 if(RPM > Constants.maxShooterRPM) {
                     ledState = 0;
                 } else {

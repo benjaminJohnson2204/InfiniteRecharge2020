@@ -82,7 +82,7 @@ public final class Constants {
 
     public static final double navXToShooterDistance = Units.inchesToMeters(1.4); // Meters
     public static final double navXToShooterAngle = 0; // Radians; angle offset between navX and shooter
-    public static final double flywheelRadius = 0.1; // Meters
+    public static final double flywheelDiameter = 0.1; // Meters
 
     public static final double maxShooterRPM = 10_000; // Highest RPM that shooter can launch balls at without breaking
 }
