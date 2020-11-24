@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -66,6 +67,7 @@ public class RobotContainer {
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
     static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
+    static JoystickWrapper testController = new JoystickWrapper(4);
     public Button[] leftButtons = new Button[2];
     public Button[] rightButtons = new Button[2];
     public Button[] xBoxButtons = new Button[10];
@@ -125,12 +127,18 @@ public class RobotContainer {
     }
 
     public void initializeSubsystems() {
-        m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
-                () -> leftJoystick.getRawAxis(1),
-                () -> rightJoystick.getRawAxis(0)));
+        if(RobotBase.isReal()) {
+            m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
+                    () -> leftJoystick.getRawAxis(1),
+                    () -> rightJoystick.getRawAxis(2)));
 
-        m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_colorSensor, m_controls));
-
+            m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_colorSensor, m_controls));
+        }
+        else {
+            m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
+                    () -> testController.getRawAxis(1),
+                    () -> testController.getRawAxis(2)));
+        }
         m_turret.setDefaultCommand(new SetTurretSetpointFieldAbsolute(m_turret, m_driveTrain, m_vision, m_shooter, m_climber, xBoxController));
 
 //    m_shooter.setDefaultCommand(new DefaultFlywheelRPM(m_shooter, m_vision));
@@ -150,6 +158,8 @@ public class RobotContainer {
         rightJoystick.invertRawAxis(0, true);
         xBoxController.invertRawAxis(1, true);
         xBoxController.invertRawAxis(5, true);
+        testController.invertRawAxis(1, true);
+        testController.invertRawAxis(5, true);
         for (int i = 0; i < leftButtons.length; i++)
             leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
         for (int i = 0; i < rightButtons.length; i++)
@@ -201,7 +211,11 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return m_autoCommand;
+        if(RobotBase.isReal())
+            return m_autoCommand;
+        else
+            //return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
+            return new  AllyTrenchPathSpline(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
 //        return new WaitCommand(0);
     }
 
@@ -215,9 +229,11 @@ public class RobotContainer {
     }
 
     public void teleOpInit() {
-        m_driveTrain.resetEncoderCounts();
-        m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
-        m_driveTrain.setDriveTrainNeutralMode(0);
+        if(RobotBase.isReal()) {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+            m_driveTrain.setDriveTrainNeutralMode(0);
+        }
     }
 
     public void teleOpPeriodic() {
@@ -240,5 +256,9 @@ public class RobotContainer {
 
     public void initalizeLogTopics() {
         m_controls.initLogging();
+    }
+
+    public DriveTrain getRobotDrive() {
+        return m_driveTrain;
     }
 }

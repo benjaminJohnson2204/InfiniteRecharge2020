@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -238,7 +239,9 @@ public class LED extends SubsystemBase {
     /*rainbows = SmartDashboard.getNumber("Rainbows", 0);
     speed = SmartDashboard.getNumber("Speed", 0);
     setBuffer();*/
-    setLED();
-    LEDStrip.setData(LEDBuffer);
+    if(RobotBase.isReal()) {
+      setLED();
+      LEDStrip.setData(LEDBuffer);
+    }
   }
 }

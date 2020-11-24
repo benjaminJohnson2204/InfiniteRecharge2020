@@ -15,11 +15,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.constants.Constants;
 
 public class Turret extends SubsystemBase {
@@ -188,24 +190,26 @@ public class Turret extends SubsystemBase {
     }
 
     private void updateSmartdashboard() {
-        SmartDashboard.putNumber("Turret Angle", getFieldRelativeAngle());
+        if (RobotBase.isReal()) {
+            SmartDashboard.putNumber("Turret Angle", getFieldRelativeAngle());
 
-        SmartDashboardTab.putNumber("Turret", "Turret Motor Output", turretMotor.getMotorOutputPercent());
-        SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
-        SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
-        SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
-//    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
-//    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
-//    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
-//    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
-        SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
+            SmartDashboardTab.putNumber("Turret", "Turret Motor Output", turretMotor.getMotorOutputPercent());
+            SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
+            SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
+            SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
+    //    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+    //    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
+    //    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
+    //    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
+            SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
 
-//        try {
-//            SmartDashboardTab.putString("DriveTrain", "Turret Command", this.getCurrentCommand().getName());
-//        }catch (Exception e) {
-//
-//        }
-//    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
+    //        try {
+    //            SmartDashboardTab.putString("DriveTrain", "Turret Command", this.getCurrentCommand().getName());
+    //        }catch (Exception e) {
+    //
+    //        }
+    //    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
+        }
     }
 
     @Override

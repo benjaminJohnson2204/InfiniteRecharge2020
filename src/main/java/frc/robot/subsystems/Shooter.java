@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -169,14 +170,16 @@ public class Shooter extends SubsystemBase {
     }
 
     private void updateShuffleboard() {
-        SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
+        if (RobotBase.isReal()) {
+            SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
 
-        SmartDashboardTab.putNumber("Shooter", "RPM Primary", getRPM(0));
-        SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
-        SmartDashboardTab.putNumber("Shooter", "Setpoint", setpoint);
-        SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
+            SmartDashboardTab.putNumber("Shooter", "RPM Primary", getRPM(0));
+            SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
+            SmartDashboardTab.putNumber("Shooter", "Setpoint", setpoint);
+            SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
 
-        SmartDashboardTab.putBoolean("DriveTrain", "CanShoot", canShoot());
+            SmartDashboardTab.putBoolean("DriveTrain", "CanShoot", canShoot());
+        }
     }
 
     public void updatePIDValues() {

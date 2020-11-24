@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
+import frc.robot.Robot;
 
 public class Vision extends SubsystemBase {
 	private NetworkTable limelight;
@@ -42,13 +43,14 @@ public class Vision extends SubsystemBase {
 	UsbCamera camera;
 
 	public Vision() {
+		if(Robot.isReal()) {
 //		camera = CameraServer.getInstance().startAutomaticCapture();
-		camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
-	    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-	    camera.setExposureManual(25);
-	    camera.setResolution(320, 240);
-	    camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
-
+			camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
+			camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+			camera.setExposureManual(25);
+			camera.setResolution(320, 240);
+			camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
+		}
 		//CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
 
 	    // TODO: What port does opensight use?

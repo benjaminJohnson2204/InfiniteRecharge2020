@@ -1,6 +1,9 @@
 package frc.robot.commands.autonomous.routines;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
@@ -21,6 +24,9 @@ import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
 import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.TrajectoryUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AllyTrenchPathStraight extends SequentialCommandGroup {
     public AllyTrenchPathStraight(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision) {
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(5.75), Units.feetToMeters(10));
@@ -29,7 +35,10 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
 
-        var startToTrenchPath = TrajectoryUtils.readCsvTrajectory("init1Ally2");
+        //var startToTrenchPath = TrajectoryUtils.readCsvTrajectory("init1Ally2");
+        ArrayList<Pose2d> startToTrenchPath = new ArrayList();
+        startToTrenchPath.add(new Pose2d(0, 0, new Rotation2d(0)));
+        startToTrenchPath.add(new Pose2d(6, 6, new Rotation2d(0)));
         var startToTrenchCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, startToTrenchPath, configA);
 
         var configB = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
@@ -37,7 +46,10 @@ public class AllyTrenchPathStraight extends SequentialCommandGroup {
         configB.setEndVelocity(0);
         configB.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configB.getMaxVelocity()));
         configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        var trenchToShootPath = TrajectoryUtils.readCsvTrajectory("ally2init2");
+        ArrayList<Pose2d> trenchToShootPath = new ArrayList();
+        trenchToShootPath.add(new Pose2d(0, 0, new Rotation2d(0)));
+        trenchToShootPath.add(new Pose2d(6, 6, new Rotation2d(0)));
+
         var trenchToShootCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, trenchToShootPath, configB);
 
         addCommands(
