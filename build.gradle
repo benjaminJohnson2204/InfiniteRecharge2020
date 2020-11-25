@@ -57,7 +57,7 @@ dependencies {
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
 
-    compile group: 'edu.wpi.first.wpimath', name: 'wpimath-java', version: '2021.1.1-beta-2'
+//    compile group: 'edu.wpi.first.wpimath', name: 'wpimath-java', version: '2021.1.1-beta-2'
 
     implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)

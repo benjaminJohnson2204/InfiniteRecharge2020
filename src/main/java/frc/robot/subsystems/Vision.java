@@ -13,6 +13,7 @@ import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -20,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
-import frc.robot.Robot;
 
 public class Vision extends SubsystemBase {
 	private NetworkTable limelight;
@@ -43,7 +43,7 @@ public class Vision extends SubsystemBase {
 	UsbCamera camera;
 
 	public Vision() {
-		if(Robot.isReal()) {
+		if(RobotBase.isReal()) {
 //		camera = CameraServer.getInstance().startAutomaticCapture();
 			camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
 			camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
