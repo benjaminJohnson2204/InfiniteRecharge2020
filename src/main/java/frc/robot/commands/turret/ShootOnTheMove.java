@@ -40,7 +40,8 @@ public class ShootOnTheMove extends CommandBase {
     private boolean isRunning; // Whether to run code
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     private double initialHeading; // Current robot position and where it's facing on the field relative to x-axis
-    private double deltaTheta; // Angle in radians that robot rotates during time to shoot
+    private double currentTurretAngle; // Initial horizontal absolute (relative to field) angle the turret is facing
+    private double changeInHeading; // Angle in radians that robot rotates during time to shoot
 
     private double horizontalBallSpeed; // The xy velocity the ball will leave the robot with
     private double targetTurretAngle; // Angle turret needs to rotate to in order for ball to hit target
@@ -53,7 +54,6 @@ public class ShootOnTheMove extends CommandBase {
     private double predictedDistanceToOuterTargetXY; // predicted distance in meters from robot to outer target
     private double predictedDistanceToInnerTargetXY; // predicted distance in meters from robot to inner target on xy-plane (field)ot to outer target on xy-plane (field)
     private double startTime; // the time it took to initialize
-    private Translation2d shooterBallVector; // xy components of shooter ball magnitude
 
 //  private final double maxHorizontalRatioOuter = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum horizontal for ball to go through outer target
 //  private double maxVerticalRatioOuter = hexagonCenterCanHitHeight / 2 / (Constants.ballRadius + Constants.ballTolerance);
@@ -108,17 +108,18 @@ public class ShootOnTheMove extends CommandBase {
             double robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
             initialHeading = Math.toRadians(m_drivetrain.getHeading());
+            currentTurretAngle = Math.toRadians(m_turret.getTurretAngle()) + initialHeading;
             currentDistanceToOuterTargetXY = Units.feetToMeters(m_vision.getTargetDistance());
-            currentAngleToOuter = Math.toRadians(m_vision.getAngleToTarget());
+            currentAngleToOuter = Math.toRadians(m_vision.getHorizontalAngleToTarget()) + currentTurretAngle;
 
-            deltaTheta = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
+            changeInHeading = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             double radius = robotLinearVelocity / (robotAngularVelocity == 0 ? 0.01 : robotAngularVelocity); // Calculating distance from robot's position and center of robot's rotation
-            double a = 2 * Math.abs(radius * Math.sin(deltaTheta / 2));
+            double a = 2 * Math.abs(radius * Math.sin(changeInHeading / 2));
 
         predictedDistanceToOuterTargetXY = Math.sqrt(
             Math.pow(currentDistanceToOuterTargetXY, 2)
             + a * a
-            - 2 * currentDistanceToOuterTargetXY * a * Math.cos(initialHeading - currentAngleToOuter + deltaTheta / 2)
+            - 2 * currentDistanceToOuterTargetXY * a * Math.cos(initialHeading - currentAngleToOuter + changeInHeading / 2)
         );
         angleToOuter = currentAngleToOuter + (Math.acos(Math.min(
             (Math.pow(currentDistanceToOuterTargetXY, 2) + Math.pow(predictedDistanceToOuterTargetXY, 2) - a * a) / 2 / currentDistanceToOuterTargetXY / predictedDistanceToOuterTargetXY, 
@@ -127,41 +128,42 @@ public class ShootOnTheMove extends CommandBase {
 
             predictedDistanceToInnerTargetXY = Math.sqrt(
                 Math.pow(predictedDistanceToOuterTargetXY, 2) + Math.pow(Constants.targetOffset, 2)
-                + 2 * predictedDistanceToOuterTargetXY * Constants.targetOffset * Math.sin(angleToOuter));
+                + 2 * predictedDistanceToOuterTargetXY * Constants.targetOffset * Math.sin(angleToOuter)
+            );
 
             angleToInner = angleToOuter - Math.asin(-Constants.targetOffset / predictedDistanceToInnerTargetXY * Math.cos(angleToOuter));
 
             // Calculations for inner
             horizontalBallSpeed = solveQuarticEquation(
                 Math.pow(Constants.verticalTargetDistance / predictedDistanceToInnerTargetXY, 2) - Constants.tanSquaredVerticalShooterAngle,
-                2 * Constants.tanSquaredVerticalShooterAngle * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner),
+                2 * Constants.tanSquaredVerticalShooterAngle * robotLinearVelocity * Math.cos(initialHeading + changeInHeading - angleToInner),
                 Constants.verticalTargetDistance * Constants.g - robotLinearVelocity * robotLinearVelocity * Constants.tanSquaredVerticalShooterAngle,
                 Math.pow(predictedDistanceToInnerTargetXY * Constants.g, 2) / 4
             );
             shooterBallMagnitude = Math.sqrt(
                 Math.pow(horizontalBallSpeed, 2) + Math.pow(robotLinearVelocity, 2)
-                 - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToInner)
+                 - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + changeInHeading - angleToInner)
             ) / Math.cos(Constants.verticalShooterAngle);
             if(canGoThroughInnerTarget()) {
                 ledState = 2;
-                targetTurretAngle = angleToInner + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToInner)
+                targetTurretAngle = angleToInner + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + changeInHeading - angleToInner)
                 / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
             } else {
                 // Calculations for outer
                 horizontalBallSpeed = solveQuarticEquation(
                     Math.pow(Constants.verticalTargetDistance / predictedDistanceToOuterTargetXY, 2) - Constants.tanSquaredVerticalShooterAngle,
-                    2 * Constants.tanSquaredVerticalShooterAngle * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter),
+                    2 * Constants.tanSquaredVerticalShooterAngle * robotLinearVelocity * Math.cos(initialHeading + changeInHeading - angleToOuter),
                     Constants.verticalTargetDistance * Constants.g - robotLinearVelocity * robotLinearVelocity * Constants.tanSquaredVerticalShooterAngle,
                     Math.pow(predictedDistanceToOuterTargetXY * Constants.g, 2) / 4
                 );
                 shooterBallMagnitude = Math.sqrt(
                     Math.pow(horizontalBallSpeed, 2) + Math.pow(robotLinearVelocity, 2)
-                    - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + deltaTheta - angleToOuter)
+                    - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + changeInHeading - angleToOuter)
                 ) / Math.cos(Constants.verticalShooterAngle);
                 
                 if(canGoThroughOuterTarget()) {
                     ledState = 1;
-                    targetTurretAngle = angleToOuter + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + deltaTheta - angleToOuter)
+                    targetTurretAngle = angleToOuter + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + changeInHeading - angleToOuter)
                     / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
                 } else {
                     ledState = 0;
@@ -169,14 +171,11 @@ public class ShootOnTheMove extends CommandBase {
             }
 
             if(ledState != 0) {
-                /*targetTurretAngle = findAngle(shooterBallVector.getX(), shooterBallVector.getY()); // Calculates angle turret needs to rotate to
-                shooterBallMagnitude = findDistance(shooterBallVector.getX(), shooterBallVector.getY()) // Gets xy magnitude of velocity balls needs to be shot at
-                        / Math.cos(Constants.verticalShooterAngle); // Project that xy-velocity into 3 dimensions*/
                 RPM = shooterBallMagnitude * 60 / (Constants.flywheelDiameter * Math.PI); // Kind of works, probably a better way
                 if(RPM > Constants.maxShooterRPM) {
                     ledState = 0;
                 } else {
-                    m_turret.setRobotCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
+                    m_turret.setFieldCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
                     m_turret.setControlMode(1); // Enabling turret to turn to setpoint
                     m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
                     m_led.setState(ledState == 2 ? 10 : 11); // Green for inner, orange for outer
@@ -190,7 +189,7 @@ public class ShootOnTheMove extends CommandBase {
     }
 
     private void updateSmartDashboard() {
-        SmartDashboard.putNumber("Predicted heading", initialHeading + deltaTheta);
+        SmartDashboard.putNumber("Predicted heading", initialHeading + changeInHeading);
         SmartDashboard.putNumber("Current distance to outer", currentDistanceToOuterTargetXY);
         SmartDashboard.putNumber("Current angle to outer", currentAngleToOuter);
 
@@ -213,12 +212,6 @@ public class ShootOnTheMove extends CommandBase {
         SmartDashboard.putNumber("Revving shooter to RPM", RPM);
         SmartDashboard.putNumber("Rotating turret to angle", targetTurretAngle);
     }
-
-    private double findDistance(double deltaX, double deltaY) { // Using Pythagorean
-        return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
-    }
-
-    // Turns out java has Math.atan2(), which does exactly what findAngle() did.
 
     private boolean canGoThroughInnerTarget() {
         double tangentOfFinalAngle = Math.abs(2 * Constants.verticalTargetDistance / (predictedDistanceToInnerTargetXY == 0 ? 0.01 : predictedDistanceToInnerTargetXY)

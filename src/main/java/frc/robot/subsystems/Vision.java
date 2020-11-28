@@ -221,7 +221,13 @@ public class Vision extends SubsystemBase {
 
 	public double getAngleToTarget() {
 		return getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
-	}
+    }
+    
+    // For Shoot on the Move, gets horizontal angle on field to target
+    public double getHorizontalAngleToTarget() {
+        return getTargetX();
+            // TODO: Figure out what to add/subtract if we're zoomed in
+    }
 
     // Used to find the most common value to provide accurate target data
     private double computeMode(double[] data) {
