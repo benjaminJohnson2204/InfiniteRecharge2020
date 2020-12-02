@@ -220,12 +220,8 @@ public class LED extends SubsystemBase {
             case 9:
                 colorWheel();
                 break;
-            case 10: // Shoot on the Move: able to shoot and hit inner
+            case 10: // Shoot on the Move: able to shoot and hit outer
                 setRGB(0, 255, 0); // Solid green
-                setSolidColor();
-                break;
-            case 11: // Shoot on the Move: able to shoot and only hit outer
-                setRGB(255, 165, 0); // Orange
                 setSolidColor();
                 break;
             default:

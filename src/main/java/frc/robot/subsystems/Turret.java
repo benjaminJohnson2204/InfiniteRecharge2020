@@ -172,6 +172,10 @@ public class Turret extends SubsystemBase {
         turretHomeSensorLatch = state;
     }
 
+    public void stopTurret() {
+        setpoint = getTurretAngle();
+    }
+
     private void initShuffleboard() {
         // Unstable. Don''t use until WPILib fixes this
         Shuffleboard.getTab("Turret").addNumber("Turret Motor Output", turretMotor :: getMotorOutputPercent);
