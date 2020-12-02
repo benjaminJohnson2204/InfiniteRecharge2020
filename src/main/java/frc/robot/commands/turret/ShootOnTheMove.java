@@ -91,15 +91,10 @@ public class ShootOnTheMove extends CommandBase {
 
 
             if(ledState != 0) {
-                RPM = shooterBallMagnitude * 60 / (Constants.flywheelDiameter * Math.PI); // Kind of works, probably a better way
-                if(RPM > Constants.maxShooterRPM) {
-                    ledState = 0;
-                } else {
-                    m_turret.setFieldCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
-                    m_turret.setControlMode(1); // Enabling turret to turn to setpoint
-                    m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
-                    m_led.setState(ledState == 2 ? 8 : 10); // Green for inner, blue for outer
-                }
+                m_turret.setFieldCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
+                m_turret.setControlMode(1); // Enabling turret to turn to setpoint
+                m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
+                m_led.setState(ledState == 2 ? 8 : 10); // Green for inner, blue for outer
             } else {
                 m_led.setState(2); // Solid red, unable to shoot
             }
@@ -169,8 +164,8 @@ public class ShootOnTheMove extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        SOTMNotifier.stop();
-        m_turret.stopTurret();
+        SOTMNotifier.stop(); // Stop the periodic calculations
+        m_turret.stopTurret(); // Stop turret from rotating
         m_shooter.setRPM(0); // Stopping shooter
     }
 
@@ -180,7 +175,7 @@ public class ShootOnTheMove extends CommandBase {
         return false; // Fix this, not sure how long command should run for
     }
 
-    public class SOTMRunnable implements Runnable {
+    public class SOTMRunnable implements Runnable { // This does all the calculations and can be run with a certain periodicity
 
         @Override
         public void run() {
@@ -254,6 +249,10 @@ public class ShootOnTheMove extends CommandBase {
                 } else {
                     ledState = 0;
                 }
+            }
+            RPM = shooterBallMagnitude * 60 / (Constants.flywheelDiameter * Math.PI); // Kind of works, probably a better way
+            if (RPM > Constants.maxShooterRPM) {
+                ledState = 0;
             }
             updateSmartDashboard();
         }
