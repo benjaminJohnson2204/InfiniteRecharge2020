@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -24,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.constants.Constants;
 
 public class Turret extends SubsystemBase {
@@ -239,20 +237,20 @@ public class Turret extends SubsystemBase {
         updateSmartdashboard();
     }
 
-    public double getTurretSimulationAngle(){
+    public double getTurretSimAngle(){
         return getTurretAngle() + 180;
     }
 
-    public Pose2d getTurretPose() {
+    public Pose2d getTurretSimPose() {
         return new Pose2d(m_driveTrain.getRobotPose().getX(),
                           m_driveTrain.getRobotPose().getY(),
-                          new Rotation2d(Math.toRadians(getTurretSimulationAngle())));
+                          new Rotation2d(Math.toRadians(getTurretSimAngle())));
 
     }
+    
     @Override
     public void simulationPeriodic() {
-
-        m_field2dTurret.setRobotPose(getTurretPose());
+        m_field2dTurret.setRobotPose(getTurretSimPose());
         SmartDashboard.putData("Turret", m_field2dTurret);
     }
 }
