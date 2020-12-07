@@ -41,10 +41,6 @@ public class Powercell {
         wasShot = shotState;
     }
 
-    public void setBallShotStateTrue() {
-        wasShot = true;
-    }
-
     public void updateBallState() {
 //        System.out.println("Ball Shot: " + wasShot + "\tBall State: " + ballState);
 //        System.out.println("Ball State: " + ballState + "\tCos: " + ballPose.getRotation().getCos() + "\tX Pos: " + ballPose.getX());
