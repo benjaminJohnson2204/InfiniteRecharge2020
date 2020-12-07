@@ -28,6 +28,7 @@ import frc.robot.commands.intake.ToggleIntakePistons;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
+import frc.robot.simulation.Powercell;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
@@ -63,6 +64,8 @@ public class RobotContainer {
     private final ColorSensor m_colorSensor = new ColorSensor();
     private final LED m_led = new LED(m_colorSensor);
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
+
+    private final Powercell[] powercells = new Powercell[6];
 
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
@@ -127,6 +130,9 @@ public class RobotContainer {
     }
 
     public void initializeSubsystems() {
+        for(int i = 0; i < powercells.length; i++)
+            powercells[i] = new Powercell(m_turret);
+
         if(RobotBase.isReal()) {
             m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
                     () -> leftJoystick.getRawAxis(1),
@@ -260,5 +266,11 @@ public class RobotContainer {
 
     public DriveTrain getRobotDrive() {
         return m_driveTrain;
+    }
+
+    public void simulatePowerCells() {
+        for(Powercell p:powercells)
+            p.simulationPeriodic();
+
     }
 }

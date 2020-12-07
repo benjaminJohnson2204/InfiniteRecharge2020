@@ -116,6 +116,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void simulationPeriodic() {
+        //m_robotContainer.simulatePowerCells();
         // Here we calculate the battery voltage based on drawn current.
         // As our robot draws more power from the battery its voltage drops.
         // The estimated voltage is highly dependent on the battery's internal

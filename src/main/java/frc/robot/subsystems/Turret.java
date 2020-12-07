@@ -245,9 +245,8 @@ public class Turret extends SubsystemBase {
         return new Pose2d(m_driveTrain.getRobotPose().getX(),
                           m_driveTrain.getRobotPose().getY(),
                           new Rotation2d(Math.toRadians(getTurretSimAngle())));
-
     }
-    
+
     @Override
     public void simulationPeriodic() {
         m_field2dTurret.setRobotPose(getTurretSimPose());
