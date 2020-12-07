@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.*;
@@ -27,12 +26,13 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.Field2d;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.VecBuilder;
 import frc.robot.constants.Constants;
 
 public class
@@ -97,7 +97,7 @@ DriveTrain extends SubsystemBase {
     private EncoderSim m_rightEncoderSim;
 
     public DifferentialDrivetrainSim m_drivetrainSimulator;
-    private Field2d m_fieldSim;
+    private Field2d m_field2dDriveTrain;
     private SimDouble m_gyroAngleSim;
 
     public DriveTrain(PowerDistributionPanel pdp) {
@@ -149,7 +149,8 @@ DriveTrain extends SubsystemBase {
                     Constants.DriveConstants.kDriveGearbox,
                     Constants.DriveConstants.kDriveGearing,
                     Constants.DriveConstants.kTrackwidthMeters,
-                    Constants.DriveConstants.kWheelDiameterMeters / 2.0);
+                    Constants.DriveConstants.kWheelDiameterMeters / 2.0,
+                    VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
 
             m_leftEncoderSim = new EncoderSim(m_leftEncoder);
             m_rightEncoderSim = new EncoderSim(m_rightEncoder);
@@ -157,7 +158,7 @@ DriveTrain extends SubsystemBase {
                     new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
                             .getDouble("Angle");
             // the Field2d class lets us visualize our robot in the simulation GUI.
-            m_fieldSim = new Field2d();
+            m_field2dDriveTrain = new Field2d();
         }
     }
 
@@ -383,13 +384,13 @@ DriveTrain extends SubsystemBase {
                 m_rightOutput * RobotController.getBatteryVoltage());
         m_drivetrainSimulator.update(0.010);
 
-        m_leftEncoderSim.setDistance(m_drivetrainSimulator.getState(DifferentialDrivetrainSim.State.kLeftPosition));
-        m_leftEncoderSim.setRate(m_drivetrainSimulator.getState(DifferentialDrivetrainSim.State.kLeftVelocity));
-        m_rightEncoderSim.setDistance(m_drivetrainSimulator.getState(DifferentialDrivetrainSim.State.kRightPosition));
-        m_rightEncoderSim.setRate(m_drivetrainSimulator.getState(DifferentialDrivetrainSim.State.kRightVelocity));
+        m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
+        m_leftEncoderSim.setRate(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
+        m_rightEncoderSim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
+        m_rightEncoderSim.setRate(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
         m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
 
-        m_fieldSim.setRobotPose(getRobotPose());
-
+        m_field2dDriveTrain.setRobotPose(getRobotPose());
+        SmartDashboard.putData("DriveTrain", m_field2dDriveTrain);
     }
 }

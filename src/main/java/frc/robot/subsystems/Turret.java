@@ -17,7 +17,10 @@ import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -60,6 +63,8 @@ public class Turret extends SubsystemBase {
     private DigitalInput turretHomeSensor = new DigitalInput(Constants.turretHomeSensor);
     private boolean turretHomeSensorLatch = false;
 
+    private Field2d m_field2dTurret;
+
     public Turret(DriveTrain driveTrain) {
         m_driveTrain = driveTrain;
         encoder.configFactoryDefault();
@@ -84,6 +89,7 @@ public class Turret extends SubsystemBase {
         //turretPID.enableContinuousInput(0, 360);
 
         //initShuffleboard();
+        m_field2dTurret = new Field2d();
     }
 
     public void resetEncoder() {
@@ -231,5 +237,22 @@ public class Turret extends SubsystemBase {
                 initialHome = true;
 
         updateSmartdashboard();
+    }
+
+    public double getTurretSimulationAngle(){
+        return getTurretAngle() + 180;
+    }
+
+    public Pose2d getTurretPose() {
+        return new Pose2d(m_driveTrain.getRobotPose().getX(),
+                          m_driveTrain.getRobotPose().getY(),
+                          new Rotation2d(Math.toRadians(getTurretSimulationAngle())));
+
+    }
+    @Override
+    public void simulationPeriodic() {
+
+        m_field2dTurret.setRobotPose(getTurretPose());
+        SmartDashboard.putData("Turret", m_field2dTurret);
     }
 }

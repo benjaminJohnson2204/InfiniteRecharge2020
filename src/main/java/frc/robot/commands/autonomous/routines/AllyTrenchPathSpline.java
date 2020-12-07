@@ -96,8 +96,13 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
         else
             addCommands(
                     new SetOdometry(driveTrain, startPosition),
+                    new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
+                    new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
                     startToTrenchCommand,
-                    new WaitCommand(2).andThen(trenchToShootCommand)
+                    new WaitCommand(2)
+                    .andThen(trenchToShootCommand)
+                    .alongWith(new SetTurretRobotRelativeAngle(turret, 0))
+                    .andThen(new AutoUseVisionCorrection(turret, vision).withTimeout(0.75))
             );
     }
 }
