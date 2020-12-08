@@ -7,10 +7,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,7 +25,9 @@ import frc.robot.commands.intake.ToggleIntakePistons;
 import frc.robot.commands.shooter.*;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ToggleTurretControlMode;
+import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.Powercell;
+import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
@@ -65,17 +64,18 @@ public class RobotContainer {
     private final LED m_led = new LED(m_colorSensor);
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
 
-    private final Powercell[] powercells = new Powercell[6];
 
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
     static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
-    static JoystickWrapper testController = new JoystickWrapper(4);
     public Button[] leftButtons = new Button[2];
     public Button[] rightButtons = new Button[2];
     public Button[] xBoxButtons = new Button[10];
     public Button[] xBoxPOVButtons = new Button[8];
     public Button xBoxLeftTrigger, xBoxRightTrigger;
+
+    static JoystickWrapper testController = new JoystickWrapper(4);
+    public Button[] testButtons = new Button[10];
 
     private static boolean init = false;
 
@@ -88,6 +88,8 @@ public class RobotContainer {
         SHOOT_AND_DRIVE_FORWARD,
         DO_NOTHING
     }
+
+    private FieldSim m_FieldSim;
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
 
@@ -130,8 +132,10 @@ public class RobotContainer {
     }
 
     public void initializeSubsystems() {
-        for(int i = 0; i < powercells.length; i++)
-            powercells[i] = new Powercell(m_turret);
+//        for(int i = 0; i < 6; i++)
+//            m_powercells[i] = new Powercell("PowerCell_" + i);
+
+        m_FieldSim = new FieldSim(m_driveTrain, m_turret, m_shooter);
 
         if(RobotBase.isReal()) {
             m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
@@ -160,50 +164,56 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        leftJoystick.invertRawAxis(1, true);
-        rightJoystick.invertRawAxis(0, true);
-        xBoxController.invertRawAxis(1, true);
-        xBoxController.invertRawAxis(5, true);
-        testController.invertRawAxis(1, true);
-        testController.invertRawAxis(5, true);
-        for (int i = 0; i < leftButtons.length; i++)
-            leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
-        for (int i = 0; i < rightButtons.length; i++)
-            rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
-        for (int i = 0; i < xBoxButtons.length; i++)
-            xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
-        for (int i = 0; i < xBoxPOVButtons.length; i++)
-            xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
-        xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
-        xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
+        if(RobotBase.isReal()) {
+            leftJoystick.invertRawAxis(1, true);
+            rightJoystick.invertRawAxis(0, true);
+            xBoxController.invertRawAxis(1, true);
+            xBoxController.invertRawAxis(5, true);
+            for (int i = 0; i < leftButtons.length; i++)
+                leftButtons[i] = new JoystickButton(leftJoystick, (i + 1));
+            for (int i = 0; i < rightButtons.length; i++)
+                rightButtons[i] = new JoystickButton(rightJoystick, (i + 1));
+            for (int i = 0; i < xBoxButtons.length; i++)
+                xBoxButtons[i] = new JoystickButton(xBoxController, (i + 1));
+            for (int i = 0; i < xBoxPOVButtons.length; i++)
+                xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
+            xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
+            xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
 
-        leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, false));   // Top Button - Switch to high gear
-        leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, true));  // Bottom Button - Switch to low gear
+            leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, false));   // Top Button - Switch to high gear
+            leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, true));  // Bottom Button - Switch to low gear
 
-        rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
+            rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
 //    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 //    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
 
-        xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
-        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
+            xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+            xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
 
-        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
-        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
-        xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
-        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
+            xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
+            xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
+            xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
+            xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
 
-        //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
-        xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
+            //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
+            xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
 
-        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
-        //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
+            xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
+            //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
 //        xBoxButtons[8].whenPressed(new DisableClimbMode(m_climber,m_turret)); //left stick
-        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
+            xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
 
-        xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
-        //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
+            xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+            //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
 //        SmartDashboard.putData("disable climb mode", new DisableClimbMode(m_climber,m_turret));
-
+        }
+        else {
+            testController.invertRawAxis(1, true);
+            testController.invertRawAxis(5, true);
+            for (int i = 0; i < testButtons.length; i++)
+                testButtons[i] = new JoystickButton(testController, (i + 1));
+            testButtons[0].whenPressed(new SimulationShoot(m_FieldSim, false));
+        }
     }
 
     /**
@@ -221,7 +231,7 @@ public class RobotContainer {
             return m_autoCommand;
         else
             //return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
-            return new  AllyTrenchPathSpline(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
+            return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
 //        return new WaitCommand(0);
     }
 
@@ -268,9 +278,13 @@ public class RobotContainer {
         return m_driveTrain;
     }
 
-    public void simulatePowerCells() {
-        for(Powercell p:powercells)
-            p.simulationPeriodic();
+    public void simulationInit() {
+        m_FieldSim.initSim();
+        m_driveTrain.setSimPose(new Pose2d(5,5, new Rotation2d()));
+    }
 
+    public void simulationPeriodic() {
+        if(!RobotState.isTest())
+            m_FieldSim.simulationPeriodic();
     }
 }

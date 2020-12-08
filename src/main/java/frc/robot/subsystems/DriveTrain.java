@@ -97,7 +97,6 @@ DriveTrain extends SubsystemBase {
     private EncoderSim m_rightEncoderSim;
 
     public DifferentialDrivetrainSim m_drivetrainSimulator;
-    private Field2d m_field2dDriveTrain;
     private SimDouble m_gyroAngleSim;
 
     public DriveTrain(PowerDistributionPanel pdp) {
@@ -158,7 +157,6 @@ DriveTrain extends SubsystemBase {
                     new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
                             .getDouble("Angle");
             // the Field2d class lets us visualize our robot in the simulation GUI.
-            m_field2dDriveTrain = new Field2d();
         }
     }
 
@@ -364,7 +362,10 @@ DriveTrain extends SubsystemBase {
     }
 
     public void setSimPose(Pose2d pose) {
+        m_leftEncoder.reset();
+        m_rightEncoder.reset();
         m_drivetrainSimulator.setPose(pose);
+        odometry.resetPosition(pose, pose.getRotation());
     }
 
     public double getDrawnCurrentAmps() {
@@ -389,8 +390,5 @@ DriveTrain extends SubsystemBase {
         m_rightEncoderSim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
         m_rightEncoderSim.setRate(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
         m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
-
-        m_field2dDriveTrain.setRobotPose(getRobotPose());
-        SmartDashboard.putData("DriveTrain", m_field2dDriveTrain);
     }
 }
