@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
@@ -173,7 +174,8 @@ public class Shooter extends SubsystemBase {
     }
 
     private void updateShuffleboard() {
-        SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
+        if (RobotBase.isReal()) {
+            SmartDashboard.putNumber("RPM", falconUnitsToRPM(outtakeMotors[0].getSelectedSensorVelocity()));
 
         SmartDashboardTab.putNumber("Shooter", "RPM Primary", getRPM(0));
         SmartDashboardTab.putNumber("Shooter", "RPM Secondary", getRPM(1));
@@ -181,7 +183,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboardTab.putNumber("Shooter", "Power", outtakeMotors[0].getMotorOutputPercent());
         SmartDashboardTab.putNumber("Shooter", "Error", getSetpoint() - getRPM(0));
 
-        SmartDashboardTab.putBoolean("DriveTrain", "CanShoot", canShoot());
+            SmartDashboardTab.putBoolean("DriveTrain", "CanShoot", canShoot());
+        }
     }
 
     public void updatePIDValues() {

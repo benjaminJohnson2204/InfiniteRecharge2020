@@ -3,6 +3,9 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2020.3.2"
 }
 
+wpi.maven.useDevelopment = true
+wpi.wpilibVersion = '2021.+'
+
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
@@ -11,6 +14,8 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 repositories {
     maven { url 'https://jitpack.io' }
     maven { url 'https://nexus.otake.pw/repository/maven-public/' }
+    maven { url 'https://frcmaven.wpi.edu/artifactory/release/' }
+    maven { url 'https://frcmaven.wpi.edu/artifactory/development/' }
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -52,6 +57,7 @@ dependencies {
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
 
+//    compile group: 'edu.wpi.first.wpimath', name: 'wpimath-java', version: '2021.1.1-beta-2'
 
     implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)

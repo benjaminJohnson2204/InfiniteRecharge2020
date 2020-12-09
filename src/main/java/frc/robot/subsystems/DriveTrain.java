@@ -13,20 +13,26 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpiutil.math.VecBuilder;
 import frc.robot.constants.Constants;
 
 public class
@@ -65,6 +71,27 @@ DriveTrain extends SubsystemBase {
     PIDController rightPIDController = new PIDController(kP, kI, kD);
 
     PowerDistributionPanel m_pdp;
+
+    double m_leftOutput, m_rightOutput;
+
+    private final Gyro m_gyro = new ADXRS450_Gyro();
+
+    // The left-side drive encoder
+    private final Encoder m_leftEncoder =
+            new Encoder(Constants.DriveConstants.kLeftEncoderPorts[0],
+                    Constants.DriveConstants.kLeftEncoderPorts[1],
+                    Constants.DriveConstants.kLeftEncoderReversed);
+
+    // The right-side drive encoder
+    private final Encoder m_rightEncoder =
+            new Encoder(Constants.DriveConstants.kRightEncoderPorts[0],
+                    Constants.DriveConstants.kRightEncoderPorts[1],
+                    Constants.DriveConstants.kRightEncoderReversed);
+    private EncoderSim m_leftEncoderSim;
+    private EncoderSim m_rightEncoderSim;
+
+    public DifferentialDrivetrainSim m_drivetrainSimulator;
+    private SimDouble m_gyroAngleSim;
 
     public DriveTrain(PowerDistributionPanel pdp) {
         // Set up DriveTrain motors
@@ -105,6 +132,27 @@ DriveTrain extends SubsystemBase {
         m_pdp = pdp;
         //initShuffleboardValues();
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+
+
+        if (RobotBase.isSimulation()) { // If our robot is simulated
+            m_leftEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulse);
+            m_rightEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulse);
+
+            m_drivetrainSimulator = new DifferentialDrivetrainSim(
+                    Constants.DriveConstants.kDrivetrainPlant,
+                    Constants.DriveConstants.kDriveGearbox,
+                    Constants.DriveConstants.kDriveGearing,
+                    Constants.DriveConstants.kTrackwidthMeters,
+                    Constants.DriveConstants.kWheelDiameterMeters / 2.0,
+                    VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
+
+            m_leftEncoderSim = new EncoderSim(m_leftEncoder);
+            m_rightEncoderSim = new EncoderSim(m_rightEncoder);
+            m_gyroAngleSim =
+                    new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
+                            .getDouble("Angle");
+            // the Field2d class lets us visualize our robot in the simulation GUI.
+        }
     }
 
     public int getEncoderCount(int sensorIndex) {
@@ -116,7 +164,10 @@ DriveTrain extends SubsystemBase {
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(- navX.getAngle(), 360);
+        if(RobotBase.isReal())
+            return Math.IEEEremainder(-navX.getAngle(), 360);
+        else
+            return Math.IEEEremainder(m_gyro.getAngle(), 360) * (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
     }
 
     public void resetAngle() {
@@ -171,12 +222,21 @@ DriveTrain extends SubsystemBase {
     }
 
     public void setVoltageOutput(double leftVoltage, double rightVoltage) {
+        var batteryVoltage = RobotController.getBatteryVoltage();
+        if (Math.max(Math.abs(leftVoltage), Math.abs(rightVoltage))
+                > batteryVoltage) {
+            leftVoltage *= batteryVoltage / 12.0;
+            rightVoltage *= batteryVoltage / 12.0;
+        }
         SmartDashboardTab.putNumber("DriveTrain", "Left Voltage", leftVoltage);
         SmartDashboardTab.putNumber("DriveTrain", "Right Voltage", rightVoltage);
+
         setMotorPercentOutput(leftVoltage / m_pdp.getVoltage(), rightVoltage / m_pdp.getVoltage());
     }
 
     private void setMotorPercentOutput(double leftOutput, double rightOutput) {
+        m_leftOutput = leftOutput;
+        m_rightOutput = rightOutput;
         driveMotors[0].set(ControlMode.PercentOutput, leftOutput);
         driveMotors[2].set(ControlMode.PercentOutput, rightOutput);
     }
@@ -270,26 +330,60 @@ DriveTrain extends SubsystemBase {
     }
 
     private void updateSmartDashboard() {
-        SmartDashboardTab.putNumber("DriveTrain", "Left Encoder", getEncoderCount(0));
-        SmartDashboardTab.putNumber("DriveTrain", "Right Encoder", getEncoderCount(2));
-        SmartDashboardTab.putNumber("DriveTrain", "xCoordinate",
-                Units.metersToFeet(getRobotPose().getTranslation().getX()));
-        SmartDashboardTab.putNumber("DriveTrain", "yCoordinate",
-                Units.metersToFeet(getRobotPose().getTranslation().getY()));
-        SmartDashboardTab.putNumber("DriveTrain", "Angle", getRobotPose().getRotation().getDegrees());
-        SmartDashboardTab.putNumber("DriveTrain", "leftSpeed",
-                Units.metersToFeet(getSpeeds().leftMetersPerSecond));
-        SmartDashboardTab.putNumber("DriveTrain", "rightSpeed",
-                Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+        if (RobotBase.isReal()) {
+            SmartDashboardTab.putNumber("DriveTrain", "Left Encoder", getEncoderCount(0));
+            SmartDashboardTab.putNumber("DriveTrain", "Right Encoder", getEncoderCount(2));
+            SmartDashboardTab.putNumber("DriveTrain", "xCoordinate",
+                    Units.metersToFeet(getRobotPose().getTranslation().getX()));
+            SmartDashboardTab.putNumber("DriveTrain", "yCoordinate",
+                    Units.metersToFeet(getRobotPose().getTranslation().getY()));
+            SmartDashboardTab.putNumber("DriveTrain", "Angle", getRobotPose().getRotation().getDegrees());
+            SmartDashboardTab.putNumber("DriveTrain", "leftSpeed",
+                    Units.metersToFeet(getSpeeds().leftMetersPerSecond));
+            SmartDashboardTab.putNumber("DriveTrain", "rightSpeed",
+                    Units.metersToFeet(getSpeeds().rightMetersPerSecond));
 
-        SmartDashboardTab.putNumber("Turret", "Robot Angle", getAngle());
+            SmartDashboardTab.putNumber("Turret", "Robot Angle", getAngle());
+        }
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        odometry.update(Rotation2d.fromDegrees(getHeading()), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+        if(RobotBase.isReal())
+            odometry.update(Rotation2d.fromDegrees(getHeading()), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
         updateSmartDashboard();
+    }
+
+    public void setSimPose(Pose2d pose) {
+        m_leftEncoder.reset();
+        m_rightEncoder.reset();
+        m_drivetrainSimulator.setPose(pose);
+        odometry.resetPosition(pose, pose.getRotation());
+    }
+
+    public double getDrawnCurrentAmps() {
+        return m_drivetrainSimulator.getCurrentDrawAmps();
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(),
+                m_rightEncoder.getDistance());
+
+        // To update our simulation, we set motor voltage inputs, update the simulation,
+        // and write the simulated positions and velocities to our simulated encoder and gyro.
+        // We negate the right side so that positive voltages make the right side
+        // move forward.
+        m_drivetrainSimulator.setInputs(m_leftOutput * RobotController.getBatteryVoltage(),
+                m_rightOutput * RobotController.getBatteryVoltage());
+        m_drivetrainSimulator.update(0.010);
+
+        m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
+        m_leftEncoderSim.setRate(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
+        m_rightEncoderSim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
+        m_rightEncoderSim.setRate(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
+        m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
     }
 }

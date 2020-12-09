@@ -7,7 +7,12 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.system.LinearSystem;
+import edu.wpi.first.wpilibj.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.wpiutil.math.numbers.N2;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -60,29 +65,49 @@ public final class Constants {
     public static final int climbPistonForward = 4;
     public static final int climbPistonReverse = 5;
 
-    // Shoot on the Move
-    public static final double g = 9.81; // Absolute value, in meters per second squared
-    public static final double airResistanceCoefficient = 1.05; // Constant that shoot velocity is multiplied by to account for air resistance
+    public static final class DriveConstants {
+        public static final int[] kLeftEncoderPorts = new int[]{10, 11};
+        public static final int[] kRightEncoderPorts = new int[]{12, 13};
+        public static final boolean kLeftEncoderReversed = false;
+        public static final boolean kRightEncoderReversed = true;
 
-    // Target measurements
-    public static final double ballRadius = Units.inchesToMeters(3.5);
-    public static final double ballTolerance = Units.inchesToMeters(1);
-    public static final double outerTargetHeight = Units.inchesToMeters(30);
-    public static final double targetOffset = Units.inchesToMeters(29.25);
+        public static final double kTrackwidthMeters = Units.inchesToMeters(21.5);
+        public static final DifferentialDriveKinematics kDriveKinematics =
+                new DifferentialDriveKinematics(kTrackwidthMeters);
 
-    // Use actual values for these
-    public static final double verticalTargetDistance = Units.inchesToMeters(98.25 - 38); // Distance between shooter and target heights from ground
-    public static final double verticalShooterAngle = Math.PI / 3; // Angle ball is shot from shooter relative to the ground 
-    public static final double tanSquaredVerticalShooterAngle = Math.pow(Math.tan(verticalShooterAngle), 2);
-    public static final double targetXPosition = 0;
-    public static final double targetYPosition = Units.inchesToMeters(629.25);
+        public static final int kEncoderCPR = 4096;
+        public static final double kWheelDiameterMeters = Units.feetToMeters(0.5);
+        public static final double kEncoderDistancePerPulse =
+                // Assumes the encoders are directly mounted on the wheel shafts
+                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR;
 
-    public static final double turretAcceleration = .75; // radians per second
-    public static final double shooterAcceleration = 1000; // RPM per second
+        public static final boolean kGyroReversed = true;
 
-    public static final double navXToShooterDistance = Units.inchesToMeters(1.4); // Meters
-    public static final double navXToShooterAngle = 0; // Radians; angle offset between navX and shooter
-    public static final double flywheelDiameter = 0.1; // Meters
+        // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
+        // These characterization values MUST be determined either experimentally or theoretically
+        // for *your* robot's drive.
+        // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
+        // values for your robot.
+        public static final double ksVolts = 0.19;
+        public static final double kvVoltSecondsPerMeter = 2.23;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.0289;
 
-    public static final double maxShooterRPM = 1000; // Highest RPM that shooter can launch balls at without breaking
+        // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
+        // These characterization values MUST be determined either experimentally or theoretically
+        // for *your* robot's drive.
+        // These two values are "angular" kV and kA
+        public static final double kvVoltSecondsPerRadian = 1.5;
+        public static final double kaVoltSecondsSquaredPerRadian = 0.3;
+
+        public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
+                LinearSystemId.identifyDrivetrainSystem(kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter,
+                        kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
+
+        // Example values only -- use what's on your physical robot!
+        public static final DCMotor kDriveGearbox = DCMotor.getFalcon500(2);
+        public static final double kDriveGearing = 14.14;
+
+        // Example value only - as above, this must be tuned for your drive!
+        public static final double kPDriveVel = 0.1;
+    }
 }

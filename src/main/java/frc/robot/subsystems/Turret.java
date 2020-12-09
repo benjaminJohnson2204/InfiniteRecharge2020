@@ -14,8 +14,12 @@ import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,6 +57,8 @@ public class Turret extends SubsystemBase {
     private boolean initialHome;
     private boolean turretHomeSensorLatch = false;
 
+    private Field2d m_field2dTurret;
+
     public Turret(DriveTrain driveTrain) {
         // Setup turrent motors
         m_driveTrain = driveTrain;
@@ -78,6 +84,7 @@ public class Turret extends SubsystemBase {
         //turretPID.enableContinuousInput(0, 360);
 
         //initShuffleboard();
+        m_field2dTurret = new Field2d();
     }
 
     public void resetEncoder() {
@@ -188,24 +195,26 @@ public class Turret extends SubsystemBase {
     }
 
     private void updateSmartdashboard() {
-        SmartDashboard.putNumber("Turret Angle", getFieldRelativeAngle());
+        if (RobotBase.isReal()) {
+            SmartDashboard.putNumber("Turret Angle", getFieldRelativeAngle());
 
-        SmartDashboardTab.putNumber("Turret", "Turret Motor Output", turretMotor.getMotorOutputPercent());
-        SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
-        SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
-        SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
-//    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
-//    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
-//    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
-//    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
-        SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
+            SmartDashboardTab.putNumber("Turret", "Turret Motor Output", turretMotor.getMotorOutputPercent());
+            SmartDashboardTab.putNumber("Turret", "Turret Robot Relative Angle", getTurretAngle());
+            SmartDashboardTab.putNumber("Turret", "Turret Field Relative Angle", getFieldRelativeAngle());
+            SmartDashboardTab.putNumber("Turret", "Turret Setpoint", getSetpoint());
+    //    SmartDashboardTab.putNumber("Turret", "Turret Error", turretMotor.getClosedLoopError());
+    //    SmartDashboardTab.putNumber("Turret", "Turret Controller Setpoint", turretMotor.getClosedLoopTarget());
+    //    SmartDashboardTab.putString("Turret", "Turret Control Mode", turretMotor.getControlMode().toString());
+    //    SmartDashboardTab.putNumber("Turret", "Turret IAccum", turretMotor.getIntegralAccumulator());
+            SmartDashboardTab.putBoolean("Turret", "Home", getTurretHome());
 
-//        try {
-//            SmartDashboardTab.putString("DriveTrain", "Turret Command", this.getCurrentCommand().getName());
-//        }catch (Exception e) {
-//
-//        }
-//    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
+    //        try {
+    //            SmartDashboardTab.putString("DriveTrain", "Turret Command", this.getCurrentCommand().getName());
+    //        }catch (Exception e) {
+    //
+    //        }
+    //    SmartDashboardTab.putNumber("Turret", "Control Mode", getControlMode());
+        }
     }
 
     @Override
@@ -227,5 +236,22 @@ public class Turret extends SubsystemBase {
                 initialHome = true;
 
         updateSmartdashboard();
+    }
+
+    public double getTurretSimAngle(){
+        return getTurretAngle() + 180;
+    }
+
+    public Pose2d getTurretSimPose() {
+        return new Pose2d(m_driveTrain.getRobotPose().getX(),
+                          m_driveTrain.getRobotPose().getY(),
+                          new Rotation2d(Math.toRadians(getTurretSimAngle())));
+    }
+
+
+    @Override
+    public void simulationPeriodic() {
+        m_field2dTurret.setRobotPose(getTurretSimPose());
+        SmartDashboard.putData("Turret", m_field2dTurret);
     }
 }

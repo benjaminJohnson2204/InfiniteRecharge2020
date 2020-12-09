@@ -1,23 +1,17 @@
 package frc.robot.commands.autonomous.routines;
 
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Transform2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.drivetrain.ResetOdometry;
 import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.drivetrain.SetOdometry;
@@ -27,14 +21,16 @@ import frc.robot.commands.shooter.AutoRapidFireSetpoint;
 import frc.robot.commands.shooter.SetAndHoldRpmSetpoint;
 import frc.robot.commands.turret.AutoUseVisionCorrection;
 import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
+import frc.robot.simulation.FieldSim;
+import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.TrajectoryUtils;
 
-import javax.xml.crypto.dsig.Transform;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class AllyTrenchPathSpline extends SequentialCommandGroup {
-    public AllyTrenchPathSpline(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision) {
+public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
+    public AllyTrenchPathSplineSim(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision, FieldSim fieldSim) {
         Pose2d startPosition = new Pose2d(Units.inchesToMeters(145), 7.5, new Rotation2d(Units.degreesToRadians(180)));
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
         configA.setReversed(true);
@@ -96,13 +92,17 @@ public class AllyTrenchPathSpline extends SequentialCommandGroup {
         else
             addCommands(
                     new SetOdometry(driveTrain, startPosition),
-                    new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
+//                    new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
+                    new ParallelDeadlineGroup(new WaitCommand(2),
+                                              new SimulationShoot(fieldSim, true)),
                     new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
                     startToTrenchCommand,
                     new WaitCommand(2)
                     .andThen(trenchToShootCommand)
                     .alongWith(new SetTurretRobotRelativeAngle(turret, 0))
                     .andThen(new AutoUseVisionCorrection(turret, vision).withTimeout(0.75))
+                    .andThen(new ParallelDeadlineGroup(new WaitCommand(2),
+                                                       new SimulationShoot(fieldSim, true)))
             );
     }
 }
