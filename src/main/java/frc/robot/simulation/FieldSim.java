@@ -132,6 +132,10 @@ public class FieldSim {
         SmartDashboard.putData("Field2d", m_field2d);
     }
 
+    public double getIdealTargetDistance() {
+        return Math.sqrt(Math.pow(SimConstants.blueGoalPose.getY() - m_turret.getTurretSimPose().getY(), 2) + Math.pow(SimConstants.blueGoalPose.getX() - m_turret.getTurretSimPose().getX(), 2));
+    }
+
     public double getIdealTurretAngle() {
 
         double targetRadians = Math.atan2(SimConstants.blueGoalPose.getY() -m_turret.getTurretSimPose().getY(), SimConstants.blueGoalPose.getX() - m_turret.getTurretSimPose().getX());

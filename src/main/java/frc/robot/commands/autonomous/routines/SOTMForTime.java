@@ -27,8 +27,6 @@ public class SOTMForTime extends CommandBase {
     public SOTMForTime(ShootOnTheMove shootOnTheMove, double duration) {
         m_shootOnTheMove = shootOnTheMove;
         m_duration = duration;
-
-        shootOnTheMove.start();
     }
 
     // Called when the command is initially scheduled.
@@ -47,7 +45,6 @@ public class SOTMForTime extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_shootOnTheMove.stop();
     }
 
     // Returns true when the command should end.

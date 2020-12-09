@@ -66,7 +66,6 @@ public class Vision extends SubsystemBase {
         m_driveTrain = driveTrain;
         m_turret = turret;
 
-	public Vision() {
 		if(RobotBase.isReal()) {
 //		camera = CameraServer.getInstance().startAutomaticCapture();
 			camera = CameraServer.getInstance().startAutomaticCapture("intake", "/dev/video0");
@@ -213,16 +212,25 @@ public class Vision extends SubsystemBase {
 
     // Calculate target distance based on field dimensions and the angle from the Limelight to the target
     public double getTargetDistance() {
-        double angleToTarget = getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
+        if (RobotBase.isReal()) {
+            double angleToTarget = getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
 
-        double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(LIMELIGHT_MOUNT_ANGLE + angleToTarget));
-        distances[index++ % distances.length] = inches / 12.0;
-
-        return computeMode(distances);
+            double inches = (TARGET_HEIGHT - LIMELIGHT_HEIGHT) / Math.tan(Math.toRadians(LIMELIGHT_MOUNT_ANGLE + angleToTarget));
+            distances[index++ % distances.length] = inches / 12.0;
+    
+            return computeMode(distances);
+        } else {
+            return Units.metersToFeet(m_turret.getIdealTargetDistance());
+        }
+        
     }
 
 	public double getAngleToTarget() {
-		return getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
+        if (RobotBase.isReal()) {
+            return getPipeline() > 0 ? getTargetY() - 12.83 : getTargetY();
+        } else {
+            return m_turret.getIdealTurretAngle();
+        }
     }
     
     // For Shoot on the Move, gets horizontal angle on field to target

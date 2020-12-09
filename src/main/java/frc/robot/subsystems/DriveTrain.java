@@ -309,6 +309,7 @@ DriveTrain extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose, Rotation2d rotation) {
         odometry.resetPosition(pose, rotation);
+        m_drivetrainSimulator.setPose(pose);
     }
 
     private void initShuffleboardValues() {

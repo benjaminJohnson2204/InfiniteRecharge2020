@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
@@ -102,28 +103,28 @@ public class ShootOnTheMove extends CommandBase {
     }
 
     private void updateSmartDashboard() {
-        SmartDashboard.putNumber("Predicted heading", initialHeading + changeInHeading);
-        SmartDashboard.putNumber("Current distance to outer", currentDistanceToOuterTargetXY);
-        SmartDashboard.putNumber("Current angle to outer", currentAngleToOuter);
+        SmartDashboardTab.putNumber("Shoot on the Move", "Predicted heading", initialHeading + changeInHeading);
+        SmartDashboardTab.putNumber("Shoot on the Move", "Current distance to outer", currentDistanceToOuterTargetXY);
+        SmartDashboardTab.putNumber("Shoot on the Move", "Current angle to outer", currentAngleToOuter);
 
         if(ledState == 2) {
-            SmartDashboard.putBoolean("Can shoot", true);
-            SmartDashboard.putString("Target", "Inner");
-            SmartDashboard.putNumber("xy Distance to inner target", predictedDistanceToInnerTargetXY);
-            SmartDashboard.putNumber("xy Angle to inner target", angleToInner);
+            SmartDashboardTab.putBoolean("Shoot on the Move", "Can shoot", true);
+            SmartDashboardTab.putString("Shoot on the Move", "Target", "Inner");
+            SmartDashboardTab.putNumber("Shoot on the Move", "xy Distance to inner target", predictedDistanceToInnerTargetXY);
+            SmartDashboardTab.putNumber("Shoot on the Move", "xy Angle to inner target", angleToInner);
         } else if(ledState == 1) {
-            SmartDashboard.putBoolean("Can shoot", true);
-            SmartDashboard.putString("Target", "Outer");
-            SmartDashboard.putNumber("xy Distance to outer target", predictedDistanceToOuterTargetXY);
-            SmartDashboard.putNumber("xy Angle to outer target", angleToOuter);
+            SmartDashboardTab.putBoolean("Shoot on the Move", "Can shoot", true);
+            SmartDashboardTab.putString("Shoot on the Move", "Target", "Outer");
+            SmartDashboardTab.putNumber("Shoot on the Move", "xy Distance to outer target", predictedDistanceToOuterTargetXY);
+            SmartDashboardTab.putNumber("Shoot on the Move", "xy Angle to outer target", angleToOuter);
         } else {
-            SmartDashboard.putBoolean("Can shoot", false);
-            SmartDashboard.putString("Target", "None");
+            SmartDashboardTab.putBoolean("Shoot on the Move", "Can shoot", false);
+            SmartDashboardTab.putString("Shoot on the Move", "Target", "None");
         }
 
-        SmartDashboard.putNumber("Shooting at speed", shooterBallMagnitude);
-        SmartDashboard.putNumber("Revving shooter to RPM", RPM);
-        SmartDashboard.putNumber("Rotating turret to angle", targetTurretAngle);
+        SmartDashboardTab.putNumber("Shoot on the Move", "Shooting at speed", shooterBallMagnitude);
+        SmartDashboardTab.putNumber("Shoot on the Move", "Revving shooter to RPM", RPM);
+        SmartDashboardTab.putNumber("Shoot on the Move", "Rotating turret to angle", targetTurretAngle);
     }
 
     private boolean canGoThroughInnerTarget() {
