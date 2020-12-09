@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -259,7 +260,8 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return m_autoCommand;
         else
-            return m_ShootOnTheMove;
+            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
+            //return m_ShootOnTheMove;
             //return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
             //return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
 //        return new WaitCommand(0);
@@ -279,6 +281,9 @@ public class RobotContainer {
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
             m_driveTrain.setDriveTrainNeutralMode(0);
+        } else {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
         }
     }
 
@@ -287,8 +292,14 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
-        m_driveTrain.resetEncoderCounts();
-        m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+        if (RobotBase.isReal()) {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+        } else {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+        }
+
     }
 
     public void autonomousPeriodic() {

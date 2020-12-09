@@ -90,7 +90,26 @@ public class FieldSim {
     }
 
     private boolean isBallInIntakeZone(Pose2d ballPose){
-        List<Double> xValues = new ArrayList<>();
+        // The rise/run between intake points 0 to 1
+        // Since the intake is a rectangle, this is the same as the slope between points 2 to 3
+        double slope0to1 = (intakePose[1].getY() - intakePose[0].getY()) /(intakePose[1].getX() - intakePose[0].getX());
+
+        // The rise/run between points 1 to 2
+        // Same as slope between points 3 and 0
+        double slope1to2 = (intakePose[2].getY() - intakePose[1].getY()) /(intakePose[2].getX() - intakePose[1].getX());
+
+        // Use point-slope form to check if ball pose is above or below each line on the intake rectangle
+        // For each pair of parallel lines, the ball needs to be above one line and below the other
+        // Note: it's very important that the points be in the same order as the diagram above
+        return (
+                (ballPose.getY() >= slope0to1 * (ballPose.getX() - intakePose[0].getX()) + intakePose[0].getY()) ==
+                        (ballPose.getY() <= slope0to1 * (ballPose.getX() - intakePose[2].getX()) + intakePose[2].getY())
+            ) && (
+                (ballPose.getY() >= slope1to2 * (ballPose.getX() - intakePose[0].getX()) + intakePose[0].getY()) ==
+                        (ballPose.getY() <= slope1to2 * (ballPose.getX() - intakePose[1].getX()) + intakePose[1].getY())
+        );
+
+        /*List<Double> xValues = new ArrayList<>();
         List<Double> yValues = new ArrayList<>();
 
         for (Pose2d p:intakePose) {
@@ -108,7 +127,7 @@ public class FieldSim {
             maxY > ballPose.getY() && ballPose.getY() > minY)
             return true;
         else
-            return false;
+            return false;*/
     }
 
     public void simulationPeriodic() {
@@ -145,6 +164,10 @@ public class FieldSim {
 
     public Powercell[] getPowerCells() {
         return m_powercells;
+    }
+
+    public Pose2d getFieldSiMRobotPose() {
+        return m_field2d.getRobotPose();
     }
 
     private void updateBallState(Powercell powercell) {

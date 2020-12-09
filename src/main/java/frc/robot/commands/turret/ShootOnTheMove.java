@@ -77,7 +77,7 @@ public class ShootOnTheMove extends CommandBase {
         m_vision = vision;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(turret, shooter, vision);
+        //addRequirements(turret, shooter, vision);
     }
 
     // Called when the command is initially scheduled.
