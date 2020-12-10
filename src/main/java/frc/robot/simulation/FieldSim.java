@@ -63,7 +63,7 @@ public class FieldSim {
              3-------2
          */
 
-        // Lookup rotating a point about another point in 2D space for the math explanation
+        // Look up rotating a point about another point in 2D space for the math explanation
         Pose2d robotPose = m_driveTrain.getRobotPose();
         double robotX = robotPose.getX();
         double robotY = robotPose.getY();
@@ -141,6 +141,10 @@ public class FieldSim {
 
     public Powercell[] getPowerCells() {
         return m_powercells;
+    }
+
+    public Pose2d getFieldSiMRobotPose() {
+        return m_field2d.getRobotPose();
     }
 
     private void updateBallState(Powercell powercell) {

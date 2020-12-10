@@ -75,11 +75,15 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(kTrackwidthMeters);
 
+        // Example values only -- use what's on your physical robot!
+        public static final DCMotor kDriveGearbox = DCMotor.getFalcon500(2);
+        public static final double kDriveGearing = 14.14;
+
         public static final int kEncoderCPR = 4096;
         public static final double kWheelDiameterMeters = Units.feetToMeters(0.5);
         public static final double kEncoderDistancePerPulse =
                 // Assumes the encoders are directly mounted on the wheel shafts
-                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR;
+                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearing;
 
         public static final boolean kGyroReversed = true;
 
@@ -103,9 +107,6 @@ public final class Constants {
                 LinearSystemId.identifyDrivetrainSystem(kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter,
                         kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
 
-        // Example values only -- use what's on your physical robot!
-        public static final DCMotor kDriveGearbox = DCMotor.getFalcon500(2);
-        public static final double kDriveGearing = 14.14;
 
         // Example value only - as above, this must be tuned for your drive!
         public static final double kPDriveVel = 0.1;

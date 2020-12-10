@@ -64,7 +64,6 @@ public class RobotContainer {
     private final LED m_led = new LED(m_colorSensor);
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
 
-
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
     static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
@@ -249,6 +248,10 @@ public class RobotContainer {
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
             m_driveTrain.setDriveTrainNeutralMode(0);
+        } else {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+
         }
     }
 
@@ -257,6 +260,8 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
+        if(RobotBase.isSimulation())
+            m_FieldSim.initSim();
     }
 
     public void autonomousPeriodic() {
@@ -280,7 +285,7 @@ public class RobotContainer {
 
     public void simulationInit() {
         m_FieldSim.initSim();
-        m_driveTrain.setSimPose(new Pose2d(5,5, new Rotation2d()));
+        //m_driveTrain.setSimPose(new Pose2d(5,5, new Rotation2d()));
     }
 
     public void simulationPeriodic() {

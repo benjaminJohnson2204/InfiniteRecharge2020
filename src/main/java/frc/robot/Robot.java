@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -76,6 +77,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+        if(RobotBase.isSimulation())
+            m_robotContainer.autonomousInit();
 //    badLog.startLogger();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 

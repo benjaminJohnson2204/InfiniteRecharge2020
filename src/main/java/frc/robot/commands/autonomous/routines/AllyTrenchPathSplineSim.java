@@ -49,7 +49,7 @@ public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
         configB.setEndVelocity(0);
         configB.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configB.getMaxVelocity()));
         configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configB.addConstraint(new CentripetalAccelerationConstraint(Units.feetToMeters(1.5)));
+        configB.addConstraint(new CentripetalAccelerationConstraint(Units.feetToMeters(2)));
         //var trenchToShootPath = TrajectoryUtils.readCsvTrajectory("ally2Ally3");
         ArrayList<Pose2d> trenchToShootPath = new ArrayList();
         trenchToShootPath.add(new Pose2d(Units.inchesToMeters(276), 7.5, new Rotation2d(Units.degreesToRadians(180))));
@@ -100,6 +100,7 @@ public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
                     new WaitCommand(2)
                     .andThen(trenchToShootCommand)
                     .alongWith(new SetTurretRobotRelativeAngle(turret, 0))
+                    .andThen(() -> driveTrain.setMotorTankDrive(0,0))
                     .andThen(new AutoUseVisionCorrection(turret, vision).withTimeout(0.75))
                     .andThen(new ParallelDeadlineGroup(new WaitCommand(2),
                                                        new SimulationShoot(fieldSim, true)))
