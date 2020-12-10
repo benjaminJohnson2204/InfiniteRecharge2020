@@ -9,28 +9,32 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
+/*
+Subsystem for controlling climber
+ */
+
 public class Skyhook extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  private VictorSPX skyhookMotor = new VictorSPX(Constants.skyhookMotor);
+    /**
+     * Creates a new ExampleSubsystem.
+     */
+    private final VictorSPX skyhookMotor = new VictorSPX(Constants.skyhookMotor);
 
-  public Skyhook() {
-    skyhookMotor.configFactoryDefault();
-    skyhookMotor.setNeutralMode(NeutralMode.Brake);
-    skyhookMotor.setInverted(true);
-  }
-  public void setSkyhook(double value) {
-    skyhookMotor.set(ControlMode.PercentOutput, value);
-  }
+    public Skyhook() {
+        skyhookMotor.configFactoryDefault();
+        skyhookMotor.setNeutralMode(NeutralMode.Brake);
+        skyhookMotor.setInverted(true);
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public void setSkyhook(double value) {
+        skyhookMotor.set(ControlMode.PercentOutput, value);
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }

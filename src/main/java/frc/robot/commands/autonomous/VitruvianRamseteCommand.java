@@ -7,13 +7,11 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.DriveTrain;
 
 import java.util.ArrayList;
@@ -48,7 +46,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
         super.initialize();
         autoStartTime = Timer.getFPGATimestamp();
         double distance = 0;
-        for (int i = 0; i < m_path.size() - 1; i++) {
+        for(int i = 0; i < m_path.size() - 1; i++) {
             var pointA = m_path.get(i);
             var pointB = m_path.get(i + 1);
 

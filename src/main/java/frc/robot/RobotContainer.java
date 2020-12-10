@@ -12,18 +12,28 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.climber.DisableClimbMode;
-import frc.robot.commands.climber.EnableClimbMode;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.routines.*;
+import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.climber.SetClimberOutput;
-import frc.robot.commands.drivetrain.*;
+import frc.robot.commands.drivetrain.BrakeWhileHeld;
+import frc.robot.commands.drivetrain.SetArcadeDrive;
+import frc.robot.commands.drivetrain.SetDriveShifters;
+import frc.robot.commands.indexer.EjectAll;
+import frc.robot.commands.indexer.FeedAll;
 import frc.robot.commands.intake.ControlledIntake;
 import frc.robot.commands.intake.ToggleIntakePistons;
-import frc.robot.commands.shooter.*;
+import frc.robot.commands.shooter.RapidFireSetpoint;
+import frc.robot.commands.shooter.SetRpmSetpoint;
+import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
+import frc.robot.commands.turret.ShootOnTheMove;
 import frc.robot.commands.turret.ToggleTurretControlMode;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.Powercell;
@@ -35,6 +45,7 @@ import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
 import frc.robot.constants.Constants;
+import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
 
@@ -51,12 +62,11 @@ import static java.util.Map.entry;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final PowerDistributionPanel pdp = new PowerDistributionPanel();
-
     private final DriveTrain m_driveTrain = new DriveTrain(pdp);
     private final Intake m_intake = new Intake();
     private final Indexer m_indexer = new Indexer();
     private final Turret m_turret = new Turret(m_driveTrain);
-    private final Vision m_vision = new Vision();
+    private final Vision m_vision = new Vision(m_driveTrain, m_turret);
     private final Shooter m_shooter = new Shooter(m_vision, pdp);
     private final Climber m_climber = new Climber();
     private final Skyhook m_skyhook = new Skyhook();
@@ -67,6 +77,8 @@ public class RobotContainer {
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
     static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
+    private final ShootOnTheMove m_ShootOnTheMove = new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led, m_vision);
+    private final SelectCommand m_autoCommand;
     public Button[] leftButtons = new Button[2];
     public Button[] rightButtons = new Button[2];
     public Button[] xBoxButtons = new Button[10];
@@ -92,25 +104,33 @@ public class RobotContainer {
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
 
-    private SelectCommand m_autoCommand;
-
     /**
      * The container for the robot.  Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
         m_autoChooser.addDefault("Drive Straight", CommandSelector.DRIVE_STRAIGHT.ordinal());
-        for (Enum commandEnum : CommandSelector.values())
-            if (commandEnum != CommandSelector.DRIVE_STRAIGHT)
+        for(Enum commandEnum : CommandSelector.values())
+            if(commandEnum != CommandSelector.DRIVE_STRAIGHT)
                 m_autoChooser.addOption(commandEnum.toString(), commandEnum.ordinal());
 
         SmartDashboard.putData(m_autoChooser);
 
+        GetSOTMTestPowers variableTestPowers = new GetSOTMTestPowers(0.22, 7);
+        double startTimestamp = Timer.getFPGATimestamp();
+
         m_autoCommand = new SelectCommand(
                 Map.ofEntries(
-                        entry(CommandSelector.SHOOT_AND_DRIVE_BACK, new ShootAndDriveBack(m_driveTrain,m_intake,m_indexer,m_turret,m_shooter,m_vision)),
+                        //entry(CommandSelector.SOTM_STILL, new SOTMWhileStill(m_driveTrain, m_ShootOnTheMove, m_indexer)),
+                        //entry(CommandSelector.SOTM_LINE_CONSTANT, new SOTMWhileMovingConstant(m_driveTrain, m_ShootOnTheMove, m_indexer, 0.2, 0.2)), // Replace these values w/ something smart
+                        //entry(CommandSelector.SOTM_LINE_VARIABLE, new SOTMWhileMovingVariable(m_driveTrain, m_ShootOnTheMove, m_indexer,
+                        //        () -> variableTestPowers.getVariablePower(Timer.getFPGATimestamp() - startTimestamp),
+                        //        () -> variableTestPowers.getVariablePower(Timer.getFPGATimestamp() - startTimestamp))),
+                        //entry(CommandSelector.SOTM_ARC_CONSTANT, new SOTMWhileMovingConstant(m_driveTrain, m_ShootOnTheMove, m_indexer, 0.21, 0.15)), // Replace these values w/ something smart
+
+                        entry(CommandSelector.SHOOT_AND_DRIVE_BACK, new ShootAndDriveBack(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision)),
                         entry(CommandSelector.DRIVE_STRAIGHT, new DriveBackwards(m_driveTrain)),
                         entry(CommandSelector.DO_NOTHING, new DoNothing()),
-                        entry(CommandSelector.SHOOT_AND_DRIVE_FORWARD, new ShootAndDriveForward(m_driveTrain,m_intake,m_indexer,m_turret,m_shooter,m_vision)),
+                        entry(CommandSelector.SHOOT_AND_DRIVE_FORWARD, new ShootAndDriveForward(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision)),
                         entry(CommandSelector.ALLIANCE_TRENCH_STRAIGHT, new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))
 //                        entry(CommandSelector.TEST_PATH, new TestAuto(m_driveTrain, m_shooter, m_indexer, m_intake)),
 //                        entry(CommandSelector.FULL_PATH, new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision))
@@ -122,12 +142,20 @@ public class RobotContainer {
 //                        entry(CommandSelector.TEST_SEQUENTIAL_SWITCHING_AUTO, new TestSequentialReverse(m_driveTrain)),
 //                        entry(CommandSelector.TEST_SEQUENTIAL_REVERSE_AUTO, new TestSequentialSwitching(m_driveTrain))
                 ),
-                this::selectCommand
+                this :: selectCommand
         );
 
         initializeSubsystems();
         // Configure the button bindings
         configureButtonBindings();
+    }
+
+    public static boolean getInitializationState() {
+        return init;
+    }
+
+    public static void setInitializationState(boolean state) {
+        init = state;
     }
 
     public void initializeSubsystems() {
@@ -189,10 +217,10 @@ public class RobotContainer {
             xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
             xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
 
-            xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
             xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
             xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
             xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
+            xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
 
             //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
             xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
@@ -211,7 +239,9 @@ public class RobotContainer {
             testController.invertRawAxis(5, true);
             for (int i = 0; i < testButtons.length; i++)
                 testButtons[i] = new JoystickButton(testController, (i + 1));
-            testButtons[0].whenPressed(new SimulationShoot(m_FieldSim, false));
+            //testButtons[0].whenPressed(new SimulationShoot(m_FieldSim, false));
+            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
+            testButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
         }
     }
 
@@ -229,8 +259,10 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return m_autoCommand;
         else
+            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
+            //return m_ShootOnTheMove;
             //return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
-            return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+            //return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
 //        return new WaitCommand(0);
     }
 
@@ -246,12 +278,11 @@ public class RobotContainer {
     public void teleOpInit() {
         if(RobotBase.isReal()) {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(new Pose2d(), new Rotation2d());
+            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
             m_driveTrain.setDriveTrainNeutralMode(0);
         } else {
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
-
         }
     }
 
@@ -260,20 +291,36 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
-        if(RobotBase.isSimulation())
-            m_FieldSim.initSim();
+        if (RobotBase.isReal()) {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+        } else {
+            m_driveTrain.resetEncoderCounts();
+            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+        }
+
     }
 
     public void autonomousPeriodic() {
     }
 
-    public static void setInitializationState(boolean state) {
-        init = state;
+    public void initializeLogTopics() {
+        m_controls.initLogging();
     }
 
-    public static boolean getInitializationState() {
-        return init;
-    }
+    /*private enum CommandSelector {
+        DRIVE_STRAIGHT,
+        ALLIANCE_TRENCH_STRAIGHT,
+        ALLIANCE_TRENCH_SPLINE,
+        ENEMY_TRENCH,
+        SHOOT_AND_DRIVE_BACK,
+        SHOOT_AND_DRIVE_FORWARD,
+        DO_NOTHING,
+        SOTM_STILL,
+        SOTM_LINE_CONSTANT,
+        SOTM_LINE_VARIABLE,
+        SOTM_ARC_CONSTANT
+    }*/
 
     public void initalizeLogTopics() {
         m_controls.initLogging();

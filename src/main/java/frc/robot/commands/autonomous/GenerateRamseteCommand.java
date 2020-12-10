@@ -16,14 +16,14 @@ public class GenerateRamseteCommand {
 
         ramseteCommand = new VitruvianRamseteCommand(
                 trajectory,
-                driveTrain::getRobotPose,
+                driveTrain :: getRobotPose,
                 new RamseteController(),
                 driveTrain.getFeedforward(),
                 driveTrain.getDriveTrainKinematics(),
-                driveTrain::getSpeeds,
+                driveTrain :: getSpeeds,
                 driveTrain.getLeftPIDController(),
                 driveTrain.getRightPIDController(),
-                driveTrain::setVoltageOutput,
+                driveTrain :: setVoltageOutput,
                 driveTrain,
                 path,
                 config

@@ -37,37 +37,31 @@ import frc.robot.constants.Constants;
 
 public class
 DriveTrain extends SubsystemBase {
-    private double gearRatioLow = 1 / 14.14;
-    private double gearRatioHigh = 1 / 7.49;
-    private double wheelDiameter = 0.5;
+    private final double gearRatioLow = 1 / 14.14;
+    private final double gearRatioHigh = 1 / 7.49;
+    private final double wheelDiameter = 0.5;
 
-    private double kS = 0.19;
-    private double kV = 2.23;
-    private double kA = 0.0289;
-
-    public double kP = 1.33;
-    public double kI = 0;
-    public double kD = 0;
-
-    public int controlMode = 0;
-
-    private TalonFX[] driveMotors = {
+    private final double kS = 0.19;
+    private final double kV = 2.23;
+    private final double kA = 0.0289;
+    private final TalonFX[] driveMotors = {
             new TalonFX(Constants.leftFrontDriveMotor),
             new TalonFX(Constants.leftRearDriveMotor),
             new TalonFX(Constants.rightFrontDriveMotor),
             new TalonFX(Constants.rightRearDriveMotor)
     };
-
-    private boolean[] brakeMode = {
+    private final boolean[] brakeMode = {
             true,
             false,
             true,
             false
     };
-
+    private final AHRS navX = new AHRS(SerialPort.Port.kMXP);
+    public double kP = 1.33;
+    public double kI = 0;
+    public double kD = 0;
+    public int controlMode = 0;
     DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
-    private AHRS navX = new AHRS(SerialPort.Port.kMXP);
-
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
     DifferentialDriveOdometry odometry;
 
@@ -100,7 +94,8 @@ DriveTrain extends SubsystemBase {
     private SimDouble m_gyroAngleSim;
 
     public DriveTrain(PowerDistributionPanel pdp) {
-        for (TalonFX motor : driveMotors) {
+        // Set up DriveTrain motors
+        for(TalonFX motor : driveMotors) {
             motor.configFactoryDefault();
 //            motor.configVoltageCompSaturation(12);
 //            motor.enableVoltageCompensation(true);
@@ -214,7 +209,7 @@ DriveTrain extends SubsystemBase {
 
         // Normalization
         double magnitude = Math.max(Math.abs(leftPWM), Math.abs(rightPWM));
-        if (magnitude > 1.0) {
+        if(magnitude > 1.0) {
             leftPWM *= 1.0 / magnitude;
             rightPWM *= 1.0 / magnitude;
         }
@@ -247,17 +242,17 @@ DriveTrain extends SubsystemBase {
     }
 
     public void setDriveTrainNeutralMode(int mode) {
-        switch (mode) {
+        switch(mode) {
             case 2:
-                for (var motor : driveMotors)
+                for(var motor : driveMotors)
                     motor.setNeutralMode(NeutralMode.Coast);
-                for (var brakeMode : brakeMode)
+                for(var brakeMode : brakeMode)
                     brakeMode = false;
                 break;
             case 1:
-                for (var motor : driveMotors)
+                for(var motor : driveMotors)
                     motor.setNeutralMode(NeutralMode.Brake);
-                for (var brakeMode : brakeMode)
+                for(var brakeMode : brakeMode)
                     brakeMode = true;
                 break;
             case 0:
@@ -275,7 +270,7 @@ DriveTrain extends SubsystemBase {
     }
 
     public boolean getDriveShifterStatus() {
-        return (driveTrainShifters.get() == DoubleSolenoid.Value.kForward) ? true : false;
+        return driveTrainShifters.get() == DoubleSolenoid.Value.kForward;
     }
 
     public void setDriveShifterStatus(boolean state) {
@@ -332,7 +327,7 @@ DriveTrain extends SubsystemBase {
         Shuffleboard.getTab("Drive Train").addNumber("rightSpeed", () ->
                 Units.metersToFeet(getSpeeds().rightMetersPerSecond));
 
-        Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX::getAngle);
+        Shuffleboard.getTab("Turret").addNumber("Robot Angle", navX :: getAngle);
     }
 
     private void updateSmartDashboard() {

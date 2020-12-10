@@ -17,19 +17,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.vitruvianlib.I2C.I2CLCD;
 
+/*
+Misc things that don't need their own subsystem
+ */
+
 public class Controls extends SubsystemBase {
-    private PowerDistributionPanel m_pdp;
-    private DriveTrain m_driveTrain;
-    private Shooter m_shooter;
-    private Turret m_turret;
-    private boolean init = false;
+    private final PowerDistributionPanel m_pdp;
+    private final DriveTrain m_driveTrain;
+    private final Shooter m_shooter;
+    private final Turret m_turret;
+    private final boolean init = false;
     /**
      * Creates a new ExampleSubsystem.
      */
     I2CLCD LCDDisplay = new I2CLCD(I2C.Port.kMXP, 0x27);
-    private boolean lcdOn = true;
-
     AnalogInput PressureSensor = new AnalogInput(0);
+    private boolean lcdOn = true;
 
     public Controls(DriveTrain driveTrain, Shooter shooter, Turret turret, PowerDistributionPanel pdp) {
         m_driveTrain = driveTrain;
@@ -39,6 +42,7 @@ public class Controls extends SubsystemBase {
         LCDDisplay.init();
     }
 
+    // Setup DriveTrain and Shooter logging
     public void initLogging() {
         BadLog.createTopic("DriveTrain/Left Front Input Current", "A",
                 () -> m_driveTrain.getMotorInputCurrent(0),
@@ -70,14 +74,14 @@ public class Controls extends SubsystemBase {
     }
 
     public String isPressureGood() {
-        if (getPressure() > 40)
+        if(getPressure() > 40)
             return "Closed";
         else
             return "Open";
     }
 
     public String isPoseGood() {
-        if (Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 && Math.abs(m_driveTrain.getHeading()) < 1)
+        if(Math.abs(m_driveTrain.getRobotPose().getTranslation().getX()) < 1 && Math.abs(m_driveTrain.getHeading()) < 1)
             return "Good";
         else
             return "Not Good";
@@ -120,6 +124,12 @@ public class Controls extends SubsystemBase {
                 if (lcdOn) {
                     LCDDisplay.backlight(false);
                 }
+            }
+            //silly stuff
+            updateSmartDashboard();
+        } else {
+            if (lcdOn) {
+                LCDDisplay.backlight(false);
             }
         }
     }

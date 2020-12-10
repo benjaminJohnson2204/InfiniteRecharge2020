@@ -17,20 +17,20 @@ public class TestSequentialForward extends SequentialCommandGroup {
         var startConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
         startConfig.setEndVelocity(startConfig.getMaxVelocity());
         ArrayList<Pose2d> pathA = new ArrayList<>();
-        pathA.add(new Pose2d(0,0,new Rotation2d()));
-        pathA.add(new Pose2d(Units.feetToMeters(2), Units.feetToMeters(0),new Rotation2d()));
+        pathA.add(new Pose2d(0, 0, new Rotation2d()));
+        pathA.add(new Pose2d(Units.feetToMeters(2), Units.feetToMeters(0), new Rotation2d()));
 
         var secondPathConfig = new TrajectoryConfig(Units.feetToMeters(4), Units.feetToMeters(2));
         ArrayList<Pose2d> pathB = new ArrayList<>();
-        pathB.add(new Pose2d(0,0,new Rotation2d()));
-        pathB.add(new Pose2d(Units.feetToMeters(5), Units.feetToMeters(-5), new Rotation2d(Units.degreesToRadians(-90))));
-        pathB.add(new Pose2d(Units.feetToMeters(0), Units.feetToMeters(-10),new Rotation2d(Units.degreesToRadians(-180))));
+        pathB.add(new Pose2d(0, 0, new Rotation2d()));
+        pathB.add(new Pose2d(Units.feetToMeters(5), Units.feetToMeters(- 5), new Rotation2d(Units.degreesToRadians(- 90))));
+        pathB.add(new Pose2d(Units.feetToMeters(0), Units.feetToMeters(- 10), new Rotation2d(Units.degreesToRadians(- 180))));
 
         var trajectoryCommandA = new GenerateRamseteCommand(driveTrain, pathA, startConfig);
         var trajectoryCommandB = new GenerateRamseteCommand(driveTrain, pathB, secondPathConfig);
         addCommands(new ResetOdometry(driveTrain),
-                    trajectoryCommandA.getRamseteCommand(),
-                    new ResetOdometry(driveTrain),
-                    trajectoryCommandB.getRamseteCommand());
+                trajectoryCommandA.getRamseteCommand(),
+                new ResetOdometry(driveTrain),
+                trajectoryCommandB.getRamseteCommand());
     }
 }
