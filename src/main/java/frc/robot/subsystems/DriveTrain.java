@@ -153,6 +153,7 @@ DriveTrain extends SubsystemBase {
                             .getDouble("Angle");
             // the Field2d class lets us visualize our robot in the simulation GUI.
         }
+        SmartDashboard.putData("DT Subsystem", this);
     }
 
     public int getEncoderCount(int sensorIndex) {
@@ -160,7 +161,10 @@ DriveTrain extends SubsystemBase {
     }
 
     public double getAngle() {
-        return navX.getAngle();
+        if(RobotBase.isReal())
+            return navX.getAngle();
+        else
+            return m_gyro.getAngle();
     }
 
     public double getHeading() {
@@ -287,6 +291,20 @@ DriveTrain extends SubsystemBase {
         return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
     }
 
+    public double getTravelDistance() {
+        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+
+        if(RobotBase.isReal()) {
+            double leftMeters = (driveMotors[0].getSelectedSensorPosition() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+            double rightMeters = (driveMotors[2].getSelectedSensorPosition() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+            return (leftMeters + rightMeters) / 2.0;
+        } else {
+            double leftMeters = m_leftEncoder.getDistance();
+            double rightMeters =  m_rightEncoder.getDistance();
+            return (leftMeters + rightMeters) / 2.0;
+        }
+    }
+
     public SimpleMotorFeedforward getFeedforward() {
         return feedforward;
     }
@@ -370,6 +388,7 @@ DriveTrain extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
+
         odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(),
                 m_rightEncoder.getDistance());
 
@@ -377,6 +396,7 @@ DriveTrain extends SubsystemBase {
         // and write the simulated positions and velocities to our simulated encoder and gyro.
         // We negate the right side so that positive voltages make the right side
         // move forward.
+
         m_drivetrainSimulator.setInputs(m_leftOutput * RobotController.getBatteryVoltage(),
                 m_rightOutput * RobotController.getBatteryVoltage());
         m_drivetrainSimulator.update(0.010);
@@ -386,5 +406,10 @@ DriveTrain extends SubsystemBase {
         m_rightEncoderSim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
         m_rightEncoderSim.setRate(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
         m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
+
+        SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putNumber("Robot Angle", getAngle());
+        SmartDashboard.putNumber("L Output", m_leftOutput);
+        SmartDashboard.putNumber("R Output", m_rightOutput);
     }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
@@ -18,7 +19,7 @@ public class FieldSim {
     private final DriveTrain m_driveTrain;
     private final Turret m_turret;
     private final Shooter m_shooter;
-    private final Powercell[] m_powercells = new Powercell[6];
+    private final Powercell[] m_powercells = new Powercell[17];
 
     private int ballCount;
     private Pose2d[] intakePose = {
@@ -33,8 +34,8 @@ public class FieldSim {
         m_turret = turret;
         m_shooter = shooter;
 
-        for(int i = 0; i < 6; i++)
-            m_powercells[i] = new Powercell("PowerCell_" + i);
+        for(int i = 0; i < m_powercells.length; i++)
+            m_powercells[i] = new Powercell(String.format("PowerCell_" + String.format("%02d", i) ));
 
         m_field2d = new Field2d();
     }
@@ -50,6 +51,24 @@ public class FieldSim {
         m_powercells[3].setBallPose(SimConstants.blueTrenchBallPos[0]);
         m_powercells[4].setBallPose(SimConstants.blueTrenchBallPos[1]);
         m_powercells[5].setBallPose(SimConstants.blueTrenchBallPos[2]);
+        m_powercells[6].setBallPose(SimConstants.blueTrenchBallPos[3]);
+        m_powercells[7].setBallPose(SimConstants.blueTrenchBallPos[4]);
+
+        m_powercells[8].setBallPose(SimConstants.blueCenterBalls[3]);
+        m_powercells[9].setBallPose(SimConstants.blueCenterBalls[4]);
+
+        m_powercells[10].setBallPose(SimConstants.redTrenchBallPos[0]);
+        m_powercells[11].setBallPose(SimConstants.redTrenchBallPos[1]);
+        m_powercells[12].setBallPose(SimConstants.redTrenchBallPos[2]);
+        m_powercells[13].setBallPose(SimConstants.redTrenchBallPos[3]);
+        m_powercells[14].setBallPose(SimConstants.redTrenchBallPos[4]);
+
+        m_powercells[15].setBallPose(SimConstants.redCenterBalls[3]);
+        m_powercells[16].setBallPose(SimConstants.redCenterBalls[4]);
+
+        Pose2d startPosition = new Pose2d(12.571505,6.425269, new Rotation2d(Units.degreesToRadians(0)));
+        m_field2d.setRobotPose(startPosition);
+        m_driveTrain.resetOdometry(startPosition, startPosition.getRotation());
     }
 
     private void updateIntakePoses() {
@@ -70,7 +89,7 @@ public class FieldSim {
         double cos = robotPose.getRotation().getCos();
         double sin = robotPose.getRotation().getSin();
 
-        double deltaXa = (robotX - SimConstants.robotLength / 2.0 + SimConstants.intakeLength) - robotX;
+        double deltaXa = (robotX - SimConstants.robotLength / 2.0 - SimConstants.intakeLength) - robotX;
         double deltaXb = (robotX - SimConstants.robotLength / 2.0) - robotX;
         double deltaYa = (robotY + SimConstants.robotWidth / 2.0 ) - robotY;
         double deltaYb = (robotY - SimConstants.robotWidth / 2.0 ) - robotY;
@@ -138,10 +157,10 @@ public class FieldSim {
 
         updateIntakePoses();
 
-//        m_field2d.getObject("Intake A").setPose(intakePose[0]);
-//        m_field2d.getObject("Intake B").setPose(intakePose[1]);
-//        m_field2d.getObject("Intake C").setPose(intakePose[2]);
-//        m_field2d.getObject("Intake D").setPose(intakePose[3]);
+        m_field2d.getObject("Intake A").setPose(intakePose[0]);
+        m_field2d.getObject("Intake B").setPose(intakePose[1]);
+        m_field2d.getObject("Intake C").setPose(intakePose[2]);
+        m_field2d.getObject("Intake D").setPose(intakePose[3]);
 
         for(Powercell p:m_powercells) {
             updateBallState(p);
@@ -173,8 +192,9 @@ public class FieldSim {
     private void updateBallState(Powercell powercell) {
         Pose2d ballPose = powercell.getBallPose();
 
-        if(ballPose.getX() < 0 || ballPose.getX() > SimConstants.fieldWidth || ballPose.getY() < 0 || ballPose.getY() > SimConstants.fieldHieght)
-            powercell.setBallState(3);
+        if(powercell.getBallState() != 1)
+            if(ballPose.getX() < 0 || ballPose.getX() > SimConstants.fieldWidth || ballPose.getY() < 0 || ballPose.getY() > SimConstants.fieldHieght)
+                powercell.setBallState(3);
 
 //        System.out.println("Ball Shot: " + wasShot + "\tBall State: " + ballState);
 //        System.out.println("Ball State: " + ballState + "\tCos: " + ballPose.getRotation().getCos() + "\tX Pos: " + ballPose.getX());
@@ -217,7 +237,7 @@ public class FieldSim {
                 break;
             case 0:
             default:
-                if(isBallInIntakeZone(ballPose)) {
+                if(isBallInIntakeZone(ballPose) && ballCount < 6) {
                     ballCount++;
                     powercell.setBallState(1);
                 }

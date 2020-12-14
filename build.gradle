@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2020.3.2"
+    id "edu.wpi.first.GradleRIO" version "2021.1.1-beta-4"
 }
 
 wpi.maven.useDevelopment = true
@@ -57,7 +57,6 @@ dependencies {
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
 
-//    compile group: 'edu.wpi.first.wpimath', name: 'wpimath-java', version: '2021.1.1-beta-2'
 
     implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
@@ -68,9 +67,11 @@ dependencies {
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+    simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
 
-    simulation "edu.wpi.first.halsim:halsim_ds_socket:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"
-    simulation "edu.wpi.first.halsim:halsim_ds_socket:${wpi.wpilibVersion}:${wpi.platforms.desktop}debug@zip"
+    // Websocket extensions require additional configuration.
+     simulation wpi.deps.sim.ws_server(wpi.platforms.desktop, true)
+    // simulation wpi.deps.sim.ws_client(wpi.platforms.desktop, false)
 
     compile "com.github.jonathandao0:badlog:v0.1.2.4"
 }

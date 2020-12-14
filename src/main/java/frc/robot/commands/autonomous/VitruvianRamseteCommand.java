@@ -46,6 +46,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
         super.initialize();
         autoStartTime = Timer.getFPGATimestamp();
         double distance = 0;
+
         for(int i = 0; i < m_path.size() - 1; i++) {
             var pointA = m_path.get(i);
             var pointB = m_path.get(i + 1);
@@ -55,7 +56,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
             double deltaDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
             distance += deltaDistance;
         }
-        autoDuration = (distance / m_config.getMaxVelocity()) + 2;
+        autoDuration = m_trajectory.getTotalTimeSeconds() + 2;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
         double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_path.get(m_path.size() - 1).getTranslation().getX()));
         double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_path.get(m_path.size() - 1).getTranslation().getY()));
         double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_path.get(m_path.size() - 1).getRotation().getDegrees());
-        boolean isFinished = ((deltaX < 0.25) && (deltaY < 0.25) && (deltaRot < 4)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
+        boolean isFinished = ((deltaX < Units.feetToMeters(.25)) && (deltaY < Units.feetToMeters(.25)) && (deltaRot < 4)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
         SmartDashboardTab.putBoolean("DriveTrain", "Ramsete Command Finished", isFinished);
         return isFinished;
     }

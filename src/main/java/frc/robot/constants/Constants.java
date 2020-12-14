@@ -136,5 +136,10 @@ public final class Constants {
 
         // Example value only - as above, this must be tuned for your drive!
         public static final double kPDriveVel = 0.1;
+
+        public static final double turn_kP =  0.00001;
+        public static final double turn_kI = 0;
+        public static final double turn_kD = 10000;
+        public static final double turn_kDt = 0.02;
     }
 }

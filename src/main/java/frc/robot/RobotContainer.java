@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.routines.*;
+import frc.robot.commands.autonomous.routines.simulation.OpRoutineRed;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.BrakeWhileHeld;
@@ -240,8 +241,8 @@ public class RobotContainer {
             for (int i = 0; i < testButtons.length; i++)
                 testButtons[i] = new JoystickButton(testController, (i + 1));
             //testButtons[0].whenPressed(new SimulationShoot(m_FieldSim, false));
-            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
-            testButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
+//            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
+            testButtons[0].whileHeld(new FeedAll(m_indexer));
         }
     }
 
@@ -259,10 +260,11 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return m_autoCommand;
         else
-            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
+//            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
-            //return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
-            //return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+//            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
+            return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+//            return new OpRoutineRed(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
 //        return new WaitCommand(0);
     }
 
@@ -298,7 +300,6 @@ public class RobotContainer {
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
         }
-
     }
 
     public void autonomousPeriodic() {
