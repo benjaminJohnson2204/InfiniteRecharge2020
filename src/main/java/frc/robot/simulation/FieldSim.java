@@ -172,9 +172,10 @@ public class FieldSim {
 
     private void updateBallState(Powercell powercell) {
         Pose2d ballPose = powercell.getBallPose();
-
-        if(ballPose.getX() < 0 || ballPose.getX() > SimConstants.fieldWidth || ballPose.getY() < 0 || ballPose.getY() > SimConstants.fieldHieght)
-            powercell.setBallState(3);
+        if(powercell.getBallState() != 1) {
+            if (ballPose.getX() < 0 || ballPose.getX() > SimConstants.fieldWidth || ballPose.getY() < 0 || ballPose.getY() > SimConstants.fieldHieght)
+                powercell.setBallState(3);
+        }
 
 //        System.out.println("Ball Shot: " + wasShot + "\tBall State: " + ballState);
 //        System.out.println("Ball State: " + ballState + "\tCos: " + ballPose.getRotation().getCos() + "\tX Pos: " + ballPose.getX());

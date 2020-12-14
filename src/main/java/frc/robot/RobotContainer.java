@@ -8,12 +8,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -35,16 +32,10 @@ import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ShootOnTheMove;
 import frc.robot.commands.turret.ToggleTurretControlMode;
-import frc.robot.simulation.FieldSim;
-import frc.robot.simulation.Powercell;
-import frc.robot.simulation.SimulationShoot;
-import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.LED.GetSubsystemStates;
-import frc.robot.commands.indexer.EjectAll;
-import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
 import frc.robot.constants.Constants;
+import frc.robot.simulation.FieldSim;
+import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
@@ -239,9 +230,11 @@ public class RobotContainer {
             testController.invertRawAxis(5, true);
             for (int i = 0; i < testButtons.length; i++)
                 testButtons[i] = new JoystickButton(testController, (i + 1));
-            //testButtons[0].whenPressed(new SimulationShoot(m_FieldSim, false));
-            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
-            testButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
+            testButtons[3].whenPressed(new SimulationShoot(m_FieldSim, false));
+//            testButtonstButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
+            testButtons[0].whileHeld(new FeedAll(m_indexer));    // A - Feed balls into shooter
+
+
         }
     }
 
