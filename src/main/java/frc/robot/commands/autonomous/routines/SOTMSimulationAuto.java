@@ -56,17 +56,16 @@ public class SOTMSimulationAuto extends SequentialCommandGroup {
         addCommands(
                     new SetOdometry(driveTrain, startPosition),
 //                    new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
-                    new ParallelDeadlineGroup(new WaitCommand(2),
-                            new SimulationShoot(fieldSim, true)),
+                    new WaitCommand(2),
                     new AutoUseVisionCorrection(turret, vision).withTimeout(0.5),
-                    new ParallelCommandGroup(shootOnTheMove, new SequentialCommandGroup(
+                    new SequentialCommandGroup(
                             startToTrenchCommand,
                             new WaitCommand(2)
                                     .andThen(trenchToShootCommand)
                                   //  .alongWith(new SetTurretRobotRelativeAngle(turret, 0))
                                     .andThen(new AutoUseVisionCorrection(turret, vision).withTimeout(0.75))
                                     .andThen(new ParallelDeadlineGroup(new WaitCommand(2),
-                                            new SimulationShoot(fieldSim, true)))))
+                                            shootOnTheMove)))
 
         );
     }

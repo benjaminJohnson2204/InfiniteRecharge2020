@@ -78,7 +78,7 @@ public class RobotContainer {
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
     static JoystickWrapper xBoxController = new JoystickWrapper(Constants.xBoxController);
-    private final ShootOnTheMove m_ShootOnTheMove = new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led, m_vision);
+    private ShootOnTheMove m_ShootOnTheMove;
     private final SelectCommand m_autoCommand;
     public Button[] leftButtons = new Button[2];
     public Button[] rightButtons = new Button[2];
@@ -183,6 +183,7 @@ public class RobotContainer {
 
         m_climber.setDefaultCommand(new SetClimberOutput(m_climber, xBoxController));
         m_skyhook.setDefaultCommand(new SetSkyhookOutput(m_climber, m_skyhook, () -> rightJoystick.getRawAxis(0)));
+        m_ShootOnTheMove = new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led, m_vision, new SimulationShoot(m_FieldSim, true));
     }
 
     /**

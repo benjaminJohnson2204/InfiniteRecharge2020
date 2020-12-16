@@ -79,6 +79,8 @@ public final class Constants {
     public static final double verticalTargetDistance = Units.inchesToMeters(98.25 - 38); // Distance between shooter and target heights from ground
     public static final double verticalShooterAngle = Math.PI / 3; // Angle ball is shot from shooter relative to the ground 
     public static final double tanSquaredVerticalShooterAngle = Math.pow(Math.tan(verticalShooterAngle), 2);
+    public static final double sinOfVerticalShootAngle = Math.sin(verticalShooterAngle);
+    public static final double cosOfVerticalShootAngle = Math.cos(verticalShooterAngle);
     public static final double targetXPosition = 0;
     public static final double targetYPosition = Units.inchesToMeters(629.25);
 

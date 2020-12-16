@@ -279,9 +279,16 @@ DriveTrain extends SubsystemBase {
 
     public DifferentialDriveWheelSpeeds getSpeeds() {
         double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+        double leftMetersPerSecond, rightMetersPerSecond;
+        if (RobotBase.isReal()) {
+             leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+             rightMetersPerSecond = (driveMotors[2].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+        } else {
+            leftMetersPerSecond = m_drivetrainSimulator.getLeftVelocityMetersPerSecond();
+            rightMetersPerSecond = m_drivetrainSimulator.getRightVelocityMetersPerSecond();
+        }
 
-        double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-        double rightMetersPerSecond = (driveMotors[2].getSelectedSensorVelocity() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+
 
         // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
         return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
@@ -343,6 +350,20 @@ DriveTrain extends SubsystemBase {
                     Units.metersToFeet(getSpeeds().leftMetersPerSecond));
             SmartDashboardTab.putNumber("DriveTrain", "rightSpeed",
                     Units.metersToFeet(getSpeeds().rightMetersPerSecond));
+
+            SmartDashboardTab.putNumber("Turret", "Robot Angle", getAngle());
+        } else {
+            SmartDashboardTab.putNumber("DriveTrain", "Left Encoder", getEncoderCount(0));
+            SmartDashboardTab.putNumber("DriveTrain", "Right Encoder", getEncoderCount(2));
+            SmartDashboardTab.putNumber("DriveTrain", "xCoordinate",
+                    Units.metersToFeet(getRobotPose().getTranslation().getX()));
+            SmartDashboardTab.putNumber("DriveTrain", "yCoordinate",
+                    Units.metersToFeet(getRobotPose().getTranslation().getY()));
+            SmartDashboardTab.putNumber("DriveTrain", "Angle", getRobotPose().getRotation().getDegrees());
+            SmartDashboardTab.putNumber("DriveTrain", "leftSpeed",
+                    Units.metersToFeet(m_drivetrainSimulator.getLeftVelocityMetersPerSecond()));
+            SmartDashboardTab.putNumber("DriveTrain", "rightSpeed",
+                    Units.metersToFeet(m_drivetrainSimulator.getLeftVelocityMetersPerSecond()));
 
             SmartDashboardTab.putNumber("Turret", "Robot Angle", getAngle());
         }

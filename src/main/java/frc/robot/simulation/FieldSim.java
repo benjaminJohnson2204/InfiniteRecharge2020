@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
@@ -193,13 +194,17 @@ public class FieldSim {
                 double currentTime = RobotController.getFPGATime();
                 // FPGA time is in microseonds, need to convert it into seconds
                 double deltaT = (currentTime - powercell.getLastTimestamp()) / 1e6;
-                double distanceTraveled = SimConstants.shotSpeed * deltaT;
-                double deltaX = distanceTraveled * ballPose.getRotation().getCos();
-                double deltaY = distanceTraveled * ballPose.getRotation().getSin();
+                //double distanceTraveled = SimConstants.shotSpeed * deltaT;
+
+                double deltaX = powercell.getBallXYVel().getX() * deltaT;
+                double deltaY = powercell.getBallXYVel().getY() * deltaT;
+                powercell.setBallZVel(powercell.getBallZVel() - Constants.g * deltaT); // Update vertical velocity by gravity
+                double deltaZ = powercell.getBallZVel() * deltaT;
 //                System.out.println("Delta X: " + deltaX + "\tDelta Y: " + deltaY + "\tDelta T: " + deltaT);
                 powercell.setBallPose(new Pose2d(deltaX + ballPose.getX(),
                                                  deltaY + ballPose.getY(),
                                                      ballPose.getRotation()));
+                powercell.moveBallZPos(deltaZ);
 
                 powercell.setLastTimestamp(currentTime);
                 break;

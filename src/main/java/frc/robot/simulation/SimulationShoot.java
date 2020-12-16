@@ -9,6 +9,9 @@ package frc.robot.simulation;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -25,6 +28,9 @@ public class SimulationShoot extends CommandBase {
     private static double lastShotTime;
 
     private boolean m_continuous;
+
+    private Pose2d m_xyShootVel;
+    private double m_zShootVel;
     /**
      * Creates a new ExampleCommand.
      *
@@ -34,6 +40,11 @@ public class SimulationShoot extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
         m_fieldSim = fieldSim;
         m_continuous = continuous;
+    }
+
+    public void setVelocity(Pose2d xyShootVel, double zShootVel) {
+        m_xyShootVel = xyShootVel;
+        m_zShootVel = zShootVel;
     }
 
     // Called when the command is initially scheduled.
@@ -51,6 +62,8 @@ public class SimulationShoot extends CommandBase {
                 if(p.getBallState() == 1 && !p.getBallShotState()) {
                     p.setBallShotState(true);
                     lastShotTime = currentTime;
+                    p.setBallZVel(m_zShootVel);
+                    p.setBallXYVel(m_xyShootVel);
                     break;
                 }
             }

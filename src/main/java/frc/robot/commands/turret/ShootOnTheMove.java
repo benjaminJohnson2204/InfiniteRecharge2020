@@ -9,12 +9,16 @@ package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
+import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Shooter;
@@ -41,6 +45,7 @@ public class ShootOnTheMove extends CommandBase {
     private final DriveTrain m_drivetrain;
     private final LED m_led;
     private final Vision m_vision;
+    private final SimulationShoot m_simulationShoot;
     private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     private double initialHeading; // Current robot position and where it's facing on the field relative to x-axis
@@ -59,6 +64,7 @@ public class ShootOnTheMove extends CommandBase {
     private double currentAngleToOuter;
     private double predictedDistanceToOuterTargetXY; // predicted distance in meters from robot to outer target
     private double predictedDistanceToInnerTargetXY; // predicted distance in meters from robot to inner target on xy-plane (field)ot to outer target on xy-plane (field)
+    private double robotLinearVelocity, robotAngularVelocity;
 
 //  private final double maxHorizontalRatioOuter = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum horizontal for ball to go through outer target
 //  private double maxVerticalRatioOuter = hexagonCenterCanHitHeight / 2 / (Constants.ballRadius + Constants.ballTolerance);
@@ -69,12 +75,13 @@ public class ShootOnTheMove extends CommandBase {
      * @param turret The subsystem used by this command.
      */
 
-    public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led, Vision vision) {
+    public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led, Vision vision, SimulationShoot simulationShoot) {
         m_turret = turret;
         m_shooter = shooter;
         m_drivetrain = drivetrain;
         m_led = led;
         m_vision = vision;
+        m_simulationShoot = simulationShoot;
 
         // Use addRequirements() here to declare subsystem dependencies.
         //addRequirements(turret, shooter, vision);
@@ -92,6 +99,11 @@ public class ShootOnTheMove extends CommandBase {
 
 
             if(ledState != 0) {
+                m_simulationShoot.setVelocity(new Pose2d(new Translation2d(
+                        robotLinearVelocity * Math.cos(initialHeading + changeInHeading) + shooterBallMagnitude * Constants.cosOfVerticalShootAngle * Math.cos(targetTurretAngle),
+                        robotLinearVelocity * Math.sin(initialHeading + changeInHeading) + shooterBallMagnitude * Constants.cosOfVerticalShootAngle * Math.sin(targetTurretAngle)),
+                                new Rotation2d()),
+                        shooterBallMagnitude * Constants.sinOfVerticalShootAngle);
                 m_turret.setFieldCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
                 m_turret.setControlMode(1); // Enabling turret to turn to setpoint
                 m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
@@ -106,6 +118,8 @@ public class ShootOnTheMove extends CommandBase {
         SmartDashboardTab.putNumber("Shoot on the Move", "Predicted heading", initialHeading + changeInHeading);
         SmartDashboardTab.putNumber("Shoot on the Move", "Current distance to outer", currentDistanceToOuterTargetXY);
         SmartDashboardTab.putNumber("Shoot on the Move", "Current angle to outer", currentAngleToOuter);
+        SmartDashboardTab.putNumber("Shoot on the Move", "robot linear velocity", robotLinearVelocity);
+        SmartDashboardTab.putNumber("Shoot on the Move", "robot angular velocity", robotAngularVelocity);
 
         if(ledState == 2) {
             SmartDashboardTab.putBoolean("Shoot on the Move", "Can shoot", true);
@@ -129,14 +143,14 @@ public class ShootOnTheMove extends CommandBase {
 
     private boolean canGoThroughInnerTarget() {
         double tangentOfFinalAngle = Math.abs(2 * Constants.verticalTargetDistance / (predictedDistanceToInnerTargetXY == 0 ? 0.01 : predictedDistanceToInnerTargetXY)
-         - shooterBallMagnitude * Math.sin(Constants.verticalShooterAngle) / horizontalBallSpeed);
+         - shooterBallMagnitude * Constants.sinOfVerticalShootAngle / horizontalBallSpeed);
         return tangentOfFinalAngle <= hexagonCenterCanHitHeight / Constants.targetOffset / 2 && // Vertical angle alone is fine
                 tangentOfFinalAngle <= - Math.sqrt(3) * Constants.targetOffset / Math.abs(Math.tan(angleToInner)) + hexagonCenterCanHitHeight; // Within sloped hexagon lines
     }
 
     private boolean canGoThroughOuterTarget() {
         double verticalTargetIntersection = Math.abs(2 * Constants.verticalTargetDistance / predictedDistanceToOuterTargetXY
-         - shooterBallMagnitude * Math.sin(Constants.verticalShooterAngle) / horizontalBallSpeed) * Constants.ballRadius;
+         - shooterBallMagnitude * Constants.sinOfVerticalShootAngle / horizontalBallSpeed) * Constants.ballRadius;
         return verticalTargetIntersection <= hexagonCenterCanHitHeight / 2 &&
                 verticalTargetIntersection <= - Math.sqrt(3) * Math.abs(Constants.ballRadius / Math.tan(angleToOuter)) + hexagonCenterCanHitHeight;
     }
@@ -185,9 +199,9 @@ public class ShootOnTheMove extends CommandBase {
 
             // Separating into linear and angular components
             // Should be re-calculated based on the maximum amount of time the turret and shooter can take to get to any given position and RPM
-            double robotLinearVelocity = speeds.vxMetersPerSecond;
+            robotLinearVelocity = speeds.vxMetersPerSecond;
             // Linear velocity is meters per second straight ahead, angular velocity is rotation per second calculated from differences between wheels
-            double robotAngularVelocity = speeds.omegaRadiansPerSecond;
+            robotAngularVelocity = speeds.omegaRadiansPerSecond;
 
             initialHeading = Math.toRadians(m_drivetrain.getHeading());
             currentTurretAngle = Math.toRadians(m_turret.getTurretAngle()) + initialHeading;
@@ -225,11 +239,11 @@ public class ShootOnTheMove extends CommandBase {
             shooterBallMagnitude = Math.sqrt(
                 Math.pow(horizontalBallSpeed, 2) + Math.pow(robotLinearVelocity, 2)
                  - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + changeInHeading - angleToInner)
-            ) / Math.cos(Constants.verticalShooterAngle);
+            ) / Constants.cosOfVerticalShootAngle;
             if(canGoThroughInnerTarget()) {
                 ledState = 2;
                 targetTurretAngle = angleToInner + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + changeInHeading - angleToInner)
-                / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
+                / shooterBallMagnitude / Constants.cosOfVerticalShootAngle);
             } else {
                 // Calculations for outer
                 horizontalBallSpeed = solveQuarticEquation(
@@ -241,12 +255,12 @@ public class ShootOnTheMove extends CommandBase {
                 shooterBallMagnitude = Math.sqrt(
                     Math.pow(horizontalBallSpeed, 2) + Math.pow(robotLinearVelocity, 2)
                     - 2 * horizontalBallSpeed * robotLinearVelocity * Math.cos(initialHeading + changeInHeading - angleToOuter)
-                ) / Math.cos(Constants.verticalShooterAngle);
+                ) / Constants.cosOfVerticalShootAngle;
                 
                 if(canGoThroughOuterTarget()) {
                     ledState = 1;
                     targetTurretAngle = angleToOuter + Math.asin(-robotLinearVelocity * Math.sin(initialHeading + changeInHeading - angleToOuter)
-                    / shooterBallMagnitude / Math.cos(Constants.verticalShooterAngle));
+                    / shooterBallMagnitude / Constants.cosOfVerticalShootAngle);
                 } else {
                     ledState = 0;
                 }
