@@ -23,10 +23,10 @@ public class FieldSim {
 
     private int ballCount;
     private Pose2d[] intakePose = {
-        new Pose2d(),
-        new Pose2d(),
-        new Pose2d(),
-        new Pose2d()
+            new Pose2d(),
+            new Pose2d(),
+            new Pose2d(),
+            new Pose2d()
     };
 
     public FieldSim(DriveTrain driveTrain, Turret turret, Shooter shooter) {
@@ -95,17 +95,17 @@ public class FieldSim {
         double deltaYb = (robotY - SimConstants.robotWidth / 2.0 ) - robotY;
 
         intakePose[0] = new Pose2d(cos * deltaXa - sin * deltaYa + robotX,
-                                   sin * deltaXa + cos * deltaYa + robotY,
-                                      new Rotation2d());
+                sin * deltaXa + cos * deltaYa + robotY,
+                new Rotation2d());
         intakePose[1] = new Pose2d(cos * deltaXa - sin * deltaYb + robotX,
-                                   sin * deltaXa + cos * deltaYb + robotY,
-                                      new Rotation2d());
+                sin * deltaXa + cos * deltaYb + robotY,
+                new Rotation2d());
         intakePose[2] = new Pose2d(cos * deltaXb - sin * deltaYb + robotX,
-                                   sin * deltaXb + cos * deltaYb + robotY,
-                                      new Rotation2d());
+                sin * deltaXb + cos * deltaYb + robotY,
+                new Rotation2d());
         intakePose[3] = new Pose2d(cos * deltaXb - sin * deltaYa + robotX,
-                                   sin * deltaXb + cos * deltaYa + robotY,
-                                      new Rotation2d());
+                sin * deltaXb + cos * deltaYa + robotY,
+                new Rotation2d());
     }
 
     private boolean isBallInIntakeZone(Pose2d ballPose){
@@ -123,7 +123,7 @@ public class FieldSim {
         return (
                 (ballPose.getY() >= slope0to1 * (ballPose.getX() - intakePose[0].getX()) + intakePose[0].getY()) ==
                         (ballPose.getY() <= slope0to1 * (ballPose.getX() - intakePose[2].getX()) + intakePose[2].getY())
-            ) && (
+        ) && (
                 (ballPose.getY() >= slope1to2 * (ballPose.getX() - intakePose[0].getX()) + intakePose[0].getY()) ==
                         (ballPose.getY() <= slope1to2 * (ballPose.getX() - intakePose[1].getX()) + intakePose[1].getY())
         );
@@ -149,11 +149,21 @@ public class FieldSim {
             return false;*/
     }
 
+    /*  Sometimes, the auto paths ran will eject the robot out of bounds. This will reset the robot state so you can
+        re-run the auto without restarting the sim
+     */
+
     public void simulationPeriodic() {
+//        var robotPose = m_field2d.getRobotPose();
+//
+//        if(robotPose.getX() < 0 || robotPose.getX() > SimConstants.fieldWidth ||
+//                robotPose.getY() < 0 || robotPose.getY() > SimConstants.fieldHieght)
+//            resetRobotPose(new Pose2d(SimConstants.fieldWidth / 2.0 ,SimConstants.fieldHieght / 2.0 , new Rotation2d(0)));
 
         m_field2d.setRobotPose(m_driveTrain.getRobotPose());
+
         m_field2d.getObject("Turret").setPose(new Pose2d(m_driveTrain.getRobotPose().getTranslation(),
-                                                                new Rotation2d(Math.toRadians(getIdealTurretAngle()))));
+                new Rotation2d(Math.toRadians(getIdealTurretAngle()))));
 
         updateIntakePoses();
 
@@ -185,8 +195,13 @@ public class FieldSim {
         return m_powercells;
     }
 
-    public Pose2d getFieldSiMRobotPose() {
+    public Pose2d getRobotPose() {
         return m_field2d.getRobotPose();
+    }
+
+    public synchronized void resetRobotPose(Pose2d pose){
+        m_field2d.setRobotPose(pose);
+        m_driveTrain.resetOdometry(pose, pose.getRotation());
     }
 
     private void updateBallState(Powercell powercell) {
@@ -195,10 +210,6 @@ public class FieldSim {
             if (ballPose.getX() < 0 || ballPose.getX() > SimConstants.fieldWidth || ballPose.getY() < 0 || ballPose.getY() > SimConstants.fieldHieght)
                 powercell.setBallState(3);
         }
-
-        if(powercell.getBallState() != 1)
-            if(ballPose.getX() < 0 || ballPose.getX() > SimConstants.fieldWidth || ballPose.getY() < 0 || ballPose.getY() > SimConstants.fieldHieght)
-                powercell.setBallState(3);
 
 //        System.out.println("Ball Shot: " + wasShot + "\tBall State: " + ballState);
 //        System.out.println("Ball State: " + ballState + "\tCos: " + ballPose.getRotation().getCos() + "\tX Pos: " + ballPose.getX());
@@ -222,8 +233,8 @@ public class FieldSim {
                 double deltaY = distanceTraveled * ballPose.getRotation().getSin();
 //                System.out.println("Delta X: " + deltaX + "\tDelta Y: " + deltaY + "\tDelta T: " + deltaT);
                 powercell.setBallPose(new Pose2d(deltaX + ballPose.getX(),
-                                                 deltaY + ballPose.getY(),
-                                                     ballPose.getRotation()));
+                        deltaY + ballPose.getY(),
+                        ballPose.getRotation()));
 
                 powercell.setLastTimestamp(currentTime);
                 break;

@@ -36,8 +36,8 @@ public class SetOdometry extends CommandBase {
   @Override
   public void initialize() {
     m_driveTrain.resetOdometry(m_pose2d, m_pose2d.getRotation());
-    if(RobotBase.isSimulation())
-      m_driveTrain.setSimPose(m_pose2d);
+//    if(RobotBase.isSimulation())
+//      m_driveTrain.resetOdometry(m_pose2d, m_pose2d.getRotation());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

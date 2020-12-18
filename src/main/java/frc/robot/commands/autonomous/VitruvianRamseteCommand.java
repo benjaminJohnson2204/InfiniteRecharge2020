@@ -18,53 +18,50 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class VitruvianRamseteCommand extends RamseteCommand {
-    Trajectory m_trajectory;
-    TrajectoryConfig m_config;
-    ArrayList<Pose2d> m_path;
-    DriveTrain m_driveTrain;
-    Supplier<Pose2d> m_pose;
-    double autoDuration, autoStartTime;
+/*  The point of this class was to do two things:
+    1) To simplify the construction of a Ramsete Command to follow a path.
+    2) To ensure that the command actually ends once you are at your target
 
-    public VitruvianRamseteCommand(Trajectory trajectory, Supplier<Pose2d> pose, RamseteController controller, SimpleMotorFeedforward feedforward, DifferentialDriveKinematics kinematics, Supplier<DifferentialDriveWheelSpeeds> wheelSpeeds, PIDController leftController, PIDController rightController, BiConsumer<Double, Double> outputVolts, DriveTrain driveTrain, ArrayList<Pose2d> path, TrajectoryConfig config) {
+    The second point was due to not being sure how the RamseteCommand would behave since it was just introduced in 2020.
+    May revisit the need to specify our own end conditions in the future.
+ */
+public class VitruvianRamseteCommand extends RamseteCommand {
+    private Trajectory m_trajectory;
+    private DriveTrain m_driveTrain;
+    private Supplier<Pose2d> m_pose;
+    private Pose2d m_finalPose;
+    private double autoDuration, autoStartTime;
+
+    public VitruvianRamseteCommand(Trajectory trajectory, Supplier<Pose2d> pose, RamseteController controller, SimpleMotorFeedforward feedforward, DifferentialDriveKinematics kinematics, Supplier<DifferentialDriveWheelSpeeds> wheelSpeeds, PIDController leftController, PIDController rightController, BiConsumer<Double, Double> outputVolts, DriveTrain driveTrain) {
         super(trajectory, pose, controller, feedforward, kinematics, wheelSpeeds, leftController, rightController, outputVolts, driveTrain);
         m_driveTrain = driveTrain;
         m_pose = pose;
         m_trajectory = trajectory;
-        m_path = path;
-        m_config = config;
+
+        int trajectorySize = m_trajectory.getStates().size() - 1;
+        m_finalPose = m_trajectory.getStates().get(trajectorySize).poseMeters;
     }
+
 
     @Override
     public void execute() {
         super.execute();
+        autoStartTime = Timer.getFPGATimestamp();
         SmartDashboardTab.putBoolean("DriveTrain", "isRunning", true);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        autoStartTime = Timer.getFPGATimestamp();
-        double distance = 0;
-
-        for(int i = 0; i < m_path.size() - 1; i++) {
-            var pointA = m_path.get(i);
-            var pointB = m_path.get(i + 1);
-
-            double deltaX = pointB.getTranslation().getX() - pointA.getTranslation().getX();
-            double deltaY = pointB.getTranslation().getY() - pointA.getTranslation().getY();
-            double deltaDistance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-            distance += deltaDistance;
-        }
         autoDuration = m_trajectory.getTotalTimeSeconds() + 2;
     }
 
     @Override
     public boolean isFinished() {
-        double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_path.get(m_path.size() - 1).getTranslation().getX()));
-        double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_path.get(m_path.size() - 1).getTranslation().getY()));
-        double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_path.get(m_path.size() - 1).getRotation().getDegrees());
-        boolean isFinished = ((deltaX < Units.feetToMeters(.25)) && (deltaY < Units.feetToMeters(.25)) && (deltaRot < 4)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
+        double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_finalPose.getX()));
+        double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_finalPose.getY()));
+        double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_finalPose.getRotation().getDegrees());
+        boolean isFinished = ((deltaX < Units.feetToMeters(.25)) && (deltaY < Units.feetToMeters(.25)) && (deltaRot < 3)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
         SmartDashboardTab.putBoolean("DriveTrain", "Ramsete Command Finished", isFinished);
         return isFinished;
     }

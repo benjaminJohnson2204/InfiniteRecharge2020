@@ -7,6 +7,7 @@
 
 package frc.robot.commands.drivetrain;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
@@ -34,7 +35,10 @@ public class SetDriveShifters extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if(m_driveTrain.getDriveShifterStatus() != m_shifterState)
+        if(RobotBase.isReal()) {
+            if (m_driveTrain.getDriveShifterStatus() != m_shifterState)
+                m_driveTrain.setDriveShifterStatus(m_shifterState);
+        } else
             m_driveTrain.setDriveShifterStatus(m_shifterState);
     }
 

@@ -103,13 +103,17 @@ public final class Constants {
 
         // Example values only -- use what's on your physical robot!
         public static final DCMotor kDriveGearbox = DCMotor.getFalcon500(2);
-        public static final double kDriveGearing = 14.14;
+        public static final double kDriveGearingLow = 7.49;
+        public static final double kDriveGearingHigh = 14.14;
 
         public static final int kEncoderCPR = 4096;
         public static final double kWheelDiameterMeters = Units.feetToMeters(0.5);
-        public static final double kEncoderDistancePerPulse =
+        public static final double kEncoderDistancePerPulseLow =
                 // Assumes the encoders are directly mounted on the wheel shafts
-                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearing;
+                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearingLow;
+        public static final double kEncoderDistancePerPulseHigh =
+                // Assumes the encoders are directly mounted on the wheel shafts
+                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearingHigh;
 
         public static final boolean kGyroReversed = true;
 
@@ -137,9 +141,9 @@ public final class Constants {
         // Example value only - as above, this must be tuned for your drive!
         public static final double kPDriveVel = 0.1;
 
-        public static final double turn_kP =  0.00001;
+        public static final double turn_kP = 0.2;
         public static final double turn_kI = 0;
-        public static final double turn_kD = 10000;
+        public static final double turn_kD = 0;
         public static final double turn_kDt = 0.02;
     }
 }

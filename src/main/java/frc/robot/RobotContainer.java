@@ -271,11 +271,11 @@ public class RobotContainer {
     public void teleOpInit() {
         if(RobotBase.isReal()) {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
             m_driveTrain.setDriveTrainNeutralMode(0);
         } else {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         }
     }
 
@@ -289,7 +289,7 @@ public class RobotContainer {
             m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
         } else {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         }
     }
 
