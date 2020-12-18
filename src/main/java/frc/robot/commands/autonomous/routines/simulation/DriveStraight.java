@@ -46,7 +46,7 @@ public class DriveStraight extends SequentialCommandGroup {
 
         addCommands(new SetOdometry(driveTrain, fieldSim, initPosition),
                     new SetDriveShifters(driveTrain, true),
-                    driveStraightCommand.andThen(() -> driveTrain.setVoltageOutput(0,0)));
-//                    spline.andThen(() -> driveTrain.setVoltageOutput(0,0)));
+                    driveStraightCommand,//.andThen(() -> driveTrain.setVoltageOutput(0,0)));
+                    spline.andThen(() -> driveTrain.setVoltageOutput(0,0)));
     }
 }
