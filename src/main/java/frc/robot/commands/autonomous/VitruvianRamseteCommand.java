@@ -46,7 +46,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
     public void initialize() {
         super.initialize();
         autoStartTime = Timer.getFPGATimestamp();
-        autoDuration = m_trajectory.getTotalTimeSeconds() + 2;
+        autoDuration = m_trajectory.getTotalTimeSeconds() + 1;
     }
 
 //    @Override

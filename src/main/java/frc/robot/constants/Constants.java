@@ -107,14 +107,18 @@ public final class Constants {
         public static final double kDriveGearingHigh = 14.14;
 
 
-        public static final int kEncoderCPR = 4096;
+        public static final int kMagEncoderCPR = 4096;
+        public static final int kFalconEncoderCPR = 2048;
         public static final double kWheelDiameterMeters = Units.feetToMeters(0.5);
         public static final double kEncoderDistancePerPulseLow =
                 // Encoders are not on the wheel shaft for Falcons, so need to multiply by gear ratio
-                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearingLow;
+                (kWheelDiameterMeters * Math.PI) / (double) kFalconEncoderCPR * kDriveGearingLow;
         public static final double kEncoderDistancePerPulseHigh =
+                // Encoders are not on the wheel shaft for Falcons, so need to multiply by gear ratio
+                (kWheelDiameterMeters * Math.PI) / (double) kFalconEncoderCPR * kDriveGearingLow;
+        public static final double kEncoderDistancePerPulseSim =
                 // Assumes the encoders are directly mounted on the wheel shafts
-                (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearingHigh;
+                (kWheelDiameterMeters * Math.PI) / (double) kMagEncoderCPR * kDriveGearingHigh;
 
         public static final boolean kGyroReversed = true;
 

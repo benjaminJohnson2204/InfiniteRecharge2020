@@ -11,7 +11,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.unmanaged.Unmanaged;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.*;
@@ -82,84 +85,100 @@ public class DriveTrain extends SubsystemBase {
 
     private final Gyro m_gyro = new ADXRS450_Gyro();
 
-    // The left-side drive encoder
-    private final Encoder m_leftEncoder =
-            new Encoder(Constants.DriveConstants.kLeftEncoderPorts[0],
-                    Constants.DriveConstants.kLeftEncoderPorts[1],
-                    Constants.DriveConstants.kLeftEncoderReversed);
+//    // The left-side drive encoder
+//    private final Encoder m_leftEncoder =
+//            new Encoder(Constants.DriveConstants.kLeftEncoderPorts[0],
+//                    Constants.DriveConstants.kLeftEncoderPorts[1],
+//                    Constants.DriveConstants.kLeftEncoderReversed);
+//
+//    // The right-side drive encoder
+//    private final Encoder m_rightEncoder =
+//            new Encoder(Constants.DriveConstants.kRightEncoderPorts[0],
+//                    Constants.DriveConstants.kRightEncoderPorts[1],
+//                    Constants.DriveConstants.kRightEncoderReversed);
+//    private EncoderSim m_leftEncoderSim;
+//    private EncoderSim m_rightEncoderSim;
 
-    // The right-side drive encoder
-    private final Encoder m_rightEncoder =
-            new Encoder(Constants.DriveConstants.kRightEncoderPorts[0],
-                    Constants.DriveConstants.kRightEncoderPorts[1],
-                    Constants.DriveConstants.kRightEncoderReversed);
-    private EncoderSim m_leftEncoderSim;
-    private EncoderSim m_rightEncoderSim;
+    // Temporary until CTRE supports FalconFX in WPILib Sim
+    private final TalonSRX[] simMotors =  new TalonSRX[4];
 
     public DifferentialDrivetrainSim m_drivetrainSimulator;
     private SimDouble m_gyroAngleSim;
 
     public DriveTrain(PowerDistributionPanel pdp) {
         // Set up DriveTrain motors
-        for(TalonFX motor : driveMotors) {
-            motor.configFactoryDefault();
-//            motor.configVoltageCompSaturation(12);
-//            motor.enableVoltageCompensation(true);
-            // motor.configGetSupplyCurrentLimit(30);
-            // motor.configPeakCurrentLimit(40);
-            // motor.configPeakCurrentDuration(1000);
-            // motor.enableCurrentLimit(true);
-            motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
-            motor.configOpenloopRamp(0.1);
-            motor.configClosedloopRamp(0.1);
-            motor.setNeutralMode(NeutralMode.Coast);
-            motor.configForwardSoftLimitEnable(false);
-            motor.configReverseSoftLimitEnable(false);
-        }
-
-        driveMotors[0].setInverted(true);
-        driveMotors[1].setInverted(true);
-        driveMotors[2].setInverted(false);
-        driveMotors[3].setInverted(false);
-
-        driveMotors[0].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        driveMotors[2].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        driveMotors[0].setSensorPhase(false);
-        driveMotors[2].setSensorPhase(false);
-
-        driveMotors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
-        driveMotors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
-        driveMotors[1].setNeutralMode(NeutralMode.Brake);
-        driveMotors[3].setNeutralMode(NeutralMode.Brake);
-
-        driveMotors[1].configOpenloopRamp(0);
-        driveMotors[3].configOpenloopRamp(0);
+        configureCtreMotors(driveMotors);
 
         m_pdp = pdp;
         //initShuffleboardValues();
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
         if (RobotBase.isSimulation()) { // If our robot is simulated
+            for(int i = 0; i < 4; i++)
+                simMotors[i] = new TalonSRX(24 + i);
+            configureCtreMotors(simMotors);
+            simMotors[0].setSensorPhase(true);
+            simMotors[2].setSensorPhase(false);
+
+//            m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulseSim);
+//            m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulseSim);
 
             m_drivetrainSimulator = new DifferentialDrivetrainSim(
                     DriveConstants.kDrivetrainPlant,
                     DriveConstants.kDriveGearbox,
-                    DriveConstants.kDriveGearingLow,
+                    DriveConstants.kDriveGearingHigh,
                     DriveConstants.kTrackwidthMeters,
                     Constants.DriveConstants.kWheelDiameterMeters / 2.0,
                     VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
 
-            m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulseLow);
-            m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulseLow);
-
-            m_leftEncoderSim = new EncoderSim(m_leftEncoder);
-            m_rightEncoderSim = new EncoderSim(m_rightEncoder);
-            m_gyroAngleSim =
-                    new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
+//            m_leftEncoderSim = new EncoderSim(m_leftEncoder);
+//            m_rightEncoderSim = new EncoderSim(m_rightEncoder);
+            m_gyroAngleSim = new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
                             .getDouble("Angle");
-            // the Field2d class lets us visualize our robot in the simulation GUI.
         }
         SmartDashboard.putData("DT Subsystem", this);
+    }
+
+    public void configureCtreMotors(BaseTalon... motors) {
+        for(int i = 0; i < motors.length; i++) {
+            motors[i].configFactoryDefault();
+//            motor.configVoltageCompSaturation(12);
+//            motor.enableVoltageCompensation(true);
+            // motor.configGetSupplyCurrentLimit(30);
+            // motor.configPeakCurrentLimit(40);
+            // motor.configPeakCurrentDuration(1000);
+            // motor.enableCurrentLimit(true);
+
+            motors[i].configOpenloopRamp(0.1);
+            motors[i].configClosedloopRamp(0.1);
+            motors[i].setNeutralMode(NeutralMode.Coast);
+            motors[i].configForwardSoftLimitEnable(false);
+            motors[i].configReverseSoftLimitEnable(false);
+
+            if(motors[i].getClass() == TalonFX.class) {
+                driveMotors[i].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
+                driveMotors[i].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+            } else if(motors[i].getClass() ==  TalonSRX.class) {
+                simMotors[i].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
+                simMotors[i].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+            }
+        }
+
+        motors[0].setInverted(true);
+        motors[1].setInverted(true);
+        motors[2].setInverted(false);
+        motors[3].setInverted(false);
+
+        motors[0].setSensorPhase(false);
+        motors[2].setSensorPhase(false);
+
+        motors[1].set(ControlMode.Follower, driveMotors[0].getDeviceID());
+        motors[3].set(ControlMode.Follower, driveMotors[2].getDeviceID());
+        motors[1].setNeutralMode(NeutralMode.Brake);
+        motors[3].setNeutralMode(NeutralMode.Brake);
+
+        motors[1].configOpenloopRamp(0);
+        motors[3].configOpenloopRamp(0);
     }
 
     public int getEncoderCount(int sensorIndex) {
@@ -185,9 +204,20 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getWheelDistanceMeters(int sensorIndex) {
-        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+//        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+        double gearRatio = gearRatioHigh;
 
-        return (driveMotors[sensorIndex].getSelectedSensorPosition() / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+        if(RobotBase.isReal())
+            return (driveMotors[sensorIndex].getSelectedSensorPosition() / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+        else {
+            return (simMotors[sensorIndex].getSelectedSensorPosition() / 4096.0) * Math.PI * Units.feetToMeters(wheelDiameter);
+//            if(sensorIndex == 0)
+//                return m_leftEncoder.getDistance();
+//            else if(sensorIndex == 2)
+//                return m_rightEncoder.getDistance();
+//            else
+//                return 0;
+            }
     }
 
     public double getMotorInputCurrent(int motorIndex) {
@@ -197,6 +227,12 @@ public class DriveTrain extends SubsystemBase {
     public void resetEncoderCounts() {
         driveMotors[0].setSelectedSensorPosition(0);
         driveMotors[2].setSelectedSensorPosition(0);
+        if(RobotBase.isSimulation()) {
+//            m_leftEncoder.reset();
+//            m_rightEncoder.reset();;
+            simMotors[0].getSimCollection().setQuadraturePosition(0);
+            simMotors[2].getSimCollection().setQuadraturePosition(0);
+        }
     }
 
     public void setMotorArcadeDrive(double throttle, double turn) {
@@ -249,6 +285,11 @@ public class DriveTrain extends SubsystemBase {
         m_rightOutput = rightOutput;
         driveMotors[0].set(ControlMode.PercentOutput, leftOutput);
         driveMotors[2].set(ControlMode.PercentOutput, rightOutput);
+
+        if(RobotBase.isSimulation()) {
+            simMotors[0].set(ControlMode.PercentOutput, leftOutput);
+            simMotors[2].set(ControlMode.PercentOutput, rightOutput);
+        }
     }
 
     public void setDriveTrainNeutralMode(int mode) {
@@ -297,31 +338,40 @@ public class DriveTrain extends SubsystemBase {
 
     public DifferentialDriveWheelSpeeds getSpeeds() {
 //        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
-        double gearRatio = gearRatioLow;
-        double leftMetersPerSecond, rightMetersPerSecond;
+        double gearRatio = gearRatioHigh;
+        double leftMetersPerSecond = 0, rightMetersPerSecond = 0;
 
         if(RobotBase.isReal()) {
-            // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
+//             getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
             leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
             rightMetersPerSecond = (driveMotors[2].getSelectedSensorVelocity() * 10.0 / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
         } else {
-            leftMetersPerSecond = m_leftEncoder.getRate();
-            rightMetersPerSecond = m_rightEncoder.getRate();
+            // This is apparently causing issues to the sim where the robot does not fully reach the endpoint. My assumption
+            // at the moment is that we need to re-characterize the drivetrain to get new values. I believe David noticed this
+            // issue on the actual robot when he had it. By removing this, the robot sim will follow the trajectory perfectly.
+//            leftMetersPerSecond = m_leftEncoderSim.getRate();
+//            rightMetersPerSecond = m_rightEncoderSim.getRate();
+//            leftMetersPerSecond = (simMotors[0].getSelectedSensorVelocity() * 10.0 / 4096.0) * Math.PI * Units.feetToMeters(wheelDiameter);
+//            rightMetersPerSecond = (simMotors[2].getSelectedSensorVelocity() * 10.0 / 4096.0) * Math.PI * Units.feetToMeters(wheelDiameter);
         }
 
         return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
     }
 
     public double getTravelDistance() {
-        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+//        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+        double gearRatio = gearRatioHigh;
+        double leftMeters, rightMeters;
 
         if(RobotBase.isReal()) {
-            double leftMeters = (driveMotors[0].getSelectedSensorPosition() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-            double rightMeters = (driveMotors[2].getSelectedSensorPosition() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+            leftMeters = (driveMotors[0].getSelectedSensorPosition() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+            rightMeters = (driveMotors[2].getSelectedSensorPosition() * 10.0 / 2048) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
             return (leftMeters + rightMeters) / 2.0;
         } else {
-            double leftMeters = m_leftEncoder.getDistance();
-            double rightMeters =  m_rightEncoder.getDistance();
+//            leftMeters = m_leftEncoder.getDistance();
+//            rightMeters =  m_rightEncoder.getDistance();
+            leftMeters = (simMotors[0].getSelectedSensorPosition() * 10.0 / 4096) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+            rightMeters = (simMotors[2].getSelectedSensorPosition() * 10.0 / 4096) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
             return (leftMeters + rightMeters) / 2.0;
         }
     }
@@ -348,10 +398,8 @@ public class DriveTrain extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose, Rotation2d rotation) {
         if(RobotBase.isSimulation()) {
-            m_leftEncoder.reset();
-            m_rightEncoder.reset();
+            resetEncoderCounts();
             m_drivetrainSimulator.setPose(pose);
-
         }
         odometry.resetPosition(pose, rotation);
     }
@@ -395,8 +443,7 @@ public class DriveTrain extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if(RobotBase.isReal())
-            odometry.update(Rotation2d.fromDegrees(getHeading()), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+         odometry.update(Rotation2d.fromDegrees(getHeading()), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
 
         updateSmartDashboard();
     }
@@ -405,10 +452,11 @@ public class DriveTrain extends SubsystemBase {
         return m_drivetrainSimulator.getCurrentDrawAmps();
     }
     double maxVel;
+
     @Override
     public void simulationPeriodic() {
-        odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(),
-                m_rightEncoder.getDistance());
+//        odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(),
+//                m_rightEncoder.getDistance());
 
         // To update our simulation, we set motor voltage inputs, update the simulation,
         // and write the simulated positions and velocities to our simulated encoder and gyro.
@@ -419,26 +467,47 @@ public class DriveTrain extends SubsystemBase {
                 m_rightOutput * RobotController.getBatteryVoltage());
         m_drivetrainSimulator.update(0.010);
 
-        m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
-        m_leftEncoderSim.setRate(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
-        m_rightEncoderSim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
-        m_rightEncoderSim.setRate(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
-        m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
+//        m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
+//        m_leftEncoderSim.setRate(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
+//        m_rightEncoderSim.setDistance(m_drivetrainSimulator.getRightPositionMeters());
+//        m_rightEncoderSim.setRate(m_drivetrainSimulator.getRightVelocityMetersPerSecond());
+//        m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
+
+        Unmanaged.feedEnable(40);
+        simMotors[0].getSimCollection().setQuadraturePosition(distanceMetersToTalonSrxUnits(m_drivetrainSimulator.getLeftPositionMeters()));
+        simMotors[0].getSimCollection().setQuadratureVelocity(distanceMetersToTalonSrxUnits(m_drivetrainSimulator.getLeftVelocityMetersPerSecond()));
+        simMotors[2].getSimCollection().setQuadraturePosition(distanceMetersToTalonSrxUnits(m_drivetrainSimulator.getRightPositionMeters()));
+        simMotors[2].getSimCollection().setQuadratureVelocity(distanceMetersToTalonSrxUnits(m_drivetrainSimulator.getRightVelocityMetersPerSecond()));
 
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putNumber("Robot Angle", getAngle());
-        SmartDashboard.putNumber("L Output", m_leftOutput);
-        SmartDashboard.putNumber("R Output", m_rightOutput);
-        SmartDashboard.putNumber("L Encoder Distance", m_leftEncoder.getDistance());
-        SmartDashboard.putNumber("R Encoder Distance", m_rightEncoder.getDistance());
-        SmartDashboard.putNumber("L Encoder Count", m_leftEncoder.get());
-        SmartDashboard.putNumber("R Encoder Count", m_rightEncoder.get());
-        SmartDashboard.putNumber("L Encoder Rate", m_leftEncoder.getRate());
-        SmartDashboard.putNumber("R Encoder Rate", m_rightEncoder.getRate());
+        SmartDashboard.putNumber("L Encoder Count", simMotors[0].getSelectedSensorPosition());
+        SmartDashboard.putNumber("R Encoder Count", simMotors[2].getSelectedSensorPosition());
+//        SmartDashboard.putNumber("L Output", m_leftOutput);
+//        SmartDashboard.putNumber("R Output", m_rightOutput);
+//        SmartDashboard.putNumber("L Encoder Distance", m_leftEncoder.getDistance());
+//        SmartDashboard.putNumber("R Encoder Distance", m_rightEncoder.getDistance());
+//        SmartDashboard.putNumber("L Encoder Count", m_leftEncoder.get());
+//        SmartDashboard.putNumber("R Encoder Count", m_rightEncoder.get());
+//        SmartDashboard.putNumber("L Encoder Rate", m_leftEncoder.getRate());
+//        SmartDashboard.putNumber("R Encoder Rate", m_rightEncoder.getRate());
 
-        if(m_leftEncoder.getRate() > maxVel) {
-            SmartDashboard.putNumber("Max Vel", m_leftEncoder.get());
-            maxVel = m_leftEncoder.getRate();
-        }
+        SmartDashboard.putBoolean("High Gear", getDriveShifterStatus());
+        SmartDashboard.putBoolean("CTRE Feed Enabled", Unmanaged.getEnableState());
+
+//        if(m_leftEncoder.getRate() > maxVel) {
+//            SmartDashboard.putNumber("Max Vel", m_leftEncoder.get());
+//            maxVel = m_leftEncoder.getRate();
+//        }
+    }
+
+    int distanceMetersToTalonSrxUnits(double meters) {
+        // To simplify, for simulating Talons, pretend they are on the wheel axel (e.g. don't care about the gear ratio)
+        return (int) (meters * 4096.0 / (Units.feetToMeters(wheelDiameter) * Math.PI));
+    }
+    int distanceMetersToFalconFxUnits(double meters) {
+        double gearRatio = gearRatioHigh;
+
+        return (int) (meters * 2048.0 / (10 * gearRatio * Math.PI));
     }
 }
