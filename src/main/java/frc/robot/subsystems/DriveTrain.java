@@ -27,44 +27,25 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
 import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.DriveConstants;
 
-import static frc.robot.constants.Constants.DriveConstants.kEncoderCPR;
-import static frc.robot.constants.Constants.DriveConstants.kWheelDiameterMeters;
 
-public class
-DriveTrain extends SubsystemBase {
-    private final double gearRatioLow = 1 / 14.14;
-    private final double gearRatioHigh = 1 / 7.49;
+public class DriveTrain extends SubsystemBase {
+    private final double gearRatioHigh = 1.0 / 14.14;
+    private final double gearRatioLow = 1.0 / 7.49;
     private final double wheelDiameter = 0.5;
 
-    private final double kS = 0.19;
-    private final double kV = 2.23;
-    private final double kA = 0.0289;
-    private final TalonFX[] driveMotors = {
-            new TalonFX(Constants.leftFrontDriveMotor),
-            new TalonFX(Constants.leftRearDriveMotor),
-            new TalonFX(Constants.rightFrontDriveMotor),
-            new TalonFX(Constants.rightRearDriveMotor)
-    };
-    private final boolean[] brakeMode = {
-            true,
-            false,
-            true,
-            false
-    };
-    private final AHRS navX = new AHRS(SerialPort.Port.kMXP);
+    private final double kS = DriveConstants.ksVolts;
+    private final double kV = DriveConstants.kvVoltSecondsPerMeter;
+    private final double kA = DriveConstants.kaVoltSecondsSquaredPerMeter;;
 
-    DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
-    private boolean m_driveShifterState;
-
-    public double kP = 1.33;
+    public double kP = 1.33; //1.33
     public double kI = 0;
     public double kD = 0;
     public int controlMode = 0;
@@ -79,7 +60,25 @@ DriveTrain extends SubsystemBase {
 
     PowerDistributionPanel m_pdp;
 
+    private final TalonFX[] driveMotors = {
+            new TalonFX(Constants.leftFrontDriveMotor),
+            new TalonFX(Constants.leftRearDriveMotor),
+            new TalonFX(Constants.rightFrontDriveMotor),
+            new TalonFX(Constants.rightRearDriveMotor)
+    };
     double m_leftOutput, m_rightOutput;
+
+    private final boolean[] brakeMode = {
+            true,
+            false,
+            true,
+            false
+    };
+
+    DoubleSolenoid driveTrainShifters = new DoubleSolenoid(Constants.pcmOne, Constants.driveTrainShiftersForward, Constants.driveTrainShiftersReverse);
+    private boolean m_driveShifterState;
+
+    private final AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
     private final Gyro m_gyro = new ADXRS450_Gyro();
 
@@ -140,19 +139,18 @@ DriveTrain extends SubsystemBase {
         //initShuffleboardValues();
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 
-
         if (RobotBase.isSimulation()) { // If our robot is simulated
 
             m_drivetrainSimulator = new DifferentialDrivetrainSim(
-                    Constants.DriveConstants.kDrivetrainPlant,
-                    Constants.DriveConstants.kDriveGearbox,
-                    Constants.DriveConstants.kDriveGearingLow,
-                    Constants.DriveConstants.kTrackwidthMeters,
+                    DriveConstants.kDrivetrainPlant,
+                    DriveConstants.kDriveGearbox,
+                    DriveConstants.kDriveGearingLow,
+                    DriveConstants.kTrackwidthMeters,
                     Constants.DriveConstants.kWheelDiameterMeters / 2.0,
                     VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
 
-            m_leftEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulseLow);
-            m_rightEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulseLow);
+            m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulseLow);
+            m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulseLow);
 
             m_leftEncoderSim = new EncoderSim(m_leftEncoder);
             m_rightEncoderSim = new EncoderSim(m_rightEncoder);
@@ -243,7 +241,7 @@ DriveTrain extends SubsystemBase {
         SmartDashboardTab.putNumber("DriveTrain", "Left Voltage", leftVoltage);
         SmartDashboardTab.putNumber("DriveTrain", "Right Voltage", rightVoltage);
 
-        setMotorPercentOutput(leftVoltage / m_pdp.getVoltage(), rightVoltage / m_pdp.getVoltage());
+        setMotorPercentOutput(leftVoltage / batteryVoltage, rightVoltage / batteryVoltage);
     }
 
     private void setMotorPercentOutput(double leftOutput, double rightOutput) {
@@ -287,24 +285,12 @@ DriveTrain extends SubsystemBase {
 
     public void setDriveShifterStatus(boolean state) {
         m_driveShifterState = state;
-        double gearRatio = state ? Constants.DriveConstants.kDriveGearingHigh : Constants.DriveConstants.kDriveGearingLow ;
-        double kEncoderDistancePerPulse = state ? Constants.DriveConstants.kEncoderDistancePerPulseHigh : Constants.DriveConstants.kEncoderDistancePerPulseLow;
+//        double gearRatio = state ? Constants.DriveConstants.kDriveGearingHigh : Constants.DriveConstants.kDriveGearingLow ;
+//        double kEncoderDistancePerPulse = state ? Constants.DriveConstants.kEncoderDistancePerPulseHigh : Constants.DriveConstants.kEncoderDistancePerPulseLow;
 
-        m_drivetrainSimulator.setCurrentGearing(gearRatio);
-        m_leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
-        m_rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
-//        m_leftEncoderSim.setRate(kEncoderDistancePerPulse);
-//        m_rightEncoderSim.setRate(kEncoderDistancePerPulse);
-//        m_leftEncoderSim = new EncoderSim(m_leftEncoder);
-//        m_rightEncoderSim = new EncoderSim(m_rightEncoder);
-        System.out.println("Sim Gearing: " + m_drivetrainSimulator.getCurrentGearing() +
-                "\tLeft Encoder Dpp: " + m_leftEncoder.getDistancePerPulse() +
-                "\tRight Encoder Dpp: " + m_rightEncoder.getDistancePerPulse() +
-                "\tLeft Encoder Rate: " + m_leftEncoder.getRate() +
-                "\tRight Encoder Rate: " + m_rightEncoder.getRate() +
-                "\tLeft Encoder Sim Rate: " + m_leftEncoderSim.getRate() +
-                "\tRight Encoder Sim Rate: " + m_rightEncoderSim.getRate()
-        );
+//        m_drivetrainSimulator.setCurrentGearing(gearRatio);
+//        m_leftEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
+//        m_rightEncoder.setDistancePerPulse(kEncoderDistancePerPulse);
 
         driveTrainShifters.set(state ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
@@ -312,11 +298,17 @@ DriveTrain extends SubsystemBase {
     public DifferentialDriveWheelSpeeds getSpeeds() {
 //        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
         double gearRatio = gearRatioLow;
+        double leftMetersPerSecond, rightMetersPerSecond;
 
-        double leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
-        double rightMetersPerSecond = (driveMotors[2].getSelectedSensorVelocity() * 10.0 / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+        if(RobotBase.isReal()) {
+            // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
+            leftMetersPerSecond = (driveMotors[0].getSelectedSensorVelocity() * 10.0 / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+            rightMetersPerSecond = (driveMotors[2].getSelectedSensorVelocity() * 10.0 / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
+        } else {
+            leftMetersPerSecond = m_leftEncoder.getRate();
+            rightMetersPerSecond = m_rightEncoder.getRate();
+        }
 
-        // getSelectedSensorVelocity() returns values in units per 100ms. Need to convert value to RPS
         return new DifferentialDriveWheelSpeeds(leftMetersPerSecond, rightMetersPerSecond);
     }
 
@@ -412,7 +404,7 @@ DriveTrain extends SubsystemBase {
     public double getDrawnCurrentAmps() {
         return m_drivetrainSimulator.getCurrentDrawAmps();
     }
-
+    double maxVel;
     @Override
     public void simulationPeriodic() {
         odometry.update(Rotation2d.fromDegrees(getHeading()), m_leftEncoder.getDistance(),
@@ -437,5 +429,16 @@ DriveTrain extends SubsystemBase {
         SmartDashboard.putNumber("Robot Angle", getAngle());
         SmartDashboard.putNumber("L Output", m_leftOutput);
         SmartDashboard.putNumber("R Output", m_rightOutput);
+        SmartDashboard.putNumber("L Encoder Distance", m_leftEncoder.getDistance());
+        SmartDashboard.putNumber("R Encoder Distance", m_rightEncoder.getDistance());
+        SmartDashboard.putNumber("L Encoder Count", m_leftEncoder.get());
+        SmartDashboard.putNumber("R Encoder Count", m_rightEncoder.get());
+        SmartDashboard.putNumber("L Encoder Rate", m_leftEncoder.getRate());
+        SmartDashboard.putNumber("R Encoder Rate", m_rightEncoder.getRate());
+
+        if(m_leftEncoder.getRate() > maxVel) {
+            SmartDashboard.putNumber("Max Vel", m_leftEncoder.get());
+            maxVel = m_leftEncoder.getRate();
+        }
     }
 }

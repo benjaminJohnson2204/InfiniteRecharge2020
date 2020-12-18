@@ -106,10 +106,11 @@ public final class Constants {
         public static final double kDriveGearingLow = 7.49;
         public static final double kDriveGearingHigh = 14.14;
 
+
         public static final int kEncoderCPR = 4096;
         public static final double kWheelDiameterMeters = Units.feetToMeters(0.5);
         public static final double kEncoderDistancePerPulseLow =
-                // Assumes the encoders are directly mounted on the wheel shafts
+                // Encoders are not on the wheel shaft for Falcons, so need to multiply by gear ratio
                 (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR * kDriveGearingLow;
         public static final double kEncoderDistancePerPulseHigh =
                 // Assumes the encoders are directly mounted on the wheel shafts
@@ -136,14 +137,5 @@ public final class Constants {
         public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
                 LinearSystemId.identifyDrivetrainSystem(kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter,
                         kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
-
-
-        // Example value only - as above, this must be tuned for your drive!
-        public static final double kPDriveVel = 0.1;
-
-        public static final double turn_kP = 0.2;
-        public static final double turn_kI = 0;
-        public static final double turn_kD = 0;
-        public static final double turn_kDt = 0.02;
     }
 }

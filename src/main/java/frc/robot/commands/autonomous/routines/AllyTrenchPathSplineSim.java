@@ -91,7 +91,7 @@ public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
             );
         else
             addCommands(
-                    new SetOdometry(driveTrain, startPosition),
+                    new SetOdometry(driveTrain, fieldSim, startPosition),
                     new SetDriveShifters(driveTrain, true),
 //                    new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
                     new ParallelDeadlineGroup(new WaitCommand(2),

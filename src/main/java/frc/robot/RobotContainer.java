@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.routines.*;
+import frc.robot.commands.autonomous.routines.simulation.DriveStraight;
 import frc.robot.commands.autonomous.routines.simulation.OpRoutineRed;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.climber.SetClimberOutput;
@@ -254,8 +255,9 @@ public class RobotContainer {
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
 //            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
-            return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+//            return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
 //            return new OpRoutineRed(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+            return new DriveStraight(m_driveTrain, m_turret, m_FieldSim);
 //        return new WaitCommand(0);
     }
 

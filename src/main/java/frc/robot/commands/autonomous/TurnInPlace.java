@@ -8,22 +8,9 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
-import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
-
-import java.util.ArrayList;
-
-import static frc.robot.constants.Constants.DriveConstants.turn_kP;
-import static frc.robot.constants.Constants.DriveConstants.turn_kI;
-import static frc.robot.constants.Constants.DriveConstants.turn_kD;
-import static frc.robot.constants.Constants.DriveConstants.turn_kDt;
-
 
 public class TurnInPlace extends CommandBase {
     private DriveTrain m_driveTrain;

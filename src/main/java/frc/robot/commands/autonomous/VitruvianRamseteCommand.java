@@ -42,19 +42,17 @@ public class VitruvianRamseteCommand extends RamseteCommand {
         m_finalPose = m_trajectory.getStates().get(trajectorySize).poseMeters;
     }
 
-
-    @Override
-    public void execute() {
-        super.execute();
-        autoStartTime = Timer.getFPGATimestamp();
-        SmartDashboardTab.putBoolean("DriveTrain", "isRunning", true);
-    }
-
     @Override
     public void initialize() {
         super.initialize();
+        autoStartTime = Timer.getFPGATimestamp();
         autoDuration = m_trajectory.getTotalTimeSeconds() + 2;
     }
+
+//    @Override
+//    public void execute() {
+//        super.execute();
+//    }
 
     @Override
     public boolean isFinished() {
