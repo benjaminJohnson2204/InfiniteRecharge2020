@@ -288,8 +288,9 @@ public class RobotContainer {
     public void autonomousInit() {
         if (RobotBase.isReal()) {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         } else {
+            m_FieldSim.initSim();
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         }

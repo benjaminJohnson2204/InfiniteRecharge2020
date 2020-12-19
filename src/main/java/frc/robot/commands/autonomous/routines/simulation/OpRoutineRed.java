@@ -1,5 +1,7 @@
 package frc.robot.commands.autonomous.routines.simulation;
 
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.commands.autonomous.SmartdashboardCommand;
 import frc.robot.commands.autonomous.TurnInPlace;
 import frc.robot.commands.drivetrain.SetDriveShifters;
@@ -45,7 +48,7 @@ public class OpRoutineRed extends SequentialCommandGroup {
 //        Pose2d blueTrenchIntakePosA = new Pose2d(10.049316,7.166328, new  Rotation2d(Units.degreesToRadians(-55)));
 //        Pose2d blueTrenchIntakePosA = new Pose2d(10.049316,7.166328, new  Rotation2d(Units.degreesToRadians(-55)));
 //        Pose2d blueTrenchIntakePosB = new Pose2d(10.049316,7.166328, new  Rotation2d(Units.degreesToRadians(-22.5)));
-
+        double startTime = Timer.getFPGATimestamp();
         Pose2d startPosition = new Pose2d(12.557047,7.275692, new Rotation2d(Units.degreesToRadians(0)));
         Pose2d blueTrenchIntakePosA = new Pose2d(10.1,7.275692, new Rotation2d(Units.degreesToRadians(0)));
         Pose2d blueTrenchIntakePosB = new Pose2d(10.1,7.275692, new Rotation2d(Units.degreesToRadians(-35)));
@@ -139,8 +142,8 @@ public class OpRoutineRed extends SequentialCommandGroup {
                 new ParallelDeadlineGroup(new TurnInPlace(driveTrain, -90),
                         new SimulationShoot(fieldSim, true)),
                 redCenterIntakeCommand.andThen(() -> driveTrain.setVoltageOutput(0,0)),
-                new SimulationShoot(fieldSim, true)
-                        .alongWith(new SmartdashboardCommand("Auto Time", 15.0 - Timer.getMatchTime()))
+                new ParallelDeadlineGroup(new WaitCommand(1.6),
+                        new SimulationShoot(fieldSim, true))
 
 
 

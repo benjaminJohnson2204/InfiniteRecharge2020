@@ -1,6 +1,7 @@
 package frc.robot.simulation;
 
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -29,6 +30,8 @@ public class FieldSim {
             new Pose2d()
     };
 
+    private double m_autoStartTime;
+
     public FieldSim(DriveTrain driveTrain, Turret turret, Shooter shooter) {
         m_driveTrain = driveTrain;
         m_turret = turret;
@@ -44,6 +47,8 @@ public class FieldSim {
         // Load 3 powercells into the robot
         for(int i = 0; i < 3; i++)
             m_powercells[i].setBallState(1);
+        for(int i = 3; i < m_powercells.length; i++)
+            m_powercells[i].setBallState(0);
 
         ballCount = 3;
 
@@ -66,9 +71,10 @@ public class FieldSim {
         m_powercells[15].setBallPose(SimConstants.redCenterBalls[3]);
         m_powercells[16].setBallPose(SimConstants.redCenterBalls[4]);
 
-        Pose2d startPosition = new Pose2d(12.571505,6.425269, new Rotation2d(Units.degreesToRadians(0)));
+        Pose2d startPosition = new Pose2d(12.557047,7.275692, new Rotation2d(Units.degreesToRadians(0)));
         m_field2d.setRobotPose(startPosition);
         m_driveTrain.resetOdometry(startPosition, startPosition.getRotation());
+        m_autoStartTime = Timer.getFPGATimestamp();
     }
 
     private void updateIntakePoses() {
@@ -180,6 +186,9 @@ public class FieldSim {
         SmartDashboard.putData("Field2d", m_field2d);
     }
 
+    public double getAutoStartTime(){
+        return m_autoStartTime;
+    }
     public double getIdealTargetDistance() {
         return Math.sqrt(Math.pow(SimConstants.blueGoalPose.getY() - m_turret.getTurretSimPose().getY(), 2) + Math.pow(SimConstants.blueGoalPose.getX() - m_turret.getTurretSimPose().getX(), 2));
     }
