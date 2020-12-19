@@ -34,19 +34,28 @@ public class DriveStraight extends SequentialCommandGroup {
 
         var driveStraightCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, driveStraight);
 
-        Pose2d position2 = new Pose2d(Units.feetToMeters(45),3, new Rotation2d());
-
-
+        Pose2d position2 = new Pose2d(Units.feetToMeters(45),3, new Rotation2d(Units.degreesToRadians(-90)));
         Trajectory splineTrajectory = TrajectoryGenerator.generateTrajectory(endPosition,
                 List.of(),
                 position2,
                 config);
-
         var spline = TrajectoryUtils.generateRamseteCommand(driveTrain, splineTrajectory);
 
-        addCommands(new SetOdometry(driveTrain, fieldSim, initPosition),
-                    new SetDriveShifters(driveTrain, true),
-                    driveStraightCommand,//.andThen(() -> driveTrain.setVoltageOutput(0,0)));
-                    spline.andThen(() -> driveTrain.setVoltageOutput(0,0)));
+        Pose2d blueTrenchIntakePos = new Pose2d(10.049316,7.166328, new  Rotation2d(Units.degreesToRadians(-55)));
+
+        Pose2d crossoverStopPos = new Pose2d(11.25,0.902087, new  Rotation2d(Units.degreesToRadians(-90)));
+
+        Trajectory crossoverTrajectory = TrajectoryGenerator.generateTrajectory(blueTrenchIntakePos,
+                List.of(),
+                crossoverStopPos,
+                config);
+
+
+        var crossoverCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, crossoverTrajectory);
+
+        addCommands(new SetOdometry(driveTrain, fieldSim, blueTrenchIntakePos),
+//                    new SetDriveShifters(driveTrain, true),
+//                    driveStraightCommand,//.andThen(() -> driveTrain.setVoltageOutput(0,0)));
+                      crossoverCommand.andThen(() -> driveTrain.setVoltageOutput(0,0)));
     }
 }

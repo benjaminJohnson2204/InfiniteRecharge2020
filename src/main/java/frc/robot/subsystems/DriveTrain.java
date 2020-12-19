@@ -155,10 +155,10 @@ public class DriveTrain extends SubsystemBase {
             motors[i].configForwardSoftLimitEnable(false);
             motors[i].configReverseSoftLimitEnable(false);
 
-            if(motors[i].getClass() == TalonFX.class) {
+            if(motors[i] instanceof TalonFX) {
                 driveMotors[i].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
                 driveMotors[i].configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-            } else if(motors[i].getClass() ==  TalonSRX.class) {
+            } else if(motors[i] instanceof TalonSRX) {
                 simMotors[i].configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 0, 0));
                 simMotors[i].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
             }

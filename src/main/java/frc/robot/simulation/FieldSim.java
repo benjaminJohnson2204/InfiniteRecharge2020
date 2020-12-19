@@ -186,8 +186,8 @@ public class FieldSim {
 
     public double getIdealTurretAngle() {
 
-        double targetRadians = Math.atan2(SimConstants.blueGoalPose.getY() -m_turret.getTurretSimPose().getY(), SimConstants.blueGoalPose.getX() - m_turret.getTurretSimPose().getX());
-
+//        double targetRadians = Math.atan2(SimConstants.blueGoalPose.getY() -m_turret.getTurretSimPose().getY(), SimConstants.blueGoalPose.getX() - m_turret.getTurretSimPose().getX());
+        double targetRadians = Math.atan2(SimConstants.redGoalPose.getY() -m_turret.getTurretSimPose().getY(), SimConstants.redGoalPose.getX() - m_turret.getTurretSimPose().getX());
         return Math.toDegrees(targetRadians);
     }
 

@@ -49,4 +49,5 @@ public class SimConstants {
     };
 
     public static final Pose2d blueGoalPose = new Pose2d(0, 5.831, new Rotation2d());
+    public static final Pose2d redGoalPose = new Pose2d(15.960367,2.373122, new Rotation2d());
 }

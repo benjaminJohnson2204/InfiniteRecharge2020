@@ -54,15 +54,15 @@ public class VitruvianRamseteCommand extends RamseteCommand {
 //        super.execute();
 //    }
 
-    @Override
-    public boolean isFinished() {
-        double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_finalPose.getX()));
-        double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_finalPose.getY()));
-        double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_finalPose.getRotation().getDegrees());
-        boolean isFinished = ((deltaX < Units.feetToMeters(.25)) && (deltaY < Units.feetToMeters(.25)) && (deltaRot < 3)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
-        SmartDashboardTab.putBoolean("DriveTrain", "Ramsete Command Finished", isFinished);
-        return isFinished;
-    }
+//    @Override
+//    public boolean isFinished() {
+//        double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_finalPose.getX()));
+//        double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_finalPose.getY()));
+//        double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_finalPose.getRotation().getDegrees());
+//        boolean isFinished = ((deltaX < Units.feetToMeters(.25)) && (deltaY < Units.feetToMeters(.25)) && (deltaRot < 2)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
+//        SmartDashboardTab.putBoolean("DriveTrain", "Ramsete Command Finished", isFinished);
+//        return isFinished;
+//    }
 
     @Override
     public void end(boolean interrupted) {
