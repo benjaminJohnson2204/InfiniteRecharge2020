@@ -24,6 +24,7 @@ public class DriveStraight extends SequentialCommandGroup {
         Pose2d endPosition = new Pose2d(Units.feetToMeters(40),5, new Rotation2d());
 
         TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(40));
+        config.setEndVelocity(0);
 //        config.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), config.getMaxVelocity()));
 //        config.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(), 10));
 
@@ -53,9 +54,9 @@ public class DriveStraight extends SequentialCommandGroup {
 
         var crossoverCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, crossoverTrajectory);
 
-        addCommands(new SetOdometry(driveTrain, fieldSim, blueTrenchIntakePos),
-//                    new SetDriveShifters(driveTrain, true),
-//                    driveStraightCommand,//.andThen(() -> driveTrain.setVoltageOutput(0,0)));
-                      crossoverCommand.andThen(() -> driveTrain.setVoltageOutput(0,0)));
+        addCommands(new SetOdometry(driveTrain, fieldSim, initPosition),
+                    new SetDriveShifters(driveTrain, true),
+                    driveStraightCommand.andThen(() -> driveTrain.setVoltageOutput(0,0)));
+//                      crossoverCommand.andThen(() -> driveTrain.setVoltageOutput(0,0)));
     }
 }

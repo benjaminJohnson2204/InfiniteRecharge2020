@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
+import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
@@ -131,6 +132,15 @@ public class DriveTrain extends SubsystemBase {
                     Constants.DriveConstants.kWheelDiameterMeters / 2.0,
                     VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
 
+//            m_drivetrainSimulator = new DifferentialDrivetrainSim(
+//                    DriveConstants.kDriveGearbox,
+//                    DriveConstants.kDriveGearingHigh,
+//                    7.5,                // Moment of inertia. Need to get it from the CAD model
+//                    63.5029,                   // 140 lbs
+//                    DriveConstants.kTrackwidthMeters,
+//                    Constants.DriveConstants.kWheelDiameterMeters / 2.0,
+//                    VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+
 //            m_leftEncoderSim = new EncoderSim(m_leftEncoder);
 //            m_rightEncoderSim = new EncoderSim(m_rightEncoder);
             m_gyroAngleSim = new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
@@ -204,8 +214,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getWheelDistanceMeters(int sensorIndex) {
-//        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
-        double gearRatio = gearRatioHigh;
+        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+//        double gearRatio = gearRatioHigh;
 
         if(RobotBase.isReal())
             return (driveMotors[sensorIndex].getSelectedSensorPosition() / 2048.0) * gearRatio * Math.PI * Units.feetToMeters(wheelDiameter);
@@ -337,8 +347,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public DifferentialDriveWheelSpeeds getSpeeds() {
-//        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
-        double gearRatio = gearRatioHigh;
+        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+//        double gearRatio = gearRatioHigh;
         double leftMetersPerSecond = 0, rightMetersPerSecond = 0;
 
         if(RobotBase.isReal()) {
@@ -359,8 +369,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     public double getTravelDistance() {
-//        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
-        double gearRatio = gearRatioHigh;
+        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
+//        double gearRatio = gearRatioHigh;
         double leftMeters, rightMeters;
 
         if(RobotBase.isReal()) {
@@ -405,7 +415,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     private void initShuffleboardValues() {
-        // Unstable. Don''t use until WPILib fixes this
+        // Need to verify that this works again
         Shuffleboard.getTab("Drive Train").addNumber("Left Encoder", () -> getEncoderCount(0));
         Shuffleboard.getTab("Drive Train").addNumber("Right Encoder", () -> getEncoderCount(2));
         Shuffleboard.getTab("Drive Train").addNumber("xCoordinate", () ->
@@ -490,8 +500,8 @@ public class DriveTrain extends SubsystemBase {
 
         SmartDashboard.putNumber("L Output", m_leftOutput);
         SmartDashboard.putNumber("R Output", m_rightOutput);
-//        SmartDashboard.putNumber("L Encoder Distance", m_leftEncoder.getDistance());
-//        SmartDashboard.putNumber("R Encoder Distance", m_rightEncoder.getDistance());
+        SmartDashboard.putNumber("L Encoder Distance", getWheelDistanceMeters(0));
+        SmartDashboard.putNumber("R Encoder Distance", getWheelDistanceMeters(2));
 //        SmartDashboard.putNumber("L Encoder Count", m_leftEncoder.get());
 //        SmartDashboard.putNumber("R Encoder Count", m_rightEncoder.get());
 //        SmartDashboard.putNumber("L Encoder Rate", m_leftEncoder.getRate());
@@ -517,7 +527,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     int distanceMetersToFalconFxUnits(double meters) {
-        double gearRatio = gearRatioHigh;
+        double gearRatio = getDriveShifterStatus() ? gearRatioHigh : gearRatioLow;
 
         return (int) (meters * 2048.0 / (10 * gearRatio * Math.PI));
     }
