@@ -16,23 +16,20 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.unmanaged.Unmanaged;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
-import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
-import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.math.VecBuilder;
@@ -56,7 +53,7 @@ public class DriveTrain extends SubsystemBase {
 
     DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(21.5));
     DifferentialDriveOdometry odometry;
-
+    DifferentialDrivePoseEstimator m_poseEstimator;
     SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
     PIDController leftPIDController = new PIDController(kP, kI, kD);
@@ -84,7 +81,7 @@ public class DriveTrain extends SubsystemBase {
 
     private final AHRS navX = new AHRS(SerialPort.Port.kMXP);
 
-    private final Gyro m_gyro = new ADXRS450_Gyro();
+    private final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro();
 
 //    // The left-side drive encoder
 //    private final Encoder m_leftEncoder =
@@ -104,7 +101,7 @@ public class DriveTrain extends SubsystemBase {
     private final TalonSRX[] simMotors =  new TalonSRX[4];
 
     public DifferentialDrivetrainSim m_drivetrainSimulator;
-    private SimDouble m_gyroAngleSim;
+    private ADXRS450_GyroSim m_gyroAngleSim;
 
     public DriveTrain(PowerDistributionPanel pdp) {
         // Set up DriveTrain motors
@@ -113,6 +110,12 @@ public class DriveTrain extends SubsystemBase {
         m_pdp = pdp;
         //initShuffleboardValues();
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+//        poseEstimator = new DifferentialDrivePoseEstimator(
+//                m_gyro.getRotation2d(),
+//                new Pose2d(),
+//                VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5), 0.01, 0.01),
+//                VecBuilder.fill(0.02, 0.02, Units.degreesToRadians(1)),
+//                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
         if (RobotBase.isSimulation()) { // If our robot is simulated
             for(int i = 0; i < 4; i++)
@@ -135,16 +138,15 @@ public class DriveTrain extends SubsystemBase {
 //            m_drivetrainSimulator = new DifferentialDrivetrainSim(
 //                    DriveConstants.kDriveGearbox,
 //                    DriveConstants.kDriveGearingHigh,
-//                    7.5,                // Moment of inertia. Need to get it from the CAD model
-//                    63.5029,                   // 140 lbs
+//                    8.28,                // Moment of inertia. Need to get it from the CAD model
+//                    70.44,                   // 140 lbs
 //                    DriveConstants.kTrackwidthMeters,
 //                    Constants.DriveConstants.kWheelDiameterMeters / 2.0,
 //                    VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
 
 //            m_leftEncoderSim = new EncoderSim(m_leftEncoder);
 //            m_rightEncoderSim = new EncoderSim(m_rightEncoder);
-            m_gyroAngleSim = new SimDeviceSim("ADXRS450_Gyro" + "[" + SPI.Port.kOnboardCS0.value + "]")
-                            .getDouble("Angle");
+            m_gyroAngleSim = new ADXRS450_GyroSim(m_gyro);
         }
         SmartDashboard.putData("DT Subsystem", this);
     }
@@ -453,7 +455,19 @@ public class DriveTrain extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-         odometry.update(Rotation2d.fromDegrees(getHeading()), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+        odometry.update(Rotation2d.fromDegrees(getHeading()), getWheelDistanceMeters(0), getWheelDistanceMeters(2));
+
+//        m_poseEstimator.update(m_gyro.getRotation2d(),
+//                getSpeeds(),
+//                getWheelDistanceMeters(0),
+//                getWheelDistanceMeters(2));
+
+        // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
+        // a real robot, this must be calculated based either on latency or timestamps.
+//        m_poseEstimator.addVisionMeasurement(
+//                ExampleGlobalMeasurementSensor.getEstimatedGlobalPose(
+//                        m_poseEstimator.getEstimatedPosition()),
+//                Timer.getFPGATimestamp() - 0.3);
 
         updateSmartDashboard();
     }
@@ -489,7 +503,7 @@ public class DriveTrain extends SubsystemBase {
         simMotors[0].getSimCollection().setQuadratureVelocity(velocityMetersToTalonSrxUnits(m_drivetrainSimulator.getLeftVelocityMetersPerSecond()));
         simMotors[2].getSimCollection().setQuadraturePosition(distanceMetersToTalonSrxUnits(m_drivetrainSimulator.getRightPositionMeters()));
         simMotors[2].getSimCollection().setQuadratureVelocity(velocityMetersToTalonSrxUnits(m_drivetrainSimulator.getRightVelocityMetersPerSecond()));
-        m_gyroAngleSim.set(-m_drivetrainSimulator.getHeading().getDegrees());
+        m_gyroAngleSim.setAngle(-m_drivetrainSimulator.getHeading().getDegrees());
 
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putNumber("Robot Angle", getAngle());
