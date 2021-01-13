@@ -8,6 +8,7 @@
 package frc.robot.commands.turret;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -18,12 +19,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.Constants;
+import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Vision;
+
+import java.lang.reflect.Field;
 
 
 /**
@@ -46,6 +50,7 @@ public class ShootOnTheMove extends CommandBase {
     private final LED m_led;
     private final Vision m_vision;
     private final SimulationShoot m_simulationShoot;
+    private final FieldSim m_fieldSim;
     private final double hexagonCenterCanHitHeight = Constants.outerTargetHeight - (2 * Constants.ballRadius) - (2 * Constants.ballTolerance); // Height of hexagon that center of ball must hit
     private double ledState = 0; // 0 = can't shoot at all, 1 = can only hit outer, 2 = can hit inner
     private double initialHeading; // Current robot position and where it's facing on the field relative to x-axis
@@ -65,6 +70,7 @@ public class ShootOnTheMove extends CommandBase {
     private double predictedDistanceToOuterTargetXY; // predicted distance in meters from robot to outer target
     private double predictedDistanceToInnerTargetXY; // predicted distance in meters from robot to inner target on xy-plane (field)ot to outer target on xy-plane (field)
     private double robotLinearVelocity, robotAngularVelocity;
+    private boolean hasShot = false;
 
 //  private final double maxHorizontalRatioOuter = (Constants.ballRadius + Constants.ballTolerance) / (2 / Math.sqrt(3)) * hexagonCenterCanHitHeight; // Maximum horizontal for ball to go through outer target
 //  private double maxVerticalRatioOuter = hexagonCenterCanHitHeight / 2 / (Constants.ballRadius + Constants.ballTolerance);
@@ -75,13 +81,14 @@ public class ShootOnTheMove extends CommandBase {
      * @param turret The subsystem used by this command.
      */
 
-    public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led, Vision vision, SimulationShoot simulationShoot) {
+    public ShootOnTheMove(Turret turret, Shooter shooter, DriveTrain drivetrain, LED led, Vision vision, SimulationShoot simulationShoot, FieldSim fieldSim) {
         m_turret = turret;
         m_shooter = shooter;
         m_drivetrain = drivetrain;
         m_led = led;
         m_vision = vision;
         m_simulationShoot = simulationShoot;
+        m_fieldSim = fieldSim;
 
         // Use addRequirements() here to declare subsystem dependencies.
         //addRequirements(turret, shooter, vision);
@@ -91,6 +98,7 @@ public class ShootOnTheMove extends CommandBase {
     @Override
     public void initialize() {
         SOTMNotifier.startPeriodic(timeStep);
+        hasShot = false;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -99,11 +107,16 @@ public class ShootOnTheMove extends CommandBase {
 
 
             if(ledState != 0) {
-                m_simulationShoot.setVelocity(new Pose2d(new Translation2d(
-                        robotLinearVelocity * Math.cos(initialHeading + changeInHeading) + shooterBallMagnitude * Constants.cosOfVerticalShootAngle * Math.cos(targetTurretAngle),
-                        robotLinearVelocity * Math.sin(initialHeading + changeInHeading) + shooterBallMagnitude * Constants.cosOfVerticalShootAngle * Math.sin(targetTurretAngle)),
-                                new Rotation2d()),
-                        shooterBallMagnitude * Constants.sinOfVerticalShootAngle);
+                if (!hasShot) {
+                    m_simulationShoot.setVelocity(new Pose2d(new Translation2d(
+                                    robotLinearVelocity * Math.cos(initialHeading + changeInHeading) + shooterBallMagnitude * Constants.cosOfVerticalShootAngle * Math.cos(targetTurretAngle),
+                                    robotLinearVelocity * Math.sin(initialHeading + changeInHeading) + shooterBallMagnitude * Constants.cosOfVerticalShootAngle * Math.sin(targetTurretAngle)),
+                                    new Rotation2d()),
+                            shooterBallMagnitude * Constants.sinOfVerticalShootAngle);
+                    m_simulationShoot.schedule();
+                    hasShot = true;
+                }
+
                 m_turret.setFieldCentricSetpoint(Math.toDegrees(targetTurretAngle)); // Setting turret to turn to angle
                 m_turret.setControlMode(1); // Enabling turret to turn to setpoint
                 m_shooter.setRPM(RPM); // Spin the shooter to shoot the ball
@@ -205,8 +218,14 @@ public class ShootOnTheMove extends CommandBase {
 
             initialHeading = Math.toRadians(m_drivetrain.getHeading());
             currentTurretAngle = Math.toRadians(m_turret.getTurretAngle()) + initialHeading;
-            currentDistanceToOuterTargetXY = Units.feetToMeters(m_vision.getTargetDistance());
-            currentAngleToOuter = Math.toRadians(m_vision.getHorizontalAngleToTarget()) + currentTurretAngle;
+            if (RobotBase.isReal()) {
+                currentDistanceToOuterTargetXY = Units.feetToMeters(m_vision.getTargetDistance());
+                currentAngleToOuter = Math.toRadians(m_vision.getHorizontalAngleToTarget()) + currentTurretAngle;
+            } else {
+                currentDistanceToOuterTargetXY = m_fieldSim.getIdealTargetDistance();
+                currentAngleToOuter = Math.toRadians(m_fieldSim.getIdealTurretAngle());
+            }
+
 
             changeInHeading = robotAngularVelocity * timeStep; // Calculating how much robot's heading will change during time to shoot
             double radius = robotLinearVelocity / (robotAngularVelocity == 0 ? 0.01 : robotAngularVelocity); // Calculating distance from robot's position and center of robot's rotation

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
@@ -200,7 +201,8 @@ public class FieldSim {
                 double deltaY = powercell.getBallXYVel().getY() * deltaT;
                 powercell.setBallZVel(powercell.getBallZVel() - Constants.g * deltaT); // Update vertical velocity by gravity
                 double deltaZ = powercell.getBallZVel() * deltaT;
-//                System.out.println("Delta X: " + deltaX + "\tDelta Y: " + deltaY + "\tDelta T: " + deltaT);
+                //System.out.println("Delta X: " + deltaX + "\tDelta Y: " + deltaY + "\tDelta T: " + deltaT);
+                SmartDashboardTab.putNumber("Shoot on the Move", "Ball height", powercell.getBallZPos());
                 powercell.setBallPose(new Pose2d(deltaX + ballPose.getX(),
                                                  deltaY + ballPose.getY(),
                                                      ballPose.getRotation()));

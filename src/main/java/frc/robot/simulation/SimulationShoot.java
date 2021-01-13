@@ -45,6 +45,7 @@ public class SimulationShoot extends CommandBase {
     public void setVelocity(Pose2d xyShootVel, double zShootVel) {
         m_xyShootVel = xyShootVel;
         m_zShootVel = zShootVel;
+        //System.out.println("x-vel: " + xyShootVel.getX() + "\ty-vel: " + xyShootVel.getY() + " \tz-vel: " + zShootVel);
     }
 
     // Called when the command is initially scheduled.
