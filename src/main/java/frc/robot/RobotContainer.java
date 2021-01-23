@@ -8,18 +8,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.commands.LED.GetSubsystemStates;
 import frc.robot.commands.autonomous.routines.*;
+import frc.robot.commands.autonomous.routines.simulation.OpRoutineRed;
 import frc.robot.commands.climber.EnableClimbMode;
 import frc.robot.commands.climber.SetClimberOutput;
 import frc.robot.commands.drivetrain.BrakeWhileHeld;
@@ -35,16 +33,10 @@ import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.SetTurretSetpointFieldAbsolute;
 import frc.robot.commands.turret.ShootOnTheMove;
 import frc.robot.commands.turret.ToggleTurretControlMode;
-import frc.robot.simulation.FieldSim;
-import frc.robot.simulation.Powercell;
-import frc.robot.simulation.SimulationShoot;
-import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.commands.LED.GetSubsystemStates;
-import frc.robot.commands.indexer.EjectAll;
-import frc.robot.commands.skyhook.SetSkyhookOutput;
 import frc.robot.commands.turret.ZeroTurretEncoder;
 import frc.robot.constants.Constants;
+import frc.robot.simulation.FieldSim;
+import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.JoystickWrapper;
 import frc.vitruvianlib.utils.XBoxTrigger;
@@ -73,7 +65,6 @@ public class RobotContainer {
     private final ColorSensor m_colorSensor = new ColorSensor();
     private final LED m_led = new LED(m_colorSensor);
     private final Controls m_controls = new Controls(m_driveTrain, m_shooter, m_turret, pdp);
-
 
     static JoystickWrapper leftJoystick = new JoystickWrapper(Constants.leftJoystick);
     static JoystickWrapper rightJoystick = new JoystickWrapper(Constants.rightJoystick);
@@ -242,8 +233,8 @@ public class RobotContainer {
             for (int i = 0; i < testButtons.length; i++)
                 testButtons[i] = new JoystickButton(testController, (i + 1));
             //testButtons[0].whenPressed(new SimulationShoot(m_FieldSim, false));
-            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
-            testButtons[0].whileHeld(new FeedAll(m_indexer));                                             // A - Feed balls into shooter
+//            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
+            testButtons[0].whileHeld(new FeedAll(m_indexer));
         }
     }
 
@@ -261,11 +252,13 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return m_autoCommand;
         else
-            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim,
-                    new ShootOnTheMove(m_turret, m_shooter, m_driveTrain, m_led, m_vision, new SimulationShoot(m_FieldSim, true),  m_FieldSim));
+            return new AutoNavSlalom(m_driveTrain, m_FieldSim);
+//            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
-            //return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
-            //return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+//            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
+//            return new AllyTrenchPathSplineSim(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+            //return new OpRoutineRed(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim);
+//            return new DriveStraight(m_driveTrain, m_turret, m_FieldSim);
 //        return new WaitCommand(0);
     }
 
@@ -281,11 +274,11 @@ public class RobotContainer {
     public void teleOpInit() {
         if(RobotBase.isReal()) {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
             m_driveTrain.setDriveTrainNeutralMode(0);
         } else {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         }
     }
 
@@ -296,12 +289,12 @@ public class RobotContainer {
     public void autonomousInit() {
         if (RobotBase.isReal()) {
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_driveTrain.getRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_driveTrain.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         } else {
+            m_FieldSim.initSim();
             m_driveTrain.resetEncoderCounts();
-            m_driveTrain.resetOdometry(m_FieldSim.getFieldSiMRobotPose(), m_FieldSim.getFieldSiMRobotPose().getRotation());
+            m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
         }
-
     }
 
     public void autonomousPeriodic() {
@@ -335,7 +328,7 @@ public class RobotContainer {
 
     public void simulationInit() {
         m_FieldSim.initSim();
-        m_driveTrain.setSimPose(new Pose2d(5,5, new Rotation2d()));
+        //m_driveTrain.setSimPose(new Pose2d(5,5, new Rotation2d()));
     }
 
     public void simulationPeriodic() {

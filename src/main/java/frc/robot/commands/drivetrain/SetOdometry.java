@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.simulation.FieldSim;
 import frc.robot.subsystems.DriveTrain;
 
 /**
@@ -19,6 +20,7 @@ import frc.robot.subsystems.DriveTrain;
 public class SetOdometry extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveTrain m_driveTrain;
+  private final FieldSim m_fieldSim;
   private Pose2d m_pose2d;
   /**
    * Creates a new ExampleCommand.
@@ -26,7 +28,15 @@ public class SetOdometry extends CommandBase {
    * @param subsystem The subsystem used by this command.
    */
   public SetOdometry(DriveTrain driveTrain, Pose2d pose2d) {
+    this(driveTrain, null, pose2d);
+  }
+
+  public SetOdometry(DriveTrain driveTrain, FieldSim fieldSim, Pose2d pose2d) {
+    if(RobotBase.isSimulation() && fieldSim == null)
+      System.out.println("SetOdometry Command Error: Robot is in Simulation, but you did not add FieldSim to the argument");
+
     m_driveTrain = driveTrain;
+    m_fieldSim = fieldSim;
     m_pose2d = pose2d;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
@@ -35,9 +45,10 @@ public class SetOdometry extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_driveTrain.resetOdometry(m_pose2d, m_pose2d.getRotation());
-    if(RobotBase.isSimulation())
-      m_driveTrain.setSimPose(m_pose2d);
+    if(RobotBase.isReal())
+      m_driveTrain.resetOdometry(m_pose2d, m_pose2d.getRotation());
+    else
+      m_fieldSim.resetRobotPose(m_pose2d);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

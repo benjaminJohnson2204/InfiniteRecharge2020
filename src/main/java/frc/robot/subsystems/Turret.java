@@ -58,8 +58,6 @@ public class Turret extends SubsystemBase {
     private boolean initialHome;
     private boolean turretHomeSensorLatch = false;
 
-    private Field2d m_field2dTurret;
-
     public Turret(DriveTrain driveTrain) {
         // Setup turrent motors
         m_driveTrain = driveTrain;
@@ -85,7 +83,6 @@ public class Turret extends SubsystemBase {
         //turretPID.enableContinuousInput(0, 360);
 
         //initShuffleboard();
-        m_field2dTurret = new Field2d();
     }
 
     public void resetEncoder() {
@@ -252,8 +249,6 @@ public class Turret extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        m_field2dTurret.setRobotPose(getTurretSimPose());
-        SmartDashboard.putData("Turret", m_field2dTurret);
     }
 
     public double getIdealTargetDistance() {

@@ -57,8 +57,8 @@ public class SimulationShoot extends CommandBase {
     @Override
     public void execute() {
         double currentTime = RobotController.getFPGATime();
-        // Shoot only every 20ms
-        if(((currentTime - lastShotTime) / 1e6) > 0.040) {
+        // Shoot only every 80ms
+        if(((currentTime - lastShotTime) / 1e6) > 0.080) {
             for(Powercell p: m_fieldSim.getPowerCells()) {
                 if(p.getBallState() == 1 && !p.getBallShotState()) {
                     p.setBallShotState(true);

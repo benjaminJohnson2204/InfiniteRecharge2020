@@ -32,11 +32,11 @@ import java.util.ArrayList;
 public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
     public AllyTrenchPathSplineSim(DriveTrain driveTrain, Intake intake, Indexer indexer, Turret turret, Shooter shooter, Vision vision, FieldSim fieldSim) {
         Pose2d startPosition = new Pose2d(Units.inchesToMeters(145), 7.5, new Rotation2d(Units.degreesToRadians(180)));
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(40));
         configA.setReversed(true);
         configA.setEndVelocity(0);
-        configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
-        configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
+//        configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
+//        configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
         //var startToTrenchPath = TrajectoryUtils.readCsvTrajectory("init1Ally2");
         ArrayList<Pose2d> startToTrenchPath = new ArrayList();
         startToTrenchPath.add(startPosition);
@@ -44,12 +44,12 @@ public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
         var startToTrenchCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, startToTrenchPath, configA);
 
         Pose2d midPoint = new Pose2d(Units.feetToMeters(-13), 0, new Rotation2d(0));
-        var configB = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(4));
+        var configB = new TrajectoryConfig(Units.feetToMeters(8), Units.feetToMeters(40));
         configB.setReversed(false);
         configB.setEndVelocity(0);
-        configB.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configB.getMaxVelocity()));
-        configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configB.addConstraint(new CentripetalAccelerationConstraint(Units.feetToMeters(1.5)));
+//        configB.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configB.getMaxVelocity()));
+//        configB.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
+        configB.addConstraint(new CentripetalAccelerationConstraint(Units.feetToMeters(2)));
         //var trenchToShootPath = TrajectoryUtils.readCsvTrajectory("ally2Ally3");
         ArrayList<Pose2d> trenchToShootPath = new ArrayList();
         trenchToShootPath.add(new Pose2d(Units.inchesToMeters(276), 7.5, new Rotation2d(Units.degreesToRadians(180))));
@@ -91,7 +91,8 @@ public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
             );
         else
             addCommands(
-                    new SetOdometry(driveTrain, startPosition),
+                    new SetOdometry(driveTrain, fieldSim, startPosition),
+                    new SetDriveShifters(driveTrain, true),
 //                    new SetTurretRobotRelativeAngle(turret, -25).withTimeout(0.5),
                     new ParallelDeadlineGroup(new WaitCommand(2),
                                               new SimulationShoot(fieldSim, true)),
@@ -100,6 +101,7 @@ public class AllyTrenchPathSplineSim extends SequentialCommandGroup {
                     new WaitCommand(2)
                     .andThen(trenchToShootCommand)
                     .alongWith(new SetTurretRobotRelativeAngle(turret, 0))
+                    .andThen(() -> driveTrain.setMotorTankDrive(0,0))
                     .andThen(new AutoUseVisionCorrection(turret, vision).withTimeout(0.75))
                     .andThen(new ParallelDeadlineGroup(new WaitCommand(2),
                                                        new SimulationShoot(fieldSim, true)))
