@@ -45,8 +45,10 @@ public class SetOdometry extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(RobotBase.isReal())
+    if(RobotBase.isReal()) {
       m_driveTrain.resetOdometry(m_pose2d, m_pose2d.getRotation());
+      m_driveTrain.setNavXOffset(m_pose2d.getRotation().getDegrees());
+    }
     else
       m_fieldSim.resetRobotPose(m_pose2d);
   }
