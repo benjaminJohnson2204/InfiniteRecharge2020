@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Transform2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -37,13 +38,31 @@ import java.util.List;
 
 public class AutoNavSlalom extends SequentialCommandGroup {
     public AutoNavSlalom(DriveTrain driveTrain, FieldSim fieldSim) {
-        Pose2d startPosition = new Pose2d();
+        /*Pose2d startPosition = new Pose2d();
         Pose2d point2 = new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(0)));
         Pose2d point3 = new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(0)));
         Pose2d point4 = new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(-120)));
         Pose2d point5 = new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(4), new Rotation2d());
         Pose2d point6 = new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(56), new Rotation2d(Units.degreesToRadians(120)));
-        Pose2d origin = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30)));
+        Pose2d origin = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30)));*/
+        Pose2d startPosition = new Pose2d();
+        Pose2d[] waypoints = {
+                new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30))),
+                new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(45))),
+                new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(25))),
+                new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(-25)))/*,
+                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(-45))),
+                new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(30))),
+                new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(150))),
+                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(225))),
+                new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(135))),
+                new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(150)))*/
+        };
+
+        Trajectory[] trajectories = new Trajectory[waypoints.length - 1];
+        Trajectory[] transformedTrajectories = new Trajectory[waypoints.length - 1];
 
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
         configA.setReversed(false);
@@ -52,7 +71,35 @@ public class AutoNavSlalom extends SequentialCommandGroup {
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
         configA.addConstraint(new CentripetalAccelerationConstraint(0.75));
 
-        var startTo2Path = TrajectoryGenerator.generateTrajectory(startPosition,
+        Trajectory tempTrajectory;
+        Pose2d finalPose = waypoints[0];
+
+        addCommands(new SetOdometry(driveTrain, fieldSim, new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30)))),
+                new SetDriveNeutralMode(driveTrain, 0));
+
+        for(int i = 0; i < waypoints.length - 1; i++) {
+            /*trajectories[i] = TrajectoryGenerator.generateTrajectory(waypoints[i],
+                    List.of(),
+                    waypoints[i + 1],
+                    configA);
+            Transform2d transform = finalPose.minus(trajectories[i].getInitialPose());
+            transformedTrajectories[i] = trajectories[i];//.transformBy(transform);
+
+            tempTrajectory = transformedTrajectories[i];
+            finalPose = waypoints[i];//tempTrajectory.getStates().get(tempTrajectory.getStates().size() - 1).poseMeters;*/
+
+                Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints[i],
+                List.of(),
+                waypoints[i + 1],
+                configA);
+            var command = TrajectoryUtils.generateRamseteCommand(driveTrain, trajectory);
+            addCommands(command);//.andThen(() -> SmartDashboard.putNumber("Final Pose angle", trajectory.)));
+            /*SmartDashboard.putNumber("Initial Pose x", tempTrajectory.getInitialPose().getX());
+            SmartDashboard.putNumber("Initial Pose y", tempTrajectory.getInitialPose().getY());
+            SmartDashboard.putNumber("Initial Pose angle", tempTrajectory.getInitialPose().getRotation().getDegrees());*/
+        }
+
+        /*var startTo2Path = TrajectoryGenerator.generateTrajectory(startPosition,
                 List.of(),
                 point2,
                 configA);
@@ -93,10 +140,10 @@ public class AutoNavSlalom extends SequentialCommandGroup {
         var point3To4Command = TrajectoryUtils.generateRamseteCommand(driveTrain, transformedPath3To4);
         var point4To5Command = TrajectoryUtils.generateRamseteCommand(driveTrain, transformedPath4To5);
         var point5To6Command = TrajectoryUtils.generateRamseteCommand(driveTrain, transformedPath5To6);
-        var point6To7Command = TrajectoryUtils.generateRamseteCommand(driveTrain, transformedPath6To7);
+        var point6To7Command = TrajectoryUtils.generateRamseteCommand(driveTrain, transformedPath6To7);*/
 
-        
-        addCommands(
+
+        /*addCommands(
                 new SetOdometry(driveTrain, fieldSim, point2To3Path.getInitialPose()),
                 new SetDriveNeutralMode(driveTrain, 0),
                 //startTo2Command,
@@ -105,7 +152,7 @@ public class AutoNavSlalom extends SequentialCommandGroup {
                 // point4To5Command,
                 // point5To6Command,
                 // point6To7Command
-        );
+        );*/
 
     }
 }
