@@ -7,71 +7,84 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.Constants;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.Vision;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class AccuracyChallengeShoot extends CommandBase { // Used in the Accuracy Challenge to set the shooter to the right speed to hit the target
+public class ControlledFireNew extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Shooter m_shooter;
-    private final Turret m_turret;
     private final Indexer m_indexer;
-    private final Intake m_intake;
-    private final Vision m_vision;
-    private double targetDistance, shootSpeed, shootRPM;
-
-    private final double metersPerSecondToRPM = 315; // How much to multiply a speed by to get RPM. This is only a preliminary estimate
+    private double timestamp;
+    private boolean timerStart;
+    private double ballsFired = 0;
+    private double lastRPM; // The most recent shooter RPM, to check if it quickly drops
+    private double significantRPMDrop = 200;
 
     /**
      * Creates a new ExampleCommand.
      *
      * @param RobotContainer.m_shooter The subsystem used by this command.
      */
-    public AccuracyChallengeShoot(Shooter shooter, Turret turret, Indexer indexer, Intake intake, Vision vision) {
+    public ControlledFireNew(Shooter shooter, Indexer indexer) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_shooter = shooter;
-        m_turret = turret;
         m_indexer = indexer;
-        m_intake = intake;
-        m_vision = vision;
         addRequirements(shooter);
         addRequirements(indexer);
-        addRequirements(intake);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        targetDistance = Units.feetToMeters(m_vision.getTargetDistance());
-        shootSpeed = targetDistance * Math.sqrt(0.5 * Constants.g / (targetDistance * Math.tan(Constants.verticalShooterAngle) - Constants.verticalTargetDistance)) / Math.cos(Constants.verticalShooterAngle);
-        shootRPM = shootSpeed * metersPerSecondToRPM;
+        ballsFired = 0;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        m_shooter.setRPM(shootRPM);
 
+        if(Math.abs(m_shooter.getRPM(0) - m_shooter.getSetpoint()) < m_shooter.getRPMTolerance() && ! timerStart) {
+            timerStart = true;
+            timestamp = Timer.getFPGATimestamp();
+        } else if(Math.abs(m_shooter.getRPM(0) - m_shooter.getSetpoint()) > m_shooter.getRPMTolerance() && timerStart) {
+            timestamp = 0;
+            timerStart = false;
+        }
+
+        if(timestamp != 0)
+            if(timerStart && Timer.getFPGATimestamp() - timestamp > 0.5) {
+                m_indexer.setIndexerOutput(1);
+                m_indexer.setKickerOutput(1);
+            } else {
+                m_indexer.setIndexerOutput(0);
+                m_indexer.setKickerOutput(0);
+            }
+
+        if (timerStart && (lastRPM - m_shooter.getRPM(0)) > significantRPMDrop) {
+            ballsFired++;
+            timestamp = 0;
+            timerStart = false;
+        }
+        lastRPM = m_shooter.getRPM(0);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        m_indexer.setIndexerOutput(0);
+        m_indexer.setKickerOutput(0);
+        m_shooter.setPower(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+        return ballsFired >= 3;
     }
 }

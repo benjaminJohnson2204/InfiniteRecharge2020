@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 
@@ -62,9 +63,12 @@ public class Shooter extends SubsystemBase {
     private boolean timerStart;
     private double timestamp;
     private boolean canShoot;
+    private double idealRPM; // The RPM the shooter should be set to in order to hit the target from this distance
 
 //    public PIDController flywheelController = new PIDController(kP, kI, kD);
 //    public SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
+    private final double metersPerSecondToRPM = 315; // How much to multiply a speed by to get ideal RPM. This is only a preliminary estimate
 
     public Shooter(Vision vision, PowerDistributionPanel pdp) {
         // Setup shooter motors (Falcons)
@@ -157,6 +161,16 @@ public class Shooter extends SubsystemBase {
         return (RPM / 600.0) * 2048.0;
     }
 
+    private void calculateIdealRPM() {
+        double targetDistance = Units.feetToMeters(m_vision.getTargetDistance());
+        double shootSpeed = targetDistance * Math.sqrt(0.5 * Constants.g / (targetDistance * Math.tan(Constants.verticalShooterAngle) - Constants.verticalTargetDistance)) / Math.cos(Constants.verticalShooterAngle);
+        idealRPM = shootSpeed * metersPerSecondToRPM;
+    }
+
+    public void setIdealRPM() {
+        setpoint = idealRPM;
+    }
+
     private void initShuffleboard() {
         // Unstable. Don''t use until WPILib fixes this
 //    Shuffleboard.getTab("Shooter").addNumber("RPM Primary", () -> this.getRPM(0));
@@ -207,6 +221,7 @@ public class Shooter extends SubsystemBase {
 //        updatePidRPM();
         updateShuffleboard();
         updatePIDValues();
+        calculateIdealRPM();
 
         if((Math.abs(getSetpoint() - getRPM(0)) < getRPMTolerance()) && m_vision.hasTarget() &&
                 (Math.abs(m_vision.getTargetX()) < 1) && ! timerStart) {

@@ -133,7 +133,7 @@ public class DriveTrain extends SubsystemBase {
                     DriveConstants.kDriveGearingHigh,
                     DriveConstants.kTrackwidthMeters,
                     Constants.DriveConstants.kWheelDiameterMeters / 2.0,
-                    VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
+                    null);//VecBuilder.fill(0, 0, 0.0001, 0.1, 0.1, 0.005, 0.005));
 
 //            m_drivetrainSimulator = new DifferentialDrivetrainSim(
 //                    DriveConstants.kDriveGearbox,

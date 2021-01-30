@@ -92,6 +92,16 @@ public class RobotContainer {
         DO_NOTHING
     }
 
+    private enum SkillsChallengeSelector {
+        ACCURACY_CHALLENGE,
+        AUTO_NAV_SLALOM,
+        AUTO_NAV_BARREL,
+        AUTO_NAV_BOUNCE,
+        None
+    }
+
+    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.ACCURACY_CHALLENGE; // Change this
+
     private FieldSim m_FieldSim;
 
     SendableChooser<Integer> m_autoChooser = new SendableChooser();
@@ -199,33 +209,11 @@ public class RobotContainer {
                 xBoxPOVButtons[i] = new POVButton(xBoxController, (i * 45));
             xBoxLeftTrigger = new XBoxTrigger(xBoxController, 2);
             xBoxRightTrigger = new XBoxTrigger(xBoxController, 3);
-
-            leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, false));   // Top Button - Switch to high gear
-            leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, true));  // Bottom Button - Switch to low gear
-
-            rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
-//    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
-//    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
-
-            xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
-            xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
-
-            xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
-            xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
-            xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
-            xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
-
-            //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
-            xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
-
-            xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
-            //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
-//        xBoxButtons[8].whenPressed(new DisableClimbMode(m_climber,m_turret)); //left stick
-            xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
-
-            xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
-            //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
-//        SmartDashboard.putData("disable climb mode", new DisableClimbMode(m_climber,m_turret));
+            if (selectedSkillsChallenge == SkillsChallengeSelector.ACCURACY_CHALLENGE) {
+                configGameChangersButtons();
+            } else {
+                configInfiniteRechargeButtons();
+            }
         }
         else {
             testController.invertRawAxis(1, true);
@@ -236,6 +224,45 @@ public class RobotContainer {
 //            testButtons[3].toggleWhenPressed(m_ShootOnTheMove); // Y - Shoot on the Move
             testButtons[0].whileHeld(new FeedAll(m_indexer));
         }
+    }
+
+    private void configInfiniteRechargeButtons() {
+        leftButtons[0].whileHeld(new SetDriveShifters(m_driveTrain, false));   // Top Button - Switch to high gear
+        leftButtons[1].whileHeld(new SetDriveShifters(m_driveTrain, true));  // Bottom Button - Switch to low gear
+
+        rightButtons[1].whileHeld(new BrakeWhileHeld(m_driveTrain));
+//    rightButtons[0].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+//    rightButtons[1].whileHeld(new AlignToBall(m_driveTrain, m_vision, () -> leftJoystick.getRawAxis(1))); //Bottom (right) Button - Turn to powercells (Automated vision targeting
+
+        xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
+
+        xBoxButtons[1].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3575));                          // B - Set RPM Medium
+        xBoxButtons[2].whileHeld(new EjectAll(m_indexer, m_intake));                                  // X - Eject All
+        xBoxButtons[3].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3900));                          // Y - Set RPM Far
+        xBoxButtons[0].whileHeld(new SetRpmSetpoint(m_shooter, m_vision, 3800));                          // A - Set RPM Close
+
+        //xBoxButtons[5].whileHeld(new RapidFire(m_shooter, m_indexer, m_intake, 3700));              // Set Distance RPM
+        xBoxRightTrigger.whileHeld(new RapidFireSetpoint(m_shooter, m_indexer, m_intake));            // flywheel on toggle
+
+        xBoxButtons[6].whenPressed(new ToggleTurretControlMode(m_turret));                            // start - toggle control mode turret
+        //xBoxButtons[7].whenPressed(new ToggleIndexerControlMode(m_indexer));                        // select - toggle control mode uptake
+//        xBoxButtons[8].whenPressed(new DisableClimbMode(m_climber,m_turret)); //left stick
+        xBoxButtons[9].whenPressed(new EnableClimbMode(m_climber, m_turret));                         // R3 - toggle driver climb mode?
+
+        xBoxPOVButtons[4].whenPressed(new ZeroTurretEncoder(m_turret));
+        //xBoxPOVButtons[4].whileHeld(new EjectAll(m_indexer, m_intake));
+//        SmartDashboard.putData("disable climb mode", new DisableClimbMode(m_climber,m_turret));
+    }
+
+    private void configGameChangersButtons() {
+        xBoxButtons[4].whenPressed(new ToggleIntakePistons(m_intake));
+        xBoxLeftTrigger.whileHeld(new ControlledIntake(m_intake, m_indexer, xBoxController)); // Deploy intake
+
+        xBoxButtons[1].whenPressed(new AccuracyChallenge(m_driveTrain, m_shooter, m_indexer, m_FieldSim, 0));      // B - Green Zone
+        xBoxButtons[2].whenPressed(new AccuracyChallenge(m_driveTrain, m_shooter, m_indexer, m_FieldSim, 1));      // X - Yellow Zone
+        xBoxButtons[3].whenPressed(new AccuracyChallenge(m_driveTrain, m_shooter, m_indexer, m_FieldSim, 2));      // Y - Blue Zone
+        xBoxButtons[0].whenPressed(new AccuracyChallenge(m_driveTrain, m_shooter, m_indexer, m_FieldSim, 3));      // A - Red Zone
     }
 
     /**
@@ -252,7 +279,7 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return m_autoCommand;
         else
-            return new AutoNavSlalom(m_driveTrain, m_FieldSim);
+            return new AutoNavBounce(m_driveTrain, m_FieldSim);
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
 //            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
