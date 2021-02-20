@@ -46,7 +46,7 @@ public class AutoNavSlalom extends SequentialCommandGroup {
         Pose2d point6 = new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(56), new Rotation2d(Units.degreesToRadians(120)));
         Pose2d origin = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30)));*/
         Pose2d[] waypoints = {
-                new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30))),
+                new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                 new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(60))),
                 new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                 new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
@@ -69,7 +69,7 @@ public class AutoNavSlalom extends SequentialCommandGroup {
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(0.5));
+        configA.addConstraint(new CentripetalAccelerationConstraint(0.45));
 
         Trajectory tempTrajectory;
         Pose2d finalPose = waypoints[0];

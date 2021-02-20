@@ -55,7 +55,7 @@ public class AccuracyChallenge extends SequentialCommandGroup {
                 new SetOdometry(driveTrain, fieldSim, new Pose2d()),
                 new SetDriveNeutralMode(driveTrain, 0),
                 new SetRPM(shooter, 3000),
-                new DriveForwardDistance(driveTrain, distancesToDrive[index]).andThen(() -> driveTrain.setVoltageOutput(0, 0)),
+                //new DriveForwardDistance(driveTrain, distancesToDrive[index]).andThen(() -> driveTrain.setVoltageOutput(0, 0)),
                 new InstantCommand(() -> shooter.setIdealRPM()),
                 new ControlledFireNew(shooter, indexer).withTimeout(3),
                 new SetRPM(shooter, 3000),
