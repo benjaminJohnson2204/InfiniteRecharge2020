@@ -507,7 +507,7 @@ public class DriveTrain extends SubsystemBase {
 
         m_drivetrainSimulator.setInputs(m_leftOutput * RobotController.getBatteryVoltage(),
                 m_rightOutput * RobotController.getBatteryVoltage());
-        m_drivetrainSimulator.update(0.010);
+        m_drivetrainSimulator.update(0.040);
 
 //        m_leftEncoderSim.setDistance(m_drivetrainSimulator.getLeftPositionMeters());
 //        m_leftEncoderSim.setRate(m_drivetrainSimulator.getLeftVelocityMetersPerSecond());
