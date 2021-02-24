@@ -59,7 +59,7 @@ public class VitruvianRamseteCommand extends RamseteCommand {
 //        double deltaX = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getX() - m_finalPose.getX()));
 //        double deltaY = Units.metersToFeet(Math.abs(m_pose.get().getTranslation().getY() - m_finalPose.getY()));
 //        double deltaRot = Math.abs(m_pose.get().getRotation().getDegrees() - m_finalPose.getRotation().getDegrees());
-//        boolean isFinished = ((deltaX < Units.feetToMeters(.25)) && (deltaY < Units.feetToMeters(.25)) && (deltaRot < 2)) || (Timer.getFPGATimestamp() > (autoDuration + autoStartTime));
+//        boolean isFinished = ((deltaX < Units.feetToMeters(.5)) && (deltaY < Units.feetToMeters(.5)) && (deltaRot < 4));
 //        SmartDashboardTab.putBoolean("DriveTrain", "Ramsete Command Finished", isFinished);
 //        return isFinished;
 //    }

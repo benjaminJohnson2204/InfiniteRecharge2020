@@ -280,7 +280,7 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return m_autoCommand;
         else
-            return new AutoNavSlalom(m_driveTrain, m_FieldSim);
+            return new AutoNavBounce(m_driveTrain, m_FieldSim);
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
 //            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
