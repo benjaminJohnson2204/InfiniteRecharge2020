@@ -47,7 +47,7 @@ public class AutoNavBarrel extends SequentialCommandGroup {
         Pose2d origin = new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(30)));*/
         Pose2d[] waypoints = {
                 new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(-30))),
+                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                 new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
                 new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
                 new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
@@ -66,17 +66,18 @@ public class AutoNavBarrel extends SequentialCommandGroup {
         Trajectory[] trajectories = new Trajectory[waypoints.length - 1];
         Trajectory[] transformedTrajectories = new Trajectory[waypoints.length - 1];
 
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(10));
         configA.setReversed(false);
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(0.4));
+        configA.addConstraint(new CentripetalAccelerationConstraint(1.5));
 
         Trajectory tempTrajectory;
         Pose2d finalPose = waypoints[0];
 
-        addCommands(new SetOdometry(driveTrain, fieldSim, startPosition),
+        addCommands(new SetDriveShifters(driveTrain, true),
+                new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain, 0));
 
         for(int i = 0; i < waypoints.length - 1; i++) {

@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -278,9 +279,9 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if(RobotBase.isReal())
-            return m_autoCommand;
+            return new AutoNavBarrel(m_driveTrain, m_FieldSim);
         else
-            return new AutoNavBounce(m_driveTrain, m_FieldSim);
+            return new AutoNavBarrel(m_driveTrain, m_FieldSim);
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
 //            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);

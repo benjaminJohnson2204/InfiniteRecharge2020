@@ -49,6 +49,7 @@ public class DriveForwardDistance extends SequentialCommandGroup {
         var driveForwardCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, trajectory);
 
         addCommands(
+                new SetDriveShifters(driveTrain, true),
                 new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain,0),
                 driveForwardCommand
