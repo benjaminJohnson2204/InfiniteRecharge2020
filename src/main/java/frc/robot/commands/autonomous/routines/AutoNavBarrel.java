@@ -38,34 +38,67 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoNavBarrel extends SequentialCommandGroup {
+    private Pose2d[] startPoints, endPoints;
     public AutoNavBarrel(DriveTrain driveTrain, FieldSim fieldSim) {
-        Pose2d[] startPoints = {
-                new Pose2d(Units.inchesToMeters(40), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
-                new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
-                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
-                new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
-                new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
-                new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(180))),
-        };
-
-        Pose2d[] endPoints = {
-                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
-                new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
-                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
-                new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
-                new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
-                new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(180))),
-                new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
-        };
+        if (RobotBase.isReal()) {
+                Pose2d[] startingPoints = {
+                        new Pose2d(Units.inchesToMeters(40), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
+                        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                };      
+                startPoints = startingPoints;
+                Pose2d[] endingPoints = {
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(-120))),
+                        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(115))),
+                        new Pose2d(Units.inchesToMeters(156), Units.inchesToMeters(85), new Rotation2d(Units.degreesToRadians(-4))),
+                        new Pose2d(Units.inchesToMeters(260), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(280), Units.inchesToMeters(105), new Rotation2d(Units.degreesToRadians(95))),
+                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(-85))),
+                        new Pose2d(Units.inchesToMeters(300), Units.inchesToMeters(20), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(55), new Rotation2d(Units.degreesToRadians(95))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(80), new Rotation2d(Units.degreesToRadians(183))),
+                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                };
+                endPoints = endingPoints;
+        } else {
+                Pose2d[] startingPoints = {
+                        new Pose2d(Units.inchesToMeters(40), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
+                        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(180))),
+                };
+                startPoints = startingPoints;
+                Pose2d[] endingPoints = {
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
+                        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(180))),
+                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                };
+                endPoints = endingPoints;
+        }
 
         Pose2d startPosition = startPoints[0];
 
