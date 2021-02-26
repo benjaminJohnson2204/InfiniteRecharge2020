@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.trajectory.constraint.EllipticalRegionConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drivetrain.SetDriveNeutralMode;
+import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.drivetrain.SetOdometry;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimConstants;
@@ -70,7 +71,8 @@ public class AutoNavSlalom extends SequentialCommandGroup {
         Trajectory tempTrajectory;
         Pose2d finalPose = waypoints[0];
 
-        addCommands(new SetOdometry(driveTrain, fieldSim, startPosition),
+        addCommands(new SetDriveShifters(driveTrain, true),
+                new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain, 0));
 
         for(int i = 0; i < waypoints.length - 1; i++) {

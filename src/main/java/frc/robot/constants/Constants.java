@@ -129,16 +129,16 @@ public final class Constants {
         // for *your* robot's drive.
         // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
         // values for your robot.
-        public static final double ksVolts = 0.683;
-        public static final double kvVoltSecondsPerMeter = 3.19;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.227;
+        public static final double ksVolts = 0.81; // Slow gear: 0.683;
+        public static final double kvVoltSecondsPerMeter = 1.74; //Slow gear: 3.19;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.301; //Slow gear: 0.227;
 
         // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
         // These characterization values MUST be determined either experimentally or theoretically
         // for *your* robot's drive.
         // These two values are "angular" kV and kA
-        public static final double kvVoltSecondsPerRadian = 3.41; // originally 1.5
-        public static final double kaVoltSecondsSquaredPerRadian = 0.111; // originally 0.3
+        public static final double kvVoltSecondsPerRadian = 2.08; // Slow gear: 3.41; // originally 1.5
+        public static final double kaVoltSecondsSquaredPerRadian = -0.0132;// Slow gear: 0.111; // originally 0.3
 
         public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
                 LinearSystemId.identifyDrivetrainSystem(kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter,

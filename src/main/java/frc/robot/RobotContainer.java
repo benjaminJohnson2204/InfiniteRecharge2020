@@ -279,7 +279,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if(RobotBase.isReal())
-            return new AutoNavBarrel(m_driveTrain, m_FieldSim);
+            return new AutoNavBounce(m_driveTrain, m_FieldSim);
         else
             return new AutoNavBarrel(m_driveTrain, m_FieldSim);
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
