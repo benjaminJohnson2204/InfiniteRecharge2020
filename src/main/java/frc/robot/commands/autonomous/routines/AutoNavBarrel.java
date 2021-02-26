@@ -29,6 +29,7 @@ import frc.robot.commands.drivetrain.SetOdometry;
 import frc.robot.commands.intake.SetIntakeSpeed;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.intake.SetIntakeStates;
+import frc.robot.constants.Constants;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
@@ -76,7 +77,7 @@ public class AutoNavBarrel extends SequentialCommandGroup {
         Trajectory tempTrajectory;
         Pose2d finalPose = waypoints[0];
 
-        addCommands(new SetDriveShifters(driveTrain, true),
+        addCommands(new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain, 0));
 

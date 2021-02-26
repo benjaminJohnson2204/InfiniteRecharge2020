@@ -124,21 +124,23 @@ public final class Constants {
 
         public static final boolean kGyroReversed = true;
 
+        public static final boolean inSlowGear = true; // True = 1 : 14.14, False = 1 : 7.49
+
         // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
         // These characterization values MUST be determined either experimentally or theoretically
         // for *your* robot's drive.
         // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
         // values for your robot.
-        public static final double ksVolts = 0.81; // Slow gear: 0.683;
-        public static final double kvVoltSecondsPerMeter = 1.74; //Slow gear: 3.19;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.301; //Slow gear: 0.227;
+        public static final double ksVolts = inSlowGear ? 0.683 : 0.81;
+        public static final double kvVoltSecondsPerMeter = inSlowGear ? 3.19 : 1.74;
+        public static final double kaVoltSecondsSquaredPerMeter = inSlowGear ? 0.227 : 0.301;
 
         // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
         // These characterization values MUST be determined either experimentally or theoretically
         // for *your* robot's drive.
         // These two values are "angular" kV and kA
-        public static final double kvVoltSecondsPerRadian = 2.08; // Slow gear: 3.41; // originally 1.5
-        public static final double kaVoltSecondsSquaredPerRadian = -0.0132;// Slow gear: 0.111; // originally 0.3
+        public static final double kvVoltSecondsPerRadian = inSlowGear ? 3.41 : 2.08; // originally 1.5
+        public static final double kaVoltSecondsSquaredPerRadian = inSlowGear ? 0.111 : -0.0132; // originally 0.3
 
         public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
                 LinearSystemId.identifyDrivetrainSystem(kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter,

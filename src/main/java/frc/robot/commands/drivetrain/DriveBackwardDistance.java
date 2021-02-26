@@ -21,6 +21,7 @@ import frc.robot.commands.shooter.AutoRapidFireSetpoint;
 import frc.robot.commands.shooter.SetAndHoldRpmSetpoint;
 import frc.robot.commands.turret.AutoUseVisionCorrection;
 import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
+import frc.robot.constants.Constants;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
@@ -44,6 +45,7 @@ public class DriveBackwardDistance extends SequentialCommandGroup {
         var driveBackwardCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, driveBackwardPath, configA);
 
         addCommands(
+                new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, startPosition),
                 new SetDriveNeutralMode(driveTrain,0),
                 driveBackwardCommand

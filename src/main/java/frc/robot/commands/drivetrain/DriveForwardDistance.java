@@ -23,6 +23,7 @@ import frc.robot.commands.shooter.AutoRapidFireSetpoint;
 import frc.robot.commands.shooter.SetAndHoldRpmSetpoint;
 import frc.robot.commands.turret.AutoUseVisionCorrection;
 import frc.robot.commands.turret.SetTurretRobotRelativeAngle;
+import frc.robot.constants.Constants;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
@@ -49,7 +50,7 @@ public class DriveForwardDistance extends SequentialCommandGroup {
         var driveForwardCommand = TrajectoryUtils.generateRamseteCommand(driveTrain, trajectory);
 
         addCommands(
-                new SetDriveShifters(driveTrain, true),
+                new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain,0),
                 driveForwardCommand
