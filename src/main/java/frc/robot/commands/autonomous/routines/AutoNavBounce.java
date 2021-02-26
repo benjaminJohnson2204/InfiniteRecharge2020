@@ -39,8 +39,18 @@ import java.util.List;
 
 public class AutoNavBounce extends SequentialCommandGroup {
     public AutoNavBounce(DriveTrain driveTrain, FieldSim fieldSim) {
-        Pose2d[] waypoints = {
+        Pose2d[] startPoints = {
                 new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
+                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(-90))),
+                new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
+                new Pose2d(Units.inchesToMeters(255), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
+                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+        };
+
+        Pose2d[] endPoints = {
                 new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
                 new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
                 new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
@@ -50,8 +60,9 @@ public class AutoNavBounce extends SequentialCommandGroup {
                 new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
                 new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(160))),
         };
+
         boolean[] pathIsReversed = {false, true, true, true, false, false, false, true};
-        Pose2d startPosition = waypoints[0];
+        Pose2d startPosition = startPoints[0];
 
 
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(11), Units.feetToMeters(10));
@@ -70,13 +81,13 @@ public class AutoNavBounce extends SequentialCommandGroup {
         double[] endVelocities = {0, configA.getMaxVelocity(), configA.getMaxVelocity(), 0, configA.getMaxVelocity(), 
                 configA.getMaxVelocity(), 0, 0};
 
-        for(int i = 0; i < waypoints.length - 1; i++) {
+        for(int i = 0; i < startPoints.length; i++) {
                 configA.setStartVelocity(startVelocities[i]);
                 configA.setEndVelocity(endVelocities[i]);
                 configA.setReversed(pathIsReversed[i]);
-                Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints[i],
+                Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPoints[i],
                 List.of(),
-                waypoints[i + 1],
+                endPoints[i],
                 configA);
             var command = TrajectoryUtils.generateRamseteCommand(driveTrain, trajectory);
             addCommands(command);
