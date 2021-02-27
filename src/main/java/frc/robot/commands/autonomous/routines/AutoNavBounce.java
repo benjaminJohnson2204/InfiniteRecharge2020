@@ -65,7 +65,7 @@ public class AutoNavBounce extends SequentialCommandGroup {
         Pose2d startPosition = startPoints[0];
 
 
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(11), Units.feetToMeters(10));
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(10));
         configA.setReversed(false);
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
