@@ -54,12 +54,12 @@ public class AutoNavSlalom extends SequentialCommandGroup {
 
         Pose2d startPosition = startPoints[0];
 
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(10));
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(14), Units.feetToMeters(14));
         configA.setReversed(false);
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(2.5));
+        configA.addConstraint(new CentripetalAccelerationConstraint(4));
 
         int numberOfCones = SimConstants.autoNavSlalomCones.length;
             for(int i = 0; i < numberOfCones; i++) {
