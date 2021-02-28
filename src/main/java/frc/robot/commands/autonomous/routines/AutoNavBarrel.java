@@ -109,7 +109,7 @@ public class AutoNavBarrel extends SequentialCommandGroup {
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(1.5));
+        configA.addConstraint(new CentripetalAccelerationConstraint(2.5)); // This is what we can change when we're actually testing
 
         addCommands(new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, fieldSim, startPosition),
@@ -119,8 +119,7 @@ public class AutoNavBarrel extends SequentialCommandGroup {
                 if (i != 0) {
                         configA.setEndVelocity(configA.getMaxVelocity());
                         configA.setStartVelocity(configA.getMaxVelocity());
-                }
-                if (i == startPoints.length - 1) {
+                } else if (i == startPoints.length - 1) {
                         configA.setEndVelocity(0);
                 }
                 Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPoints[i],
