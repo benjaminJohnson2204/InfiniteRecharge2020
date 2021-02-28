@@ -43,48 +43,48 @@ public class AutoNavBounce extends SequentialCommandGroup {
         if (RobotBase.isReal()) {
                 Pose2d[] startingPoints = {
                         new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
                         new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-90))),
                         new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(255), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                 };
                 startPoints = startingPoints;
 
                 Pose2d[] endingPoints = {
-                        new Pose2d(Units.inchesToMeters(87), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(87), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
                         new Pose2d(Units.inchesToMeters(148), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(175), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(-92))),
+                        new Pose2d(Units.inchesToMeters(175), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-92))),
                         new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(250), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(265), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(265), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(160))),
                 };
                 endPoints = endingPoints;
         } else {
                 Pose2d[] startingPoints = {
                         new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
                         new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-90))),
                         new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(255), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                 };
                 startPoints = startingPoints;
 
                 Pose2d[] endingPoints = {
-                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
                         new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-90))),
                         new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(255), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(160))),
                 };
                 endPoints = endingPoints;
@@ -94,12 +94,12 @@ public class AutoNavBounce extends SequentialCommandGroup {
         Pose2d startPosition = startPoints[0];
 
 
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(10));
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(14), Units.feetToMeters(14));
         configA.setReversed(false);
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(2.25));
+        configA.addConstraint(new CentripetalAccelerationConstraint(6));
 
         addCommands(new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, fieldSim, startPosition),
