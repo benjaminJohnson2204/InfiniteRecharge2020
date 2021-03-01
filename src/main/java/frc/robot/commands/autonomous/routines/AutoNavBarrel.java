@@ -51,24 +51,24 @@ public class AutoNavBarrel extends SequentialCommandGroup {
                         new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
                         new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
                         new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
-                        new Pose2d(Units.inchesToMeters(295), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(275), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(-90))),
+                        //new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(295), Units.inchesToMeters(75), new Rotation2d(Units.degreesToRadians(160))),
+                        //new Pose2d(Units.inchesToMeters(275), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
                 };      
                 startPoints = startingPoints;
                 Pose2d[] endingPoints = {
                         new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(-120))),
-                        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(115))),
-                        new Pose2d(Units.inchesToMeters(156), Units.inchesToMeters(85), new Rotation2d(Units.degreesToRadians(-4))),
+                        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(118))),
+                        new Pose2d(Units.inchesToMeters(156), Units.inchesToMeters(85), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(260), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(280), Units.inchesToMeters(105), new Rotation2d(Units.degreesToRadians(95))),
-                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(-90))),
-                        new Pose2d(Units.inchesToMeters(308), Units.inchesToMeters(15), new Rotation2d(Units.degreesToRadians(-3))),
-                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(100))),
-                        new Pose2d(Units.inchesToMeters(295), Units.inchesToMeters(75), new Rotation2d(Units.degreesToRadians(190))),
-                        new Pose2d(Units.inchesToMeters(275), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(-90))),
-                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(-86))),
+                        new Pose2d(Units.inchesToMeters(320), Units.inchesToMeters(20), new Rotation2d(Units.degreesToRadians(2))),
+                        //new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(100))),
+                        new Pose2d(Units.inchesToMeters(295), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(190))),
+                        new Pose2d(Units.inchesToMeters(275), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(185))),
+                        //new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
                 };
                 endPoints = endingPoints;
         } else {
@@ -109,7 +109,7 @@ public class AutoNavBarrel extends SequentialCommandGroup {
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(2.5)); // This is what we can change when we're actually testing
+        configA.addConstraint(new CentripetalAccelerationConstraint(1.3)); // This is what we can change when we're actually testing
 
         addCommands(new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, fieldSim, startPosition),
@@ -119,7 +119,8 @@ public class AutoNavBarrel extends SequentialCommandGroup {
                 if (i != 0) {
                         configA.setEndVelocity(configA.getMaxVelocity());
                         configA.setStartVelocity(configA.getMaxVelocity());
-                } else if (i == startPoints.length - 1) {
+                }
+                if (i == startPoints.length - 1) {
                         configA.setEndVelocity(0);
                 }
                 Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPoints[i],
