@@ -30,7 +30,7 @@ public class AutoNavSlalom extends SequentialCommandGroup {
                 Pose2d[] startingPoints = {
                         new Pose2d(Units.inchesToMeters(40), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                         //new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(60))),
-                        new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(130), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(225), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                         //new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(-45))),
                         new Pose2d(Units.inchesToMeters(300), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
@@ -44,10 +44,10 @@ public class AutoNavSlalom extends SequentialCommandGroup {
         
                 Pose2d[] endingPoints = {
                         //new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(60))),
-                        new Pose2d(Units.inchesToMeters(120), Units.inchesToMeters(85), new Rotation2d(Units.degreesToRadians(-17))),
-                        new Pose2d(Units.inchesToMeters(235), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(130), Units.inchesToMeters(85), new Rotation2d(Units.degreesToRadians(-18))),
+                        new Pose2d(Units.inchesToMeters(265), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                         //new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(-45))),
-                        new Pose2d(Units.inchesToMeters(300), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(305), Units.inchesToMeters(15), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(150))),
                         //new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(225))),
                         new Pose2d(Units.inchesToMeters(225), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
