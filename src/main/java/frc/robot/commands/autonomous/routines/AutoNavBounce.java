@@ -43,6 +43,28 @@ public class AutoNavBounce extends SequentialCommandGroup {
         if (RobotBase.isReal()) {
                 Pose2d[] startingPoints = {
                         new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(145), new Rotation2d(Units.degreesToRadians(90))),
+                        new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
+                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(180))),
+                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(139), new Rotation2d(Units.degreesToRadians(-90))),
+                        new Pose2d(Units.inchesToMeters(211), Units.inchesToMeters(42), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(252), Units.inchesToMeters(42), new Rotation2d(Units.degreesToRadians(0))),
+                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(147), new Rotation2d(Units.degreesToRadians(90))),
+                };
+                startPoints = startingPoints;
+
+                Pose2d[] endingPoints = {
+                        new Pose2d(Units.inchesToMeters(87), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
+                        startingPoints[2],
+                        startingPoints[3],
+                        startingPoints[4],
+                        startingPoints[5],
+                        startingPoints[6],
+                        startingPoints[7],
+                        new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(100), new Rotation2d(Units.degreesToRadians(160))),
+                };
+                /*Pose2d[] startingPoints = {
+                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(95))),
                         new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
                         new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
@@ -62,7 +84,7 @@ public class AutoNavBounce extends SequentialCommandGroup {
                         new Pose2d(Units.inchesToMeters(252), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
                         new Pose2d(Units.inchesToMeters(265), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(85))),
                         new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
-                };
+                };*/
                 endPoints = endingPoints;
         } else {
                 Pose2d[] startingPoints = {
@@ -85,7 +107,7 @@ public class AutoNavBounce extends SequentialCommandGroup {
                         startingPoints[5],
                         startingPoints[6],
                         startingPoints[7],
-                        new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(160))),
+                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(100), new Rotation2d(Units.degreesToRadians(160))),
                 };
                 endPoints = endingPoints;
         }
