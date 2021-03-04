@@ -8,11 +8,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -25,7 +28,9 @@ import frc.robot.commands.drivetrain.BrakeWhileHeld;
 import frc.robot.commands.drivetrain.DriveBackwardDistance;
 import frc.robot.commands.drivetrain.DriveForwardDistance;
 import frc.robot.commands.drivetrain.SetArcadeDrive;
+import frc.robot.commands.drivetrain.SetDriveNeutralMode;
 import frc.robot.commands.drivetrain.SetDriveShifters;
+import frc.robot.commands.drivetrain.SetOdometry;
 import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.indexer.FeedAll;
 import frc.robot.commands.intake.ControlledIntake;
@@ -282,7 +287,12 @@ public class RobotContainer {
         if(RobotBase.isReal())
             return new AutoNavBounce(m_driveTrain, m_FieldSim);
         else
-            return new AutoNavBounce(m_driveTrain, m_FieldSim);
+            return new SequentialCommandGroup(
+                new SetDriveShifters(m_driveTrain, Constants.DriveConstants.inSlowGear),
+                new SetOdometry(m_driveTrain, m_FieldSim, new Pose2d(Units.inchesToMeters(40), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0)))),
+                new SetDriveNeutralMode(m_driveTrain, 0),
+                new AutoNewTest(m_driveTrain, m_FieldSim)
+            );
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
 //            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);
