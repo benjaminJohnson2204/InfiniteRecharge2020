@@ -43,17 +43,14 @@ import java.util.List;
 public class AutoNewTest extends CommandBase {
         private Pose2d currentPose;
         private Pose2d[] endPoints = {
-        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-        new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
-        new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
-        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-        new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
-        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
-        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
-        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
-        new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(86), new Rotation2d(Units.degreesToRadians(180))),
-        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+            new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(145), new Rotation2d(Units.degreesToRadians(90))),
+            new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
+            new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(180))),
+            new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(139), new Rotation2d(Units.degreesToRadians(-90))),
+            new Pose2d(Units.inchesToMeters(211), Units.inchesToMeters(42), new Rotation2d(Units.degreesToRadians(0))),
+            new Pose2d(Units.inchesToMeters(252), Units.inchesToMeters(42), new Rotation2d(Units.degreesToRadians(0))),
+            new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(147), new Rotation2d(Units.degreesToRadians(90))),
+            new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(100), new Rotation2d(Units.degreesToRadians(160))),
     };
 
     private int index = 0;
@@ -64,6 +61,14 @@ public class AutoNewTest extends CommandBase {
     private VitruvianRamseteCommand command;
     private boolean complete = false;
 
+    
+    boolean[] pathIsReversed = {false, true, true, true, false, false, false, true};
+
+    double[] startVelocities = {configA.getMaxVelocity(), 0, configA.getMaxVelocity(), configA.getMaxVelocity(), 0, 
+        configA.getMaxVelocity(), configA.getMaxVelocity(), 0, 0};
+    double[] endVelocities = {0, configA.getMaxVelocity(), configA.getMaxVelocity(), 0, configA.getMaxVelocity(), 
+        configA.getMaxVelocity(), 0, 0};
+
     public AutoNewTest(DriveTrain driveTrain, FieldSim fieldSim) {
         m_driveTrain = driveTrain;
         m_fieldSim = fieldSim;
@@ -72,7 +77,7 @@ public class AutoNewTest extends CommandBase {
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(2.25)); // This is what we can change when we're actually testing
+        configA.addConstraint(new CentripetalAccelerationConstraint(2));
         }
 
         @Override
@@ -100,10 +105,12 @@ public class AutoNewTest extends CommandBase {
                 complete = true;
                 return;
             }
-            configA.setEndVelocity(configA.getMaxVelocity());
-            configA.setStartVelocity(configA.getMaxVelocity());
-            if (index == endPoints.length - 1)
-                configA.setEndVelocity(0);
+
+            configA.setStartVelocity(startVelocities[index]);
+            configA.setEndVelocity(endVelocities[index]);
+            configA.setReversed(pathIsReversed[index]);
+            // if (index == endPoints.length - 1)
+            //     configA.setEndVelocity(0);
             currentPose = m_driveTrain.getRobotPose();
             trajectory = TrajectoryGenerator.generateTrajectory(currentPose,
                 List.of(),

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -33,7 +34,9 @@ import frc.robot.commands.drivetrain.SetDriveShifters;
 import frc.robot.commands.drivetrain.SetOdometry;
 import frc.robot.commands.indexer.EjectAll;
 import frc.robot.commands.indexer.FeedAll;
+import frc.robot.commands.intake.AutoControlledIntake;
 import frc.robot.commands.intake.ControlledIntake;
+import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.intake.ToggleIntakePistons;
 import frc.robot.commands.shooter.RapidFireSetpoint;
 import frc.robot.commands.shooter.SetRpmSetpoint;
@@ -285,7 +288,11 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if(RobotBase.isReal())
-            return new AutoNavBounce(m_driveTrain, m_FieldSim);
+            return new SequentialCommandGroup(
+                new SetIntakePiston(m_intake, true),
+                new GalacticSearchA(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
+                new SetIntakePiston(m_intake, false)
+            );
         else
             return new SequentialCommandGroup(
                 new SetDriveShifters(m_driveTrain, Constants.DriveConstants.inSlowGear),

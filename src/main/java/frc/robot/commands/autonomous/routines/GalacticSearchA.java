@@ -29,6 +29,7 @@ import frc.robot.commands.drivetrain.SetOdometry;
 import frc.robot.commands.intake.SetIntakeSpeed;
 import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.intake.SetIntakeStates;
+import frc.robot.constants.Constants;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimulationShoot;
 import frc.robot.subsystems.*;
@@ -39,26 +40,27 @@ import java.util.List;
 public class GalacticSearchA extends SequentialCommandGroup {
     public GalacticSearchA(DriveTrain driveTrain, FieldSim fieldSim) {
         Pose2d[] waypoints = {
-                new Pose2d(Units.inchesToMeters(15), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(-45))),
-                new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(15))),
-                new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(30))),
-                new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-30))),
-                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                new Pose2d(Units.inchesToMeters(345), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0)))
+                new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(135))),
+                new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(-165))),
+                new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(-150))),
+                new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(150))),
+                new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
+                new Pose2d(Units.inchesToMeters(345), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180)))
         };
         Pose2d startPosition = waypoints[0];
 
 
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
-        configA.setReversed(false);
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(10));
+        configA.setReversed(true);
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
         configA.addConstraint(new DifferentialDriveVoltageConstraint(driveTrain.getFeedforward(), driveTrain.getDriveTrainKinematics(),10));
-        configA.addConstraint(new CentripetalAccelerationConstraint(0.4));
+        configA.addConstraint(new CentripetalAccelerationConstraint(1.5));
 
-        addCommands(new SetOdometry(driveTrain, fieldSim, startPosition),
+        addCommands(new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
+                new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain, 0));
 
         for(int i = 0; i < waypoints.length - 1; i++) {

@@ -417,6 +417,7 @@ public class DriveTrain extends SubsystemBase {
             resetEncoderCounts();
             m_drivetrainSimulator.setPose(pose);
         }
+        setNavXOffset(rotation.getDegrees());
         odometry.resetPosition(pose, rotation);
         resetEncoderCounts();
     }

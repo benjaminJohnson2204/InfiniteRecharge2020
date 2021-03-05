@@ -54,6 +54,10 @@ public class FieldSim {
 
         ballCount = 3;
 
+        m_powercells[3].setBallPose(SimConstants.GalacticSearchARedBalls[0]);
+        m_powercells[4].setBallPose(SimConstants.GalacticSearchARedBalls[1]);
+        m_powercells[5].setBallPose(SimConstants.GalacticSearchARedBalls[2]);
+
         // Put 3 powercells in the trench;
         /*m_powercells[3].setBallPose(SimConstants.blueTrenchBallPos[0]);
         m_powercells[4].setBallPose(SimConstants.blueTrenchBallPos[1]);

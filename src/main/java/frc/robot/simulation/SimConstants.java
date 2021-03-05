@@ -3,6 +3,7 @@ package frc.robot.simulation;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.util.Units;
 
 public class SimConstants {
     public static final double fieldWidth = 15.980;
@@ -71,5 +72,29 @@ public class SimConstants {
             new Translation2d(5.313633,1.513965),
             new Translation2d(6.044377,1.513965),
             new Translation2d(7.550150,1.513965)
+    };
+
+    public static final Pose2d[] GalacticSearchARedBalls = {
+        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(90), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(60), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(150), new Rotation2d()),
+    };
+    
+    public static final Pose2d[] GalacticSearchABlueBalls = {
+        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(30), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(90), new Rotation2d()),
+    };
+
+    public static final Pose2d[] GalacticSearchBRedBalls = {
+        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(120), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(60), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d())
+    };
+    
+    public static final Pose2d[] GalacticSearchBBlueBalls = {
+        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(60), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(120), new Rotation2d()),
+        new Pose2d(Units.inchesToMeters(300), Units.inchesToMeters(60), new Rotation2d())
     };
 }
