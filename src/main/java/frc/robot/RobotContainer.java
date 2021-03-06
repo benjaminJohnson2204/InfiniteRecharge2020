@@ -288,11 +288,12 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if(RobotBase.isReal())
-            return new SequentialCommandGroup(
-                new SetIntakePiston(m_intake, true),
-                new GalacticSearchA(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
-                new SetIntakePiston(m_intake, false)
-            );
+            return new AutoNavSlalom(m_driveTrain, m_FieldSim);
+            // return new SequentialCommandGroup(
+            //     new SetIntakePiston(m_intake, true),
+            //     new GalacticSearchA(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
+            //     new SetIntakePiston(m_intake, false)
+            // );
         else
             return new SequentialCommandGroup(
                 new SetDriveShifters(m_driveTrain, Constants.DriveConstants.inSlowGear),
