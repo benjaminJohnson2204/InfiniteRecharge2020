@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
+import frc.robot.RobotContainer;
+import frc.robot.RobotContainer.SkillsChallengeSelector;
 import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
@@ -16,6 +18,7 @@ import frc.robot.subsystems.Turret;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class FieldSim {
     private Field2d m_field2d;
@@ -47,16 +50,13 @@ public class FieldSim {
 
     public void initSim() {
         // Load 3 powercells into the robot
-        for(int i = 0; i < 3; i++)
-            m_powercells[i].setBallState(1);
+        // for(int i = 0; i < 3; i++)
+        //     m_powercells[i].setBallState(1);
         for(int i = 3; i < m_powercells.length; i++)
             m_powercells[i].setBallState(0);
 
-        ballCount = 3;
+        //ballCount = 3;
 
-        m_powercells[3].setBallPose(SimConstants.GalacticSearchARedBalls[0]);
-        m_powercells[4].setBallPose(SimConstants.GalacticSearchARedBalls[1]);
-        m_powercells[5].setBallPose(SimConstants.GalacticSearchARedBalls[2]);
 
         // Put 3 powercells in the trench;
         /*m_powercells[3].setBallPose(SimConstants.blueTrenchBallPos[0]);
@@ -81,6 +81,19 @@ public class FieldSim {
         m_field2d.setRobotPose(startPosition);
         m_driveTrain.resetOdometry(startPosition, startPosition.getRotation());
         m_autoStartTime = Timer.getFPGATimestamp();
+    }
+
+    public void placeSkillPowercells(RobotContainer.SkillsChallengeSelector command) {
+        boolean red = Math.random() > 0.5;
+        if (command == SkillsChallengeSelector.GALACTIC_SEARCH_A) {
+            for (int i = 0; i < 3; i++) {
+                m_powercells[i].setBallPose(red ? SimConstants.GalacticSearchARedBalls[i] : SimConstants.GalacticSearchABlueBalls[i]);
+            }
+        } else if (command == SkillsChallengeSelector.GALACTIC_SEARCH_B) {
+            for (int i = 0; i < 3; i++) {
+                m_powercells[i].setBallPose(red ? SimConstants.GalacticSearchBRedBalls[i] : SimConstants.GalacticSearchBBlueBalls[i]);
+            }
+        }
     }
 
     private void updateIntakePoses() {

@@ -38,82 +38,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutoNavBounce extends SequentialCommandGroup {
-    private Pose2d[] startPoints, endPoints;
     public AutoNavBounce(DriveTrain driveTrain, FieldSim fieldSim) {
-        if (RobotBase.isReal()) {
-                Pose2d[] startingPoints = {
-                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(145), new Rotation2d(Units.degreesToRadians(90))),
-                        new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
-                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(139), new Rotation2d(Units.degreesToRadians(-90))),
-                        new Pose2d(Units.inchesToMeters(211), Units.inchesToMeters(42), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(252), Units.inchesToMeters(42), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(147), new Rotation2d(Units.degreesToRadians(90))),
-                };
-                startPoints = startingPoints;
-
-                Pose2d[] endingPoints = {
-                        new Pose2d(Units.inchesToMeters(87), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(90))),
-                        startingPoints[2],
-                        startingPoints[3],
-                        startingPoints[4],
-                        startingPoints[5],
-                        startingPoints[6],
-                        startingPoints[7],
-                        new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(100), new Rotation2d(Units.degreesToRadians(160))),
-                };
-                /*Pose2d[] startingPoints = {
-                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(95))),
-                        new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
-                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-90))),
-                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(255), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
-                };
-                startPoints = startingPoints;
-
-                Pose2d[] endingPoints = {
-                        new Pose2d(Units.inchesToMeters(87), Units.inchesToMeters(150), new Rotation2d(Units.degreesToRadians(95))),
-                        new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
-                        new Pose2d(Units.inchesToMeters(148), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(175), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-92))),
-                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(252), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(265), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(85))),
-                        new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
-                };*/
-                endPoints = endingPoints;
-        } else {
-                Pose2d[] startingPoints = {
-                        new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
-                        new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
-                        new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(180))),
-                        new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(-90))),
-                        new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(255), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
-                        new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(140), new Rotation2d(Units.degreesToRadians(90))),
-                };
-                startPoints = startingPoints;
-
-                Pose2d[] endingPoints = {
-                        startingPoints[1],
-                        startingPoints[2],
-                        startingPoints[3],
-                        startingPoints[4],
-                        startingPoints[5],
-                        startingPoints[6],
-                        startingPoints[7],
-                        new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(100), new Rotation2d(Units.degreesToRadians(160))),
-                };
-                endPoints = endingPoints;
-        }
+        Pose2d[] waypoints = {
+            new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
+            new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(145), new Rotation2d(Units.degreesToRadians(90))),
+            new Pose2d(Units.inchesToMeters(105), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(120))),
+            new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(40), new Rotation2d(Units.degreesToRadians(180))),
+            new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(139), new Rotation2d(Units.degreesToRadians(-90))),
+            new Pose2d(Units.inchesToMeters(211), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
+            new Pose2d(Units.inchesToMeters(252), Units.inchesToMeters(30), new Rotation2d(Units.degreesToRadians(0))),
+            new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(147), new Rotation2d(Units.degreesToRadians(90))),       
+            new Pose2d(Units.inchesToMeters(315), Units.inchesToMeters(100), new Rotation2d(Units.degreesToRadians(160))),
+        };
 
         boolean[] pathIsReversed = {false, true, true, true, false, false, false, true};
-        Pose2d startPosition = startPoints[0];
+        Pose2d startPosition = waypoints[0];
 
 
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(10));
@@ -132,13 +71,13 @@ public class AutoNavBounce extends SequentialCommandGroup {
         double[] endVelocities = {0, configA.getMaxVelocity(), configA.getMaxVelocity(), 0, configA.getMaxVelocity(), 
                 configA.getMaxVelocity(), 0, 0};
 
-        for(int i = 0; i < startPoints.length; i++) {
+        for(int i = 0; i < waypoints.length - 1; i++) {
                 configA.setStartVelocity(startVelocities[i]);
                 configA.setEndVelocity(endVelocities[i]);
                 configA.setReversed(pathIsReversed[i]);
-                Trajectory trajectory = TrajectoryGenerator.generateTrajectory(startPoints[i],
+                Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints[i],
                 List.of(),
-                endPoints[i],
+                waypoints[i + 1],
                 configA);
             var command = TrajectoryUtils.generateRamseteCommand(driveTrain, trajectory);
             addCommands(command);

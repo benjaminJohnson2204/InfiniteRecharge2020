@@ -34,6 +34,7 @@ import frc.robot.commands.intake.SetIntakePiston;
 import frc.robot.commands.intake.SetIntakeStates;
 import frc.robot.commands.shooter.ControlledFireNew;
 import frc.robot.commands.shooter.SetRPM;
+import frc.robot.constants.Constants;
 import frc.robot.simulation.FieldSim;
 import frc.robot.simulation.SimConstants;
 import frc.robot.simulation.SimulationShoot;
@@ -52,14 +53,15 @@ public class AccuracyChallenge extends SequentialCommandGroup {
             Units.inchesToMeters(60 - 6) - SimConstants.robotLength // Red
         };
         addCommands(
+                new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
                 new SetOdometry(driveTrain, fieldSim, new Pose2d()),
                 new SetDriveNeutralMode(driveTrain, 0),
                 new SetRPM(shooter, 3000),
-                //new DriveForwardDistance(driveTrain, distancesToDrive[index]).andThen(() -> driveTrain.setVoltageOutput(0, 0)),
+                new DriveForwardDistance(driveTrain, fieldSim, distancesToDrive[index]).andThen(() -> driveTrain.setVoltageOutput(0, 0)),
                 new InstantCommand(() -> shooter.setIdealRPM()),
                 new ControlledFireNew(shooter, indexer).withTimeout(3),
                 new SetRPM(shooter, 3000),
-                new DriveBackwardDistance(driveTrain, distancesToDrive[index]).andThen(() -> driveTrain.setVoltageOutput(0, 0))
+                new DriveBackwardDistance(driveTrain, fieldSim, distancesToDrive[index]).andThen(() -> driveTrain.setVoltageOutput(0, 0))
         );
     }
 }

@@ -103,15 +103,17 @@ public class RobotContainer {
         DO_NOTHING
     }
 
-    private enum SkillsChallengeSelector {
+    public enum SkillsChallengeSelector {
         ACCURACY_CHALLENGE,
         AUTO_NAV_SLALOM,
         AUTO_NAV_BARREL,
         AUTO_NAV_BOUNCE,
+        GALACTIC_SEARCH_A,
+        GALACTIC_SEARCH_B,
         None
     }
 
-    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.ACCURACY_CHALLENGE; // Change this
+    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.AUTO_NAV_BOUNCE; // Change this
 
     private FieldSim m_FieldSim;
 
@@ -185,6 +187,7 @@ public class RobotContainer {
             m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_colorSensor, m_controls));
         }
         else {
+            m_FieldSim.placeSkillPowercells(selectedSkillsChallenge);
             m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
                     () -> testController.getRawAxis(1),
                     () -> testController.getRawAxis(2)));
@@ -287,20 +290,29 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        if(RobotBase.isReal())
-            return new AutoNavSlalom(m_driveTrain, m_FieldSim);
-            // return new SequentialCommandGroup(
-            //     new SetIntakePiston(m_intake, true),
-            //     new GalacticSearchA(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
-            //     new SetIntakePiston(m_intake, false)
-            // );
-        else
-            return new SequentialCommandGroup(
-                new SetDriveShifters(m_driveTrain, Constants.DriveConstants.inSlowGear),
-                new SetOdometry(m_driveTrain, m_FieldSim, new Pose2d(Units.inchesToMeters(40), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0)))),
-                new SetDriveNeutralMode(m_driveTrain, 0),
-                new AutoNewTest(m_driveTrain, m_FieldSim)
-            );
+        switch (selectedSkillsChallenge) {
+            case AUTO_NAV_BARREL:
+                return new AutoNavBarrel(m_driveTrain, m_FieldSim);
+            case AUTO_NAV_BOUNCE:
+                return new AutoNavBounce(m_driveTrain, m_FieldSim);
+            case AUTO_NAV_SLALOM:
+                return new AutoNavSlalom(m_driveTrain, m_FieldSim);
+            case GALACTIC_SEARCH_A:
+                return new SequentialCommandGroup(
+                    new SetIntakePiston(m_intake, true), 
+                    new GalacticSearchA(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
+                    new SetIntakePiston(m_intake, false));
+            case GALACTIC_SEARCH_B:
+                return new SequentialCommandGroup(
+                    new SetIntakePiston(m_intake, true), 
+                    new GalacticSearchB(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
+                    new SetIntakePiston(m_intake, false));
+            case None:
+            default:
+                System.out.println("Not a recognized skills command");
+                return null;
+        }
+        
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
             //return m_ShootOnTheMove;
 //            return new AllyTrenchPathStraight(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision);

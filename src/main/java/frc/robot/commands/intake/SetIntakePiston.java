@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Intake;
 
 /**
- * An example command that uses an example subsystem.
+ * Sets the piston that raises/lowers the intake.
  */
 public class SetIntakePiston extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
@@ -19,14 +19,14 @@ public class SetIntakePiston extends CommandBase {
     boolean extend;
 
     /**
-     * Creates a new ExampleCommand.
-     *
-     * @param subsystem The subsystem used by this command.
+     * 
+     * @param intake The robot's intake
+     * @param extend True means lowered and able to intake power cells, false means raised
      */
-    public SetIntakePiston(Intake subsystem, boolean extend) {
-        intake = subsystem;
+    public SetIntakePiston(Intake intake, boolean extend) {
+        this.intake = intake;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(subsystem);
+        addRequirements(intake);
         this.extend = extend;
     }
 

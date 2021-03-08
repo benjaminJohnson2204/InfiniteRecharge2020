@@ -31,7 +31,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class DriveBackwardDistance extends SequentialCommandGroup {
-    public DriveBackwardDistance(DriveTrain driveTrain, double distance) { // Distance in meters
+    public DriveBackwardDistance(DriveTrain driveTrain, FieldSim fieldSim, double distance) { // Distance in meters
         Pose2d startPosition = new Pose2d();
         Pose2d endPosition = new Pose2d(-distance, 0, new Rotation2d());
         TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(6), Units.feetToMeters(10));
@@ -46,7 +46,7 @@ public class DriveBackwardDistance extends SequentialCommandGroup {
 
         addCommands(
                 new SetDriveShifters(driveTrain, Constants.DriveConstants.inSlowGear),
-                new SetOdometry(driveTrain, startPosition),
+                new SetOdometry(driveTrain, fieldSim, startPosition),
                 new SetDriveNeutralMode(driveTrain,0),
                 driveBackwardCommand
             );
