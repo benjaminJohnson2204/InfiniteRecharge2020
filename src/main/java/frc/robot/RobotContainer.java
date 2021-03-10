@@ -109,12 +109,13 @@ public class RobotContainer {
         AUTO_NAV_SLALOM,
         AUTO_NAV_BARREL,
         AUTO_NAV_BOUNCE,
+        LIGHSTPEED_CIRCUIT,
         GALACTIC_SEARCH_A,
         GALACTIC_SEARCH_B,
         None
     }
 
-    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.GALACTIC_SEARCH_A; // Change this
+    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.LIGHSTPEED_CIRCUIT; // Change this
 
     private FieldSim m_FieldSim;
 
@@ -298,6 +299,8 @@ public class RobotContainer {
                 return new AutoNavBounce(m_driveTrain, m_FieldSim);
             case AUTO_NAV_SLALOM:
                 return new AutoNavSlalom(m_driveTrain, m_FieldSim);
+            case LIGHSTPEED_CIRCUIT:
+                return new LightspeedCircuit(m_driveTrain, m_FieldSim);
             case GALACTIC_SEARCH_A:
                 return new SequentialCommandGroup(
                     new SetIntakePiston(m_intake, true), 

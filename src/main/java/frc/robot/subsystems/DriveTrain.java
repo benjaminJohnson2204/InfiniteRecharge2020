@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -102,6 +104,8 @@ public class DriveTrain extends SubsystemBase {
 
     public DifferentialDrivetrainSim m_drivetrainSimulator;
     private ADXRS450_GyroSim m_gyroAngleSim;
+
+    private DoubleSupplier joystickCorrector = null; // A turning joystick to adjust trajectories during tele-op
 
     public DriveTrain(PowerDistributionPanel pdp) {
         // Set up DriveTrain motors
@@ -251,6 +255,10 @@ public class DriveTrain extends SubsystemBase {
         }
     }
 
+    public void setAutosJoystick(DoubleSupplier supplier) {
+        joystickCorrector = supplier;
+    }
+
     public void setMotorArcadeDrive(double throttle, double turn) {
         double leftPWM = throttle + turn;
         double rightPWM = throttle - turn;
@@ -292,8 +300,11 @@ public class DriveTrain extends SubsystemBase {
         }
         SmartDashboardTab.putNumber("DriveTrain", "Left Voltage", leftVoltage);
         SmartDashboardTab.putNumber("DriveTrain", "Right Voltage", rightVoltage);
-
-        setMotorPercentOutput(leftVoltage / batteryVoltage, rightVoltage / batteryVoltage);
+        if (joystickCorrector == null) {   
+            setMotorPercentOutput(leftVoltage / batteryVoltage, rightVoltage / batteryVoltage);
+        } else {
+            setMotorPercentOutput(leftVoltage / batteryVoltage + joystickCorrector.getAsDouble(), rightVoltage / batteryVoltage - joystickCorrector.getAsDouble());
+        }
     }
 
     private void setMotorPercentOutput(double leftOutput, double rightOutput) {

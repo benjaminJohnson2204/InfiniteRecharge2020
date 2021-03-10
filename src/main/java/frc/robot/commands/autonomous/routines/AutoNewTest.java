@@ -39,7 +39,10 @@ import frc.robot.subsystems.*;
 import frc.vitruvianlib.utils.TrajectoryUtils;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Generates each trajectory right before running it instead of all at once
+ * in order to adjust for robot's actual vs. expected position disparities
+ */
 public class AutoNewTest extends CommandBase {
         private Pose2d currentPose;
         private Pose2d[] endPoints = {
