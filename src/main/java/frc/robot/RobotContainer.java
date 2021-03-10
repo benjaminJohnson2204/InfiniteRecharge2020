@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -113,7 +114,7 @@ public class RobotContainer {
         None
     }
 
-    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.AUTO_NAV_BOUNCE; // Change this
+    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.GALACTIC_SEARCH_A; // Change this
 
     private FieldSim m_FieldSim;
 
@@ -300,7 +301,7 @@ public class RobotContainer {
             case GALACTIC_SEARCH_A:
                 return new SequentialCommandGroup(
                     new SetIntakePiston(m_intake, true), 
-                    new GalacticSearchA(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
+                    (new ConditionalCommand(new GalacticSearchARed(m_driveTrain, m_FieldSim), new GalacticSearchABlue(m_driveTrain, m_FieldSim), () -> true)).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
                     new SetIntakePiston(m_intake, false));
             case GALACTIC_SEARCH_B:
                 return new SequentialCommandGroup(
