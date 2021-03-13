@@ -115,7 +115,7 @@ public class RobotContainer {
         None
     }
 
-    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.LIGHSTPEED_CIRCUIT; // Change this
+    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.AUTO_NAV_BOUNCE; // Change this
 
     private FieldSim m_FieldSim;
 
@@ -184,7 +184,7 @@ public class RobotContainer {
         if(RobotBase.isReal()) {
             m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
                     () -> leftJoystick.getRawAxis(1),
-                    () -> rightJoystick.getRawAxis(2)));
+                    () -> rightJoystick.getRawAxis(0)));
 
             m_led.setDefaultCommand(new GetSubsystemStates(this, m_led, m_indexer, m_intake, m_vision, m_turret, m_climber, m_colorSensor, m_controls));
         }

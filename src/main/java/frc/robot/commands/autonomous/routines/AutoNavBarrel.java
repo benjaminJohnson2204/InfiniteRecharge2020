@@ -57,7 +57,7 @@ public class AutoNavBarrel extends SequentialCommandGroup {
 
         Pose2d startPosition = waypoints[0];
 
-        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(6));
+        TrajectoryConfig configA = new TrajectoryConfig(Units.feetToMeters(9), Units.feetToMeters(6));
         configA.setReversed(false);
         //configA.setEndVelocity(configA.getMaxVelocity());
         configA.addConstraint(new DifferentialDriveKinematicsConstraint(driveTrain.getDriveTrainKinematics(), configA.getMaxVelocity()));
