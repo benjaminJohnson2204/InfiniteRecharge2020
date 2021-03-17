@@ -43,7 +43,7 @@ import java.util.List;
  * Generates each trajectory right before running it instead of all at once
  * in order to adjust for robot's actual vs. expected position disparities
  */
-public class AutoNewTest extends CommandBase {
+public class AutoNewBarrelTest extends CommandBase {
         private Pose2d currentPose;
         private Pose2d[] endPoints = {
             new Pose2d(Units.inchesToMeters(90), Units.inchesToMeters(145), new Rotation2d(Units.degreesToRadians(90))),
@@ -64,15 +64,7 @@ public class AutoNewTest extends CommandBase {
     private VitruvianRamseteCommand command;
     private boolean complete = false;
 
-    
-    boolean[] pathIsReversed = {false, true, true, true, false, false, false, true};
-
-    double[] startVelocities = {configA.getMaxVelocity(), 0, configA.getMaxVelocity(), configA.getMaxVelocity(), 0, 
-        configA.getMaxVelocity(), configA.getMaxVelocity(), 0, 0};
-    double[] endVelocities = {0, configA.getMaxVelocity(), configA.getMaxVelocity(), 0, configA.getMaxVelocity(), 
-        configA.getMaxVelocity(), 0, 0};
-
-    public AutoNewTest(DriveTrain driveTrain, FieldSim fieldSim) {
+    public AutoNewBarrelTest(DriveTrain driveTrain, FieldSim fieldSim) {
         m_driveTrain = driveTrain;
         m_fieldSim = fieldSim;
 
@@ -109,11 +101,8 @@ public class AutoNewTest extends CommandBase {
                 return;
             }
 
-            configA.setStartVelocity(startVelocities[index]);
-            configA.setEndVelocity(endVelocities[index]);
-            configA.setReversed(pathIsReversed[index]);
-            // if (index == endPoints.length - 1)
-            //     configA.setEndVelocity(0);
+            if (index == endPoints.length - 1)
+                configA.setEndVelocity(0);
             currentPose = m_driveTrain.getRobotPose();
             trajectory = TrajectoryGenerator.generateTrajectory(currentPose,
                 List.of(),

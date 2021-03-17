@@ -339,7 +339,7 @@ public class RobotContainer {
         if(RobotBase.isReal()) {
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
-            m_driveTrain.setDriveTrainNeutralMode(0);
+            m_driveTrain.setDriveTrainNeutralMode(2); // All in coast; change this maybe
         } else {
             m_driveTrain.resetEncoderCounts();
             m_driveTrain.resetOdometry(m_FieldSim.getRobotPose(), m_FieldSim.getRobotPose().getRotation());
