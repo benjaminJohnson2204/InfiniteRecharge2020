@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.SimVisionSystem;
+
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSource;
@@ -18,12 +21,15 @@ import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Transform2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboardTab;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpiutil.net.PortForwarder;
+import frc.robot.simulation.SimConstants;
 
 /*
 Subsystem for interacting with the Limelight and OpenSight vision systems
@@ -46,7 +52,8 @@ public class Vision extends SubsystemBase {
 
     // NetworkTables for reading vision data
     private final NetworkTable limelight;
-    private final NetworkTable openSight;
+    private final NetworkTable photonVision;
+    private final PhotonCamera photonCamera;
 
     // Subsystems that will be controlled based on vision data
     private final DriveTrain m_driveTrain;
@@ -62,6 +69,26 @@ public class Vision extends SubsystemBase {
     private double lastValidTargetTime;
     private boolean validTarget;
 
+    String camName = "MyCamera";
+    double camDiagFOV = 75.0; // degrees
+    double camPitch = -30;     // degrees
+    Transform2d cameraToRobot = new Transform2d(new Translation2d(-0.838 / 2, 0.0), new Rotation2d()); // meters
+    double camHeightOffGround = 0.85; // meters
+    double maxLEDRange = 20;          // meters
+    int camResolutionWidth = 640;     // pixels
+    int camResolutionHeight = 480;    // pixels
+    double minTargetArea = 10;        // square pixels
+
+    SimVisionSystem visionSys = new SimVisionSystem(camName,
+                                camDiagFOV,
+                                camPitch,
+                                cameraToRobot,
+                                camHeightOffGround,
+                                maxLEDRange,
+                                camResolutionWidth,
+                                camResolutionHeight,
+                                minTargetArea);
+
     public Vision(DriveTrain driveTrain, Turret turret) {
         m_driveTrain = driveTrain;
         m_turret = turret;
@@ -72,7 +99,7 @@ public class Vision extends SubsystemBase {
 			camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
 			camera.setExposureManual(25);
 			camera.setResolution(320, 240);
-			camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
+            camera.setPixelFormat(VideoMode.PixelFormat.kMJPEG);
 		}
 		//CameraServer.getInstance().addAxisCamera("opensight", "opensight.local");
 
@@ -84,7 +111,10 @@ public class Vision extends SubsystemBase {
 
         // Init vision NetworkTables
         limelight = NetworkTableInstance.getDefault().getTable("limelight");
-        openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
+        //openSight = NetworkTableInstance.getDefault().getTable("OpenSight");
+        photonVision = NetworkTableInstance.getDefault().getTable("PhotonVision");
+        photonCamera = new PhotonCamera("photonvision");
+
         setPipeline(0);
 
         //initShuffleboard();
@@ -103,6 +133,10 @@ public class Vision extends SubsystemBase {
             ledsOff();
             validTarget = false;
         }
+    }
+
+    public SimVisionSystem getVisionSim() {
+        return visionSys;
     }
 
     public boolean getValidTarget() {
@@ -264,14 +298,47 @@ public class Vision extends SubsystemBase {
     }
 
     // Read ball position data from OpenSight (Raspberry Pi)
+    // Returns angle in degrees from center of camera (right is positive)
     public double getPowerCellX() {
         // TODO: Calculate degrees from pixels?
         // return openSight.getEntry("found-x").getDouble(0) * 5.839; // 5.839 pixels per degree
-        return openSight.getEntry("found-x").getDouble(0);
+        return photonVision.getEntry("targetYaw").getDouble(0);
+    }
+
+    // Decides, based on power cell locations, which color (red or blue) and path (A or B) to run
+    // 0 = red A, 1 = blue A, 2 = red B, 3 = blue B, -1 = can't determine path
+    public int galacticSearchPath() {
+        if (!photonCamera.hasTargets()) {
+            SmartDashboard.putString("Galactic Search Path", "None");
+            return -1;
+        }
+        var targets = photonCamera.getLatestResult().getTargets();
+        if (Math.abs(targets.get(0).getYaw()) < 10) {
+            if (m_driveTrain.getHeading() > 3 && m_driveTrain.getHeading() < 40) {
+                SmartDashboard.putString("Galactic Search Path", "Red B");
+                return 2;
+            }
+            if (m_driveTrain.getHeading() > -3 && m_driveTrain.getHeading() < 3) {
+                SmartDashboard.putString("Galactic Search Path", "Red A");
+                return 0;
+            }
+        } else {
+            if (m_driveTrain.getHeading() < -3 && m_driveTrain.getHeading() > -30) {
+                SmartDashboard.putString("Galactic Search Path", "Blue A");
+                return 1;
+            }
+            if (m_driveTrain.getHeading() > -3 && m_driveTrain.getHeading() < 3) {
+                SmartDashboard.putString("Galactic Search Path", "Blue B");
+                return 3;
+            }
+        }
+        SmartDashboard.putString("Galactic Search Path", "None");
+        return -1;
     }
 
     public boolean hasPowerCell() {
-        return openSight.getEntry("found").getBoolean(false);
+        //return photonVision.getEntry("found").getBoolean(false);
+        return photonVision.getEntry("hasTarget").getBoolean(false);
     }
 
     private void initShuffleboard() {
@@ -296,6 +363,9 @@ public class Vision extends SubsystemBase {
         // This method will be called once per scheduler run
         updateSmartDashboard();
         updateValidTarget();
+        galacticSearchPath();
+        if (RobotBase.isSimulation())
+            visionSys.processFrame(m_driveTrain.getRobotPose());
 
         //resetPoseByVision();
     }

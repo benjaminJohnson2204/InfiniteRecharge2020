@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -110,12 +111,12 @@ public class RobotContainer {
         AUTO_NAV_BARREL,
         AUTO_NAV_BOUNCE,
         LIGHSTPEED_CIRCUIT,
-        GALACTIC_SEARCH_A,
-        GALACTIC_SEARCH_B,
+        GALACTIC_SEARCH,
         None
     }
 
-    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.AUTO_NAV_BOUNCE; // Change this
+    private SkillsChallengeSelector selectedSkillsChallenge = SkillsChallengeSelector.GALACTIC_SEARCH; // Change this
+    private int galacticSearchPath;
 
     private FieldSim m_FieldSim;
 
@@ -179,7 +180,7 @@ public class RobotContainer {
 //        for(int i = 0; i < 6; i++)
 //            m_powercells[i] = new Powercell("PowerCell_" + i);
 
-        m_FieldSim = new FieldSim(m_driveTrain, m_turret, m_shooter);
+        m_FieldSim = new FieldSim(m_driveTrain, m_turret, m_shooter, m_vision);
 
         if(RobotBase.isReal()) {
             m_driveTrain.setDefaultCommand(new SetArcadeDrive(m_driveTrain, m_intake,
@@ -301,20 +302,24 @@ public class RobotContainer {
                 return new AutoNavSlalom(m_driveTrain, m_FieldSim);
             case LIGHSTPEED_CIRCUIT:
                 return new LightspeedCircuit(m_driveTrain, m_FieldSim);
-            case GALACTIC_SEARCH_A:
-                return new SequentialCommandGroup(
-                    new SetIntakePiston(m_intake, true), 
-                    (new ConditionalCommand(new GalacticSearchARed(m_driveTrain, m_FieldSim), new GalacticSearchABlue(m_driveTrain, m_FieldSim), () -> true)).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
-                    new SetIntakePiston(m_intake, false));
-            case GALACTIC_SEARCH_B:
-                return new SequentialCommandGroup(
-                    new SetIntakePiston(m_intake, true), 
-                    new GalacticSearchB(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)),
-                    new SetIntakePiston(m_intake, false));
+            case GALACTIC_SEARCH:
+                switch (galacticSearchPath) {
+                    case 0:
+                        return new SequentialCommandGroup(new SetIntakePiston(m_intake, true), new GalacticSearchARed(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)));
+                    case 1:
+                        return new SequentialCommandGroup(new SetIntakePiston(m_intake, true), new GalacticSearchABlue(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)));
+                    case 2:
+                        return new SequentialCommandGroup(new SetIntakePiston(m_intake, true), new GalacticSearchBRed(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer)));
+                    case 3:
+                        return new SequentialCommandGroup(new SetIntakePiston(m_intake, true), new GalacticSearchBBlue(m_driveTrain, m_FieldSim).deadlineWith(new AutoControlledIntake(m_intake, m_indexer))); 
+                    case -1:
+                    default:
+                        return new WaitCommand(0);
+                }
             case None:
             default:
                 System.out.println("Not a recognized skills command");
-                return null;
+                return new WaitCommand(0);
         }
         
 //            return new SOTMSimulationAuto(m_driveTrain, m_intake, m_indexer, m_turret, m_shooter, m_vision, m_FieldSim, m_ShootOnTheMove);
@@ -329,6 +334,12 @@ public class RobotContainer {
     public void disabledInit() {
         setInitializationState(true);
         m_driveTrain.setDriveTrainNeutralMode(2);
+        m_driveTrain.resetOdometry(new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
+        m_driveTrain.resetAngle();
+    }
+
+    public void disabledPeriodic() {
+        galacticSearchPath = m_vision.galacticSearchPath();
     }
 
     public void robotPeriodic() {

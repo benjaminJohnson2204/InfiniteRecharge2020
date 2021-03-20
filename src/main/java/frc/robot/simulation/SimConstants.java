@@ -1,5 +1,7 @@
 package frc.robot.simulation;
 
+import org.photonvision.SimVisionTarget;
+
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -96,5 +98,15 @@ public class SimConstants {
         new Pose2d(Units.inchesToMeters(180), Units.inchesToMeters(60), new Rotation2d()),
         new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(120), new Rotation2d()),
         new Pose2d(Units.inchesToMeters(300), Units.inchesToMeters(60), new Rotation2d())
-    };
+    };  
+        
+    public static final Pose2d targetPose = new Pose2d(new Translation2d(Units.inchesToMeters(90), Units.inchesToMeters(90)), new Rotation2d()); // meters
+    public static final double targetHeightAboveGround = 0; // meters
+    public static final double targetWidth = Units.inchesToMeters(7);           // meters
+    public static final double targetHeight = Units.inchesToMeters(7);          // meters
+
+    public static final SimVisionTarget newTgt = new SimVisionTarget(targetPose,
+                                    targetHeightAboveGround,
+                                    targetWidth,
+                                    targetHeight);
 }

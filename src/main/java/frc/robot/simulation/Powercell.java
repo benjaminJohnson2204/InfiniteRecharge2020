@@ -1,5 +1,8 @@
 package frc.robot.simulation;
 
+import org.photonvision.SimVisionSystem;
+import org.photonvision.SimVisionTarget;
+
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -16,6 +19,8 @@ public class Powercell {
     private Pose2d ballXYVel = new Pose2d(); // X and Y velocity of the ball while in the air
     double m_lastTimestamp;
     private int ballState = 0;
+
+    private SimVisionTarget simTarget;
 
 
     String m_name;
@@ -82,6 +87,10 @@ public class Powercell {
 
     public double getLastTimestamp() {
         return m_lastTimestamp;
+    }
+
+    public SimVisionTarget getSimTarget() {
+        return simTarget;
     }
 
     public void simulationPeriodic() {

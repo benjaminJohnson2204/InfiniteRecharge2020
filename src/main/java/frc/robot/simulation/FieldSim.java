@@ -14,6 +14,7 @@ import frc.robot.constants.Constants;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Vision;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ public class FieldSim {
     private final DriveTrain m_driveTrain;
     private final Turret m_turret;
     private final Shooter m_shooter;
+    private final Vision m_vision;
     private final Powercell[] m_powercells = new Powercell[17];
 
     private int ballCount;
@@ -37,10 +39,11 @@ public class FieldSim {
 
     private double m_autoStartTime;
 
-    public FieldSim(DriveTrain driveTrain, Turret turret, Shooter shooter) {
+    public FieldSim(DriveTrain driveTrain, Turret turret, Shooter shooter, Vision vision) {
         m_driveTrain = driveTrain;
         m_turret = turret;
         m_shooter = shooter;
+        m_vision = vision;
 
         for(int i = 0; i < m_powercells.length; i++)
             m_powercells[i] = new Powercell(String.format("PowerCell_" + String.format("%02d", i) ));
@@ -81,19 +84,22 @@ public class FieldSim {
         m_field2d.setRobotPose(startPosition);
         m_driveTrain.resetOdometry(startPosition, startPosition.getRotation());
         m_autoStartTime = Timer.getFPGATimestamp();
+        var target = SimConstants.newTgt;
+        m_vision.getVisionSim().addSimVisionTarget(SimConstants.newTgt);
     }
 
     public void placeSkillPowercells(RobotContainer.SkillsChallengeSelector command) {
         boolean red = Math.random() > 0.5;
-        if (command == SkillsChallengeSelector.GALACTIC_SEARCH_A) {
+        /*if (command == SkillsChallengeSelector.GALACTIC_SEARCH) {
             for (int i = 0; i < 3; i++) {
                 m_powercells[i].setBallPose(red ? SimConstants.GalacticSearchARedBalls[i] : SimConstants.GalacticSearchABlueBalls[i]);
             }
-        } else if (command == SkillsChallengeSelector.GALACTIC_SEARCH_B) {
+        } else if (command == SkillsChallengeSelector.GALACTIC_SEARCH) {
             for (int i = 0; i < 3; i++) {
                 m_powercells[i].setBallPose(red ? SimConstants.GalacticSearchBRedBalls[i] : SimConstants.GalacticSearchBBlueBalls[i]);
             }
-        }
+        }*/
+        //TODO: Fix this
     }
 
     private void updateIntakePoses() {
