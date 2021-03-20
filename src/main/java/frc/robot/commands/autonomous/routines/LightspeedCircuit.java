@@ -42,7 +42,7 @@ public class LightspeedCircuit extends SequentialCommandGroup {
             {300,30,180},
             {170,30,180},
             {115,90,180},
-            {60,30,-100},
+            {60,30,-100}
         };
         Pose2d[] waypoints = new Pose2d[waypointsRaw.length];
         for (int j = 0; j < waypointsRaw.length; j++) {

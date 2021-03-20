@@ -40,15 +40,15 @@ import java.util.List;
 public class AutoNavBounce extends SequentialCommandGroup {
     public AutoNavBounce(DriveTrain driveTrain, FieldSim fieldSim) {
         int[][] waypointsRaw = {
-            {30,90,0},
-            {90,150,90},
-            {105,90,120},
-            {150,40,180},
-            {180,139,-90},
-            {211,30,0},
-            {252,30,0},
-            {270,147,90},
-            {315,100,160},
+                {30,90,0},
+                {90,150,90},
+                {105,90,120},
+                {150,40,180},
+                {180,139,-90},
+                {211,30,0},
+                {252,30,0},
+                {270,147,90},
+                {315,100,160}
         };
         Pose2d[] waypoints = new Pose2d[waypointsRaw.length];
         for (int j = 0; j < waypointsRaw.length; j++) {

@@ -44,7 +44,7 @@ public class GalacticSearchBRed extends SequentialCommandGroup {
             {90,120,-170},
             {150,60,180},
             {210,120,180},
-            {345,90,180},
+            {345,90,180}
         };
         Pose2d[] waypoints = new Pose2d[waypointsRaw.length];
         for (int j = 0; j < waypointsRaw.length; j++) {
