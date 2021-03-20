@@ -44,20 +44,22 @@ import java.util.List;
  * in order to adjust for robot's actual vs. expected position disparities
  */
 public class AutoNewBarrelTest extends CommandBase {
-        private Pose2d currentPose;
-        private Pose2d[] endPoints = {
-            new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-            new Pose2d(Units.inchesToMeters(176), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(-120))),
-            new Pose2d(Units.inchesToMeters(124), Units.inchesToMeters(45), new Rotation2d(Units.degreesToRadians(120))),
-            new Pose2d(Units.inchesToMeters(150), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-            new Pose2d(Units.inchesToMeters(240), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(0))),
-            new Pose2d(Units.inchesToMeters(270), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(90))),
-            new Pose2d(Units.inchesToMeters(210), Units.inchesToMeters(120), new Rotation2d(Units.degreesToRadians(-90))),
-            new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(34), new Rotation2d(Units.degreesToRadians(0))),
-            new Pose2d(Units.inchesToMeters(330), Units.inchesToMeters(60), new Rotation2d(Units.degreesToRadians(90))),
-            new Pose2d(Units.inchesToMeters(285), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180))),
-            new Pose2d(Units.inchesToMeters(30), Units.inchesToMeters(90), new Rotation2d(Units.degreesToRadians(180)))
+    private Pose2d currentPose;
+    int[][] endPointsRaw = {
+        {150,90,0},
+        {176,45,-120},
+        {124,45,120},
+        {150,90,0},
+        {240,90,0},
+        {270,120,90},
+        {210,120,-90},
+        {285,34,0},
+        {330,60,90},
+        {285,90,180},
+        {30,90,180}
     };
+
+    Pose2d[] endPoints = new Pose2d[endPointsRaw.length];
 
     private int index = 0;
     private DriveTrain m_driveTrain;
@@ -70,6 +72,10 @@ public class AutoNewBarrelTest extends CommandBase {
     public AutoNewBarrelTest(DriveTrain driveTrain, FieldSim fieldSim) {
         m_driveTrain = driveTrain;
         m_fieldSim = fieldSim;
+
+        for (int j = 0; j < endPointsRaw.length; j++) {
+            endPoints[j] = new Pose2d(Units.inchesToMeters(endPointsRaw[j][0]), Units.inchesToMeters(endPointsRaw[j][1]), new Rotation2d(Units.degreesToRadians(endPointsRaw[j][2])));
+        }
 
         configA.setReversed(false);
         //configA.setEndVelocity(configA.getMaxVelocity());
